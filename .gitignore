@@ -1,0 +1,32 @@
+# Copyrighted source materials — never commit
+source_local_only/
+Session_PPT/
+Sample_Paper/
+extracted_text/
+
+# MkDocs build output
+site/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (in case)
+node_modules/
+
+# Claude
+.claude/

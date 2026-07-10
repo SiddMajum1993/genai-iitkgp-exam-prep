@@ -1,0 +1,154 @@
+site_name: GenAI & Agentic AI — Exam Prep
+site_description: A learner-friendly study guide for the upGrad × IIT Kharagpur Certificate Course on Generative and Agentic AI. Deep learn-guides, compressed revision notes, mock exam, and cheat sheet.
+site_author: Community contributors
+site_url: https://genai-exam-prep.pages.dev/
+
+repo_url: https://github.com/your-username/genai-iitkgp-exam-prep
+repo_name: genai-iitkgp-exam-prep
+edit_uri: edit/main/docs/
+
+copyright: >
+  Study materials © the contributors, released under CC BY 4.0.
+  Lecture slides, sample paper, and course content © upGrad × IIT Kharagpur — not redistributed here.
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+plugins:
+  - search
+  - tags
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra_css:
+  - assets/css/quiz.css
+
+extra_javascript:
+  - assets/js/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - assets/js/mock-exam-1-data.js
+  - assets/js/quiz.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/your-username/genai-iitkgp-exam-prep
+  generator: false
+
+nav:
+  - Home: index.md
+  - Cheat sheet: cheatsheet.md
+  - Learn (deep guides):
+      - learn/index.md
+      - 01 · ML foundations: learn/01-ml-foundations.md
+      - 02 · Neural networks & word embeddings: learn/02-neural-networks.md
+      - 03 · Transformers & attention: learn/03-transformers.md
+      - 04 · LLM decoding & APIs: learn/04-llm-decoding-apis.md
+      - 05 · Structured outputs & evaluation: learn/05-structured-outputs-evaluation.md
+      - 06 · AI safety & CIA triad: learn/06-ai-safety.md
+      - 07 · Advanced prompting: learn/07-advanced-prompting.md
+      - 08 · Prompt security & APE: learn/08-prompt-security-ape.md
+      - 09 · RAG fundamentals: learn/09-rag-fundamentals.md
+      - 10 · Dense retrieval & rerankers: learn/10-dense-retrieval.md
+      - 11 · Vector indexing & PQ math: learn/11-vector-indexing.md
+      - 12 · Agentic RAG: learn/12-agentic-rag.md
+  - Revise (compressed):
+      - revise/index.md
+      - 01 · ML foundations: revise/01-ml-foundations.md
+      - 02 · Neural networks: revise/02-neural-networks.md
+      - 03 · Transformers: revise/03-transformers.md
+      - 04 · LLM decoding & APIs: revise/04-llm-decoding-apis.md
+      - 05 · Structured outputs & evaluation: revise/05-structured-outputs-evaluation.md
+      - 06 · AI safety: revise/06-ai-safety.md
+      - 07 · Advanced prompting: revise/07-advanced-prompting.md
+      - 08 · Prompt security & APE: revise/08-prompt-security-ape.md
+      - 09 · RAG fundamentals: revise/09-rag-fundamentals.md
+      - 10 · Dense retrieval: revise/10-dense-retrieval.md
+      - 11 · Vector indexing: revise/11-vector-indexing.md
+      - 12 · Agentic RAG: revise/12-agentic-rag.md
+  - Practice:
+      - practice/index.md
+      - Mock Exam 1: practice/mock-exam-1.md
+  - About: about.md
