@@ -1,0 +1,583 @@
+/* =========================================================================
+   Aura Academic — MkDocs Material overrides
+   Inspired by the stitch_study_guide_portal_redesign mockups.
+   Ported into Material's CSS custom-property system so the theme's nav,
+   search, TOC, and quiz plumbing continue to work.
+   ========================================================================= */
+
+:root,
+[data-md-color-scheme="default"] {
+  /* Palette — Aura Academic */
+  --aura-slate-950: #0f172a;
+  --aura-slate-900: #131b2e;
+  --aura-slate-800: #213145;
+  --aura-slate-600: #45464d;
+  --aura-slate-400: #76777d;
+  --aura-slate-200: #c6c6cd;
+  --aura-slate-100: #d3e4fe;
+  --aura-slate-50:  #eff4ff;
+  --aura-surface:   #f8f9ff;
+  --aura-white:     #ffffff;
+
+  --aura-emerald-500: #10b981;
+  --aura-emerald-400: #4edea3;
+  --aura-emerald-200: #6ffbbe;
+  --aura-emerald-50:  #dcfce7;
+  --aura-emerald-ink: #005236;
+
+  --aura-blue-500: #3b82f6;
+  --aura-blue-400: #3980f4;
+
+  --aura-amber-500: #f59e0b;
+  --aura-red-500:   #ba1a1a;
+
+  /* Rebind Material tokens */
+  --md-primary-fg-color:              var(--aura-slate-900);
+  --md-primary-fg-color--light:       var(--aura-slate-800);
+  --md-primary-fg-color--dark:        var(--aura-slate-950);
+  --md-primary-bg-color:              var(--aura-white);
+  --md-primary-bg-color--light:       rgba(255, 255, 255, 0.85);
+
+  --md-accent-fg-color:               var(--aura-emerald-500);
+  --md-accent-fg-color--transparent:  rgba(16, 185, 129, 0.12);
+  --md-accent-bg-color:               var(--aura-white);
+  --md-accent-bg-color--light:        rgba(255, 255, 255, 0.85);
+
+  --md-default-bg-color:              var(--aura-surface);
+  --md-default-fg-color:              var(--aura-slate-950);
+  --md-default-fg-color--light:       var(--aura-slate-600);
+  --md-default-fg-color--lighter:     var(--aura-slate-400);
+  --md-default-fg-color--lightest:    var(--aura-slate-200);
+
+  --md-typeset-color:                 #0b1c30;
+  --md-typeset-a-color:               var(--aura-blue-500);
+
+  --md-code-bg-color:                 #eef2f8;
+  --md-code-fg-color:                 #1f2937;
+
+  /* Aura typography */
+  --md-text-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --md-code-font: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* =========================================================================
+   Fonts — Hanken Grotesk (headlines), Inter (body), JetBrains Mono (labels)
+   ========================================================================= */
+@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+body,
+.md-typeset {
+  font-family: "Inter", var(--md-text-font);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  color: var(--md-typeset-color);
+  background-color: var(--md-default-bg-color);
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  font-family: "Hanken Grotesk", "Inter", sans-serif;
+  color: var(--aura-slate-950);
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+.md-typeset h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-top: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.md-typeset h2 {
+  font-size: 1.65rem;
+  border-bottom: 1px solid var(--aura-slate-200);
+  padding-bottom: 0.35rem;
+  margin-top: 2.25rem;
+  margin-bottom: 1.1rem;
+}
+
+.md-typeset h3 { font-size: 1.25rem; margin-top: 1.75rem; }
+.md-typeset h4 { font-size: 1.05rem; margin-top: 1.5rem; }
+
+/* =========================================================================
+   Header — Deep Slate top bar with emerald active accent
+   ========================================================================= */
+.md-header {
+  background-color: var(--aura-slate-900);
+  box-shadow: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.md-header--shadow {
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+}
+
+.md-header__title {
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.md-tabs {
+  background-color: var(--aura-slate-900);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.md-tabs__link {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.85rem;
+  opacity: 1;
+  transition: color 0.15s ease;
+}
+
+.md-tabs__link:hover,
+.md-tabs__link:focus {
+  color: #ffffff;
+}
+
+.md-tabs__link--active,
+.md-tabs__item--active > .md-tabs__link {
+  color: #ffffff;
+  font-weight: 600;
+  position: relative;
+}
+
+.md-tabs__link--active::after,
+.md-tabs__item--active > .md-tabs__link::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--aura-emerald-200);
+  border-radius: 2px;
+}
+
+.md-search__form {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+/* Header identity chip (LinkedIn) — replaces the usual repo widget.
+   We repurpose Material's .md-header__source slot; the label is set via
+   mkdocs.yml's repo_name and the link via repo_url. */
+.md-header__source {
+  max-width: none;
+  width: auto;
+}
+.md-source {
+  font-family: "Hanken Grotesk", "Inter", sans-serif;
+}
+.md-source__icon {
+  color: #ffffff;
+}
+.md-source__repository {
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #ffffff;
+  max-width: none;
+  overflow: visible;
+  margin-left: 0.4rem;
+  opacity: 1;
+}
+/* Hide the auto-fetched repo facts (stars, forks) — they don't apply here */
+.md-source__facts { display: none; }
+
+.md-search__input {
+  color: #ffffff;
+}
+.md-search__input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+.md-search__input:hover,
+.md-search__form:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+/* When search is open (focused / overlay mode), Material gives the form
+   a light background — flip the input text to dark so it stays readable. */
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form,
+.md-search__form:focus-within {
+  background-color: var(--aura-white);
+}
+[data-md-toggle="search"]:checked ~ .md-header .md-search__input,
+.md-search__form:focus-within .md-search__input {
+  color: var(--aura-slate-950);
+}
+[data-md-toggle="search"]:checked ~ .md-header .md-search__input::placeholder,
+.md-search__form:focus-within .md-search__input::placeholder {
+  color: var(--aura-slate-400);
+}
+[data-md-toggle="search"]:checked ~ .md-header .md-search__icon,
+.md-search__form:focus-within .md-search__icon {
+  color: var(--aura-slate-600);
+}
+
+/* =========================================================================
+   Sidebar navigation — cleaner, tighter, monospace section labels
+   ========================================================================= */
+.md-nav__title {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--aura-slate-400);
+  font-weight: 500;
+}
+
+.md-nav__link {
+  color: var(--aura-slate-600);
+  transition: color 0.15s ease, background-color 0.15s ease;
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+}
+.md-nav__link:hover {
+  color: var(--aura-slate-950);
+  background-color: var(--aura-slate-50);
+}
+.md-nav__link--active,
+.md-nav__item--active > .md-nav__link {
+  color: var(--aura-slate-950);
+  font-weight: 600;
+}
+
+/* =========================================================================
+   Content surface — cards, admonitions, tables, buttons
+   ========================================================================= */
+
+/* Grid cards (from mkdocs-material `.grid.cards`) — bento-style */
+.md-typeset .grid.cards > ol > li,
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  background: var(--aura-white);
+  border: 1px solid var(--aura-slate-200);
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1),
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+  box-shadow: none;
+}
+
+.md-typeset .grid.cards > ol > li:hover,
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid > .card:hover {
+  transform: translateY(-3px);
+  border-color: var(--aura-emerald-400);
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* Featured "practice" card — dark variant on the home page.
+   Applied via .aura-card-dark class OR the 3rd grid-card on the home page
+   (Practice is always the 3rd Start-here card). */
+.md-typeset .aura-card-dark,
+.md-typeset .grid.cards > ul > li:nth-child(3) {
+  background: var(--aura-slate-900);
+  color: #ffffff;
+  border-color: var(--aura-slate-900);
+}
+.md-typeset .aura-card-dark:hover,
+.md-typeset .grid.cards > ul > li:nth-child(3):hover {
+  border-color: var(--aura-emerald-400);
+}
+.md-typeset .aura-card-dark p,
+.md-typeset .aura-card-dark li,
+.md-typeset .aura-card-dark strong,
+.md-typeset .grid.cards > ul > li:nth-child(3) p,
+.md-typeset .grid.cards > ul > li:nth-child(3) strong { color: rgba(255, 255, 255, 0.82); }
+.md-typeset .aura-card-dark h1,
+.md-typeset .aura-card-dark h2,
+.md-typeset .aura-card-dark h3,
+.md-typeset .aura-card-dark h4,
+.md-typeset .grid.cards > ul > li:nth-child(3) h1,
+.md-typeset .grid.cards > ul > li:nth-child(3) h2,
+.md-typeset .grid.cards > ul > li:nth-child(3) h3,
+.md-typeset .grid.cards > ul > li:nth-child(3) h4 { color: #ffffff; }
+.md-typeset .aura-card-dark a,
+.md-typeset .grid.cards > ul > li:nth-child(3) a { color: var(--aura-emerald-200); }
+.md-typeset .grid.cards > ul > li:nth-child(3) hr {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Admonitions — thick left-border, subdued fill, editorial header */
+.md-typeset .admonition,
+.md-typeset details {
+  background: var(--aura-white);
+  border: 1px solid var(--aura-slate-200);
+  border-left: 4px solid var(--aura-slate-400);
+  border-radius: 8px;
+  box-shadow: none;
+  padding: 0;
+}
+
+.md-typeset .admonition-title,
+.md-typeset summary {
+  background: transparent;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 600;
+  font-size: 0.98rem;
+  padding: 0.75rem 1rem 0.35rem 2.4rem;
+  border: none;
+}
+
+.md-typeset .admonition-title::before,
+.md-typeset summary::before {
+  top: 0.85rem;
+  left: 0.85rem;
+}
+
+.md-typeset .admonition > *:not(.admonition-title):not(summary),
+.md-typeset details > *:not(summary) {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.md-typeset .admonition > *:last-child,
+.md-typeset details > *:last-child { padding-bottom: 0.9rem; }
+
+.md-typeset .admonition.info,
+.md-typeset details.info {
+  border-left-color: var(--aura-emerald-500);
+  background: linear-gradient(0deg, rgba(16, 185, 129, 0.04), rgba(16, 185, 129, 0.04)), var(--aura-white);
+}
+.md-typeset .info > .admonition-title::before,
+.md-typeset details.info > summary::before { background-color: var(--aura-emerald-500); }
+
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-left-color: var(--aura-emerald-500);
+}
+.md-typeset .tip > .admonition-title::before,
+.md-typeset details.tip > summary::before { background-color: var(--aura-emerald-500); }
+
+.md-typeset .admonition.note,
+.md-typeset details.note {
+  border-left-color: var(--aura-blue-500);
+}
+.md-typeset .note > .admonition-title::before,
+.md-typeset details.note > summary::before { background-color: var(--aura-blue-500); }
+
+.md-typeset .admonition.warning,
+.md-typeset details.warning,
+.md-typeset .admonition.caution,
+.md-typeset details.caution {
+  border-left-color: var(--aura-amber-500);
+}
+
+.md-typeset .admonition.danger,
+.md-typeset details.danger,
+.md-typeset .admonition.failure,
+.md-typeset details.failure {
+  border-left-color: var(--aura-red-500);
+}
+
+/* Tables — editorial: light header, thin bottom dividers, mono column heads */
+.md-typeset table:not([class]) {
+  background: var(--aura-white);
+  border: 1px solid var(--aura-slate-200);
+  border-radius: 10px;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: none;
+  font-size: 0.88rem;
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--aura-slate-50);
+  color: var(--aura-slate-600);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--aura-slate-200);
+  padding: 0.75rem 1rem;
+}
+
+.md-typeset table:not([class]) td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--aura-slate-100);
+  border-top: none;
+}
+
+.md-typeset table:not([class]) tr:last-child td {
+  border-bottom: none;
+}
+
+.md-typeset table:not([class]) tr:hover td {
+  background: rgba(220, 233, 255, 0.35);
+}
+
+/* Inline code + code blocks */
+.md-typeset code {
+  background: var(--md-code-bg-color);
+  color: var(--md-code-fg-color);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-size: 0.86em;
+}
+
+.md-typeset pre > code {
+  border-radius: 8px;
+  border: 1px solid var(--aura-slate-200);
+  padding: 1rem 1.25rem;
+  font-size: 0.85em;
+}
+
+/* Buttons */
+.md-typeset .md-button {
+  border-radius: 6px;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 600;
+  border: 1px solid var(--aura-slate-900);
+  background: var(--aura-slate-900);
+  color: #ffffff;
+  padding: 0.55rem 1.1rem;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  box-shadow: none;
+}
+.md-typeset .md-button:hover {
+  background: var(--aura-slate-950);
+  border-color: var(--aura-slate-950);
+  color: #ffffff;
+}
+.md-typeset .md-button--primary {
+  background: var(--aura-emerald-500);
+  border-color: var(--aura-emerald-500);
+  color: #ffffff;
+}
+.md-typeset .md-button--primary:hover {
+  background: #0ea472;
+  border-color: #0ea472;
+}
+
+/* Blockquotes — editorial */
+.md-typeset blockquote {
+  border-left: 3px solid var(--aura-emerald-500);
+  color: var(--aura-slate-600);
+  background: var(--aura-slate-50);
+  padding: 0.75rem 1rem;
+  border-radius: 0 6px 6px 0;
+}
+
+/* =========================================================================
+   Aura eyebrow label (uppercase mono) — utility for hero sections
+   ========================================================================= */
+.md-typeset .aura-eyebrow {
+  display: inline-block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--aura-emerald-500);
+  margin-bottom: 0.75rem;
+}
+
+/* Aura pill row — used under the hero paragraph */
+.md-typeset .aura-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0 1.5rem;
+  padding-left: 0;
+  list-style: none;
+}
+.md-typeset .aura-pills li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  background: var(--aura-white);
+  border: 1px solid var(--aura-slate-200);
+  border-radius: 999px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--aura-slate-600);
+}
+.md-typeset .aura-pills li.aura-pill-accent {
+  background: var(--aura-emerald-50);
+  border-color: var(--aura-emerald-200);
+  color: var(--aura-emerald-ink);
+}
+
+/* Aura fact list — used inside "Exam at a glance" admonition */
+.md-typeset .aura-facts {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.5rem 0;
+}
+.md-typeset .aura-facts li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--aura-slate-100);
+}
+.md-typeset .aura-facts li:last-child { border-bottom: none; }
+.md-typeset .aura-facts .aura-fact-label {
+  color: var(--aura-slate-600);
+  font-weight: 500;
+}
+.md-typeset .aura-facts .aura-fact-value {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.82rem;
+  color: var(--aura-slate-950);
+  background: var(--aura-slate-50);
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+}
+
+/* Footer polish */
+.md-footer {
+  background-color: var(--aura-slate-900);
+}
+.md-footer-meta {
+  background-color: var(--aura-slate-950);
+}
+.md-footer__link {
+  border-radius: 6px;
+}
+
+/* Search results dropdown */
+.md-search-result__meta {
+  background: var(--aura-slate-50);
+  color: var(--aura-slate-600);
+}
+
+/* TOC (right rail) */
+.md-nav--secondary .md-nav__title {
+  background: transparent;
+  color: var(--aura-slate-600);
+}
+
+/* Ensure body links animate */
+.md-typeset a {
+  transition: color 0.15s ease;
+}
+.md-typeset a:hover {
+  color: var(--aura-slate-950);
+  text-decoration: underline;
+  text-decoration-color: var(--aura-emerald-400);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* Quiz surface stays consistent with Aura tables/cards */
+#quiz-root {
+  background: var(--aura-white);
+  border: 1px solid var(--aura-slate-200);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 16px rgba(15, 23, 42, 0.04);
+}

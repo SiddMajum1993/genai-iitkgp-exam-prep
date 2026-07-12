@@ -3,9 +3,9 @@ site_description: A learner-friendly study guide for the upGrad × IIT Kharagpur
 site_author: Community contributors
 site_url: https://genai-exam-prep.pages.dev/
 
-repo_url: https://github.com/your-username/genai-iitkgp-exam-prep
-repo_name: genai-iitkgp-exam-prep
-edit_uri: edit/main/docs/
+repo_url: https://www.linkedin.com/in/siddmajum1993
+repo_name: Find me on LinkedIn
+edit_uri: ""
 
 copyright: >
   Study materials © the contributors, released under CC BY 4.0.
@@ -13,6 +13,7 @@ copyright: >
 
 theme:
   name: material
+  custom_dir: overrides
   language: en
   features:
     - navigation.instant
@@ -30,31 +31,15 @@ theme:
     - content.code.copy
     - content.code.annotate
     - content.tabs.link
-    - content.action.edit
   palette:
-    - media: "(prefers-color-scheme)"
-      toggle:
-        icon: material/brightness-auto
-        name: Switch to light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-4
-        name: Switch to system preference
+    - scheme: default
+      primary: custom
+      accent: custom
   font:
     text: Inter
     code: JetBrains Mono
   icon:
-    repo: fontawesome/brands/github
+    repo: fontawesome/brands/linkedin
     edit: material/pencil
     view: material/eye
 
@@ -102,6 +87,7 @@ markdown_extensions:
   - pymdownx.tilde
 
 extra_css:
+  - assets/css/aura.css
   - assets/css/quiz.css
 
 extra_javascript:
@@ -109,12 +95,18 @@ extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - assets/js/mock-exam-1-data.js
+  - assets/js/mock-exam-2-data.js
+  - assets/js/mock-exam-3-data.js
+  - assets/js/mock-exam-4-data.js
+  - assets/js/mock-exam-5-data.js
   - assets/js/quiz.js
+  - assets/js/aura.js
 
 extra:
   social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/your-username/genai-iitkgp-exam-prep
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/siddmajum1993
+      name: Connect with Siddhartha on LinkedIn
   generator: false
 
 nav:
@@ -151,4 +143,8 @@ nav:
   - Practice:
       - practice/index.md
       - Mock Exam 1: practice/mock-exam-1.md
+      - Mock Exam 2: practice/mock-exam-2.md
+      - Mock Exam 3: practice/mock-exam-3.md
+      - Mock Exam 4: practice/mock-exam-4.md
+      - Mock Exam 5: practice/mock-exam-5.md
   - About: about.md

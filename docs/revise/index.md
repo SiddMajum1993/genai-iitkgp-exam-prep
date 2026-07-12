@@ -1,3 +1,5 @@
+<span class="aura-eyebrow">Revise · Compressed Notes</span>
+
 # Revise — Compressed Notes
 
 Compressed revision notes. Every lecture reduced to its formulas, tables, and flashcards. **Not** for first-time learners — use the [Learn guides](../learn/index.md) for that.

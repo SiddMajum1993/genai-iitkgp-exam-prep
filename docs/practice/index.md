@@ -1,6 +1,14 @@
+<span class="aura-eyebrow">Practice · Simulate exam conditions</span>
+
 # Practice
 
 Full mock exams matching the format of the real paper: 24 multiple-choice questions across the four sections, 4 marks each, 90 minutes, no negative marking.
+
+<ul class="aura-pills" markdown>
+<li markdown>:material-timer-outline: 90 minutes each</li>
+<li class="aura-pill-accent" markdown>:material-check-all: Instant scoring</li>
+<li markdown>:material-numeric-5-circle-outline: Five full mocks</li>
+</ul>
 
 !!! tip "How to take a mock"
     1. **Set a 90-minute timer.** No pausing, no reference material.
@@ -14,6 +22,13 @@ Full mock exams matching the format of the real paper: 24 multiple-choice questi
 | Mock | Coverage | Difficulty | Length |
 |---|---|---|---|
 | [Mock Exam 1](mock-exam-1.md) | All 4 sections, 24 questions | Matches sample paper | 90 min |
+| [Mock Exam 2](mock-exam-2.md) | All 4 sections, 24 questions | Matches sample paper | 90 min |
+| [Mock Exam 3](mock-exam-3.md) | All 4 sections, 24 questions | Matches sample paper | 90 min |
+| [Mock Exam 4](mock-exam-4.md) | All 4 sections, 24 questions | Matches sample paper | 90 min |
+| [Mock Exam 5](mock-exam-5.md) | All 4 sections, 24 questions | Slightly harder — challenge round | 90 min |
+
+!!! tip "Suggested order"
+    Work through Mock 1 first, then Mock 3, then Mock 4, then Mock 2, and save Mock 5 for last. This mixes original scenarios with the sample-paper style paper so you calibrate to both.
 
 ## Section weighting (as tested)
 
@@ -25,9 +40,6 @@ The exam is roughly balanced across four sections. Each has 6 questions × 4 mar
 | 2 | LLM decoding, APIs, tooling, evaluation, safety | 4, 5, 6 |
 | 3 | Prompting techniques & NLP metrics | 7, 8, 5 |
 | 4 | Vector indexing & RAG security | 11, 12 |
-
-!!! info "Where's the sample paper?"
-    The official upGrad × IIT Kharagpur sample paper is copyrighted and cannot be redistributed on this site. If you're enrolled in the course, download it from your course dashboard. This mock exam is an original replica in the same format and coverage.
 
 ## After you finish a mock
 

@@ -1,3 +1,5 @@
+<span class="aura-eyebrow">Learn · Deep Guides</span>
+
 # Learn — Deep Guides
 
 These are the **primary reading materials**. Each guide takes a single lecture and explains it in plain English — the problem it solves, an intuition (usually with an analogy), a worked example, the formula with meanings, common misunderstandings, and how it shows up in the exam.
