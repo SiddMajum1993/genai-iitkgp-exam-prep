@@ -18,6 +18,13 @@ This site turns twelve dense lectures into a study path you can actually finish 
 <li markdown>:material-clock-outline: 90-min mock exams</li>
 </ul>
 
+!!! tip "New: 2nd proctored exam guide"
+    Preparing for **Exam 2**? It has its own guide covering fine-tuning, PEFT (LoRA/QLoRA), RLHF & DPO, vision-language models, multimodal RAG, agents, LangGraph and Responsible AI. There are 13 chapters with practice questions, plus a focus map, decision tables and a glossary.
+
+    [:material-arrow-right: Open the Exam 2 guide](exam2/index.md){ .md-button .md-button--primary }
+
+    *The rest of this page covers the 1st exam.*
+
 !!! info "Exam at a glance"
     <ul class="aura-facts" markdown>
     <li><span class="aura-fact-label">Format</span><span class="aura-fact-value">24 multiple-choice questions</span></li>

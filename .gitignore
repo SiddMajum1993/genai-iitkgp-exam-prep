@@ -30,3 +30,6 @@ node_modules/
 
 # Claude
 .claude/
+
+# Exam 2 course materials + derived notes — never commit
+2nd Proctored Exam Material/

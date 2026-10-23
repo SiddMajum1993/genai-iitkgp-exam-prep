@@ -1,7 +1,7 @@
 site_name: GenAI & Agentic AI — Exam Prep
 site_description: A learner-friendly study guide for the upGrad × IIT Kharagpur Certificate Course on Generative and Agentic AI. Deep learn-guides, compressed revision notes, mock exam, and cheat sheet.
 site_author: Community contributors
-site_url: https://genai-exam-prep.pages.dev/
+site_url: https://genai-iitkgp-exam-prep.pages.dev/
 
 repo_url: https://www.linkedin.com/in/siddmajum1993
 repo_name: Find me on LinkedIn
@@ -89,10 +89,10 @@ markdown_extensions:
 extra_css:
   - assets/css/aura.css
   - assets/css/quiz.css
+  - assets/css/practice-quiz.css
 
 extra_javascript:
   - assets/js/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - assets/js/mock-exam-1-data.js
   - assets/js/mock-exam-2-data.js
@@ -100,6 +100,20 @@ extra_javascript:
   - assets/js/mock-exam-4-data.js
   - assets/js/mock-exam-5-data.js
   - assets/js/quiz.js
+  - assets/js/quizzes/ch01-ft-decisions.js
+  - assets/js/quizzes/ch02-ft-data-training.js
+  - assets/js/quizzes/ch03-peft-adapters-prompts.js
+  - assets/js/quizzes/ch04-lora-qlora.js
+  - assets/js/quizzes/ch05-rlhf-dpo.js
+  - assets/js/quizzes/ch06-revision-slm-guardrails.js
+  - assets/js/quizzes/ch07-vlm-architectures.js
+  - assets/js/quizzes/ch08-vlm-applications.js
+  - assets/js/quizzes/ch09-multimodal-rag.js
+  - assets/js/quizzes/ch10-rag-to-agents.js
+  - assets/js/quizzes/ch11-multi-agent.js
+  - assets/js/quizzes/ch12-langchain-langgraph.js
+  - assets/js/quizzes/ch13-responsible-ai.js
+  - assets/js/practice-quiz.js
   - assets/js/aura.js
 
 extra:
@@ -111,6 +125,31 @@ extra:
 
 nav:
   - Home: index.md
+  - Exam 2 prep:
+      - exam2/index.md
+      - Part A · Fine-tuning:
+          - 01 · When to fine-tune: exam2/learn/01-ft-decisions.md
+          - 02 · Data prep & training mechanics: exam2/learn/02-ft-data-training.md
+          - 03 · PEFT — adapters & soft prompts: exam2/learn/03-peft-adapters-prompts.md
+          - 04 · LoRA & QLoRA: exam2/learn/04-lora-qlora.md
+          - 05 · RLHF & DPO: exam2/learn/05-rlhf-dpo.md
+          - 06 · Revision, SLMs & guardrails: exam2/learn/06-revision-slm-guardrails.md
+      - Part B · Vision-language models:
+          - 07 · VLM architectures: exam2/learn/07-vlm-architectures.md
+          - 08 · Applications of VLMs: exam2/learn/08-vlm-applications.md
+          - 09 · Multimodal RAG: exam2/learn/09-multimodal-rag.md
+      - Part C · Agents:
+          - 10 · RAG to assistants & agents: exam2/learn/10-rag-to-agents.md
+          - 11 · Multi-agent systems: exam2/learn/11-multi-agent.md
+          - 12 · LangChain & LangGraph: exam2/learn/12-langchain-langgraph.md
+      - Part D · Responsible AI:
+          - 13 · Responsible & trusted AI: exam2/learn/13-responsible-ai.md
+      - Exam toolkit:
+          - Focus map: exam2/extras/focus-map.md
+          - Which one when?: exam2/extras/which-one-when.md
+          - Commonly confused pairs: exam2/extras/confused-pairs.md
+          - Cheat sheet: exam2/extras/cheat-sheet.md
+          - Glossary: exam2/extras/glossary.md
   - Cheat sheet: cheatsheet.md
   - Learn (deep guides):
       - learn/index.md

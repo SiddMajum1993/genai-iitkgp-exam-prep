@@ -1,0 +1,184 @@
+/* End-of-chapter practice quizzes (instant feedback, no timer). */
+
+.practice-quiz {
+  max-width: 900px;
+  margin: 1.5rem 0;
+}
+
+.pq-scorebar {
+  position: sticky;
+  top: 3.6rem;
+  z-index: 2;
+  padding: 0.6em 1em;
+  margin-bottom: 1em;
+  border-radius: 8px;
+  border: 1px solid var(--aura-slate-200);
+  background: var(--aura-slate-50);
+  color: var(--aura-slate-900);
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.pq-card {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 10px;
+  padding: 1.1em 1.4em;
+  margin-bottom: 1.1em;
+  background: var(--md-default-bg-color);
+  box-shadow: 0 2px 16px rgba(15, 23, 42, 0.04);
+}
+
+.pq-head {
+  display: flex;
+  gap: 0.6em;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+
+.pq-num {
+  font-weight: 700;
+  color: var(--md-primary-fg-color);
+}
+
+.pq-type {
+  font-size: 0.72em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15em 0.6em;
+  border-radius: 999px;
+  background: var(--aura-slate-100);
+  color: var(--aura-slate-800);
+}
+
+.pq-stem {
+  font-size: 1.0em;
+  line-height: 1.55;
+  margin-bottom: 0.8em;
+}
+
+.pq-code {
+  background: var(--md-code-bg-color);
+  padding: 0.85em 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.5em 0 1em;
+  font-family: var(--md-code-font);
+  font-size: 0.82em;
+  line-height: 1.5;
+}
+
+.pq-code code {
+  background: transparent;
+  padding: 0;
+  white-space: pre;
+}
+
+.pq-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.pq-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75em;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  padding: 0.65em 0.9em;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.pq-option:hover:not(:disabled) {
+  background: var(--md-default-fg-color--lightest);
+}
+
+.pq-option:disabled {
+  cursor: default;
+}
+
+.pq-option:focus-visible {
+  outline: 2px solid var(--md-primary-fg-color);
+  outline-offset: 2px;
+}
+
+.pq-letter {
+  font-weight: 700;
+  color: var(--md-primary-fg-color);
+  flex-shrink: 0;
+  min-width: 1.25em;
+}
+
+.pq-option-text {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.pq-option.is-correct {
+  background: #e6f7ea;
+  border-color: #4caf50;
+}
+
+.pq-option.is-wrong {
+  background: #fdeaea;
+  border-color: #e53935;
+}
+
+.pq-feedback {
+  margin-top: 1em;
+  padding: 0.8em 1em;
+  border-radius: 6px;
+  border-left: 4px solid;
+  font-size: 0.92em;
+  line-height: 1.55;
+}
+
+.pq-feedback.correct {
+  background: #f1faf3;
+  border-color: #4caf50;
+}
+
+.pq-feedback.wrong {
+  background: #fdf3f3;
+  border-color: #e53935;
+}
+
+.pq-status {
+  font-weight: 700;
+  margin-bottom: 0.4em;
+}
+
+.md-typeset .pq-why {
+  margin: 0.3em 0 0.5em;
+  padding-left: 0;
+  list-style: none;
+}
+
+.md-typeset .pq-why li {
+  margin: 0.35em 0;
+  padding-left: 0;
+}
+
+.pq-why li.why-correct strong {
+  color: #2e7d32;
+}
+
+.pq-why li.why-wrong strong {
+  color: #c62828;
+}
+
+.pq-takeaway {
+  margin-top: 0.5em;
+  padding-top: 0.5em;
+  border-top: 1px dashed var(--md-default-fg-color--lighter);
+}
+
+.pq-controls {
+  padding: 0.5em 0 1em;
+}
