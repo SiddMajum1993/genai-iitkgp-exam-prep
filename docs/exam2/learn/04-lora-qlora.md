@@ -22,18 +22,31 @@ If you remember one sentence, make it this one: **LoRA reduces what you train; Q
 
 How likely each topic is to be tested, based on how much slide time it got, how often it appears across the pre-read, slides and post-read, how many student questions it drew, and whether it came back in the revision session (Chapter 06).
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| How LoRA works: frozen W₀, side path B·A, B starts at zero | 🔴 High | Pre-read, slides, ~10 Q&A questions, re-taught in revision |
-| Why LoRA saves memory (no gradients or optimizer states for frozen weights) | 🔴 High | Repeated in slides and Q&A; the classic "why" question |
-| Merging the adapter → no extra inference latency (vs adapters) | 🔴 High | Pre-read calls it "the fundamental advantage" |
-| QLoRA's ingredients: NF4, double quantization, paged optimizer (+ gradient checkpointing) | 🔴 High | Whole second half of the lecture; repeated in revision |
-| What QLoRA quantizes (frozen base only, not A and B) | 🔴 High | Asked 4 different ways in the Q&A sheet |
-| Intrinsic dimension: why low-rank updates are enough | 🟠 Medium | Opens the lecture; pre-read section |
-| The two dials r (rank) and α (alpha) | 🟠 Medium | Live in-class quiz on it; several Q&A rows |
-| Multi-tenant use case: one base model, many hot-swapped adapters | 🟠 Medium | Opening story; good scenario-question material |
-| Block-wise quantization and outliers | 🟠 Medium | Several slides plus Q&A |
-| Gradient checkpointing details, exact NF4 level values | 🟢 Low | Mechanism matters; exact numbers don't |
+### 🔴 High: expect questions here
+
+**How LoRA works.** The original weights W₀ stay frozen, a side path B·A is trained, and B starts at zero. This is in the pre-read and the slides, drew about 10 student questions, and was taught again in the revision session.
+
+**Why LoRA saves memory.** Frozen weights need no gradients and no optimizer states. The slides and the Q&A keep coming back to this. It's the classic "why" question.
+
+**Merging means no extra inference latency.** After training, the LoRA update can be folded into W₀, unlike adapters, which stay in the network. The pre-read calls this "the fundamental advantage".
+
+**QLoRA's ingredients.** NF4, double quantization and the paged optimizer, plus gradient checkpointing. This was the whole second half of the lecture, and it came back in revision.
+
+**What QLoRA quantizes.** Only the frozen base, not A and B. Students asked about this four different ways in the Q&A sheet.
+
+### 🟠 Medium: likely to show up in one question
+
+**Intrinsic dimension.** This is why a low-rank update is enough. It opens the lecture and has its own pre-read section.
+
+**The two dials, r (rank) and α (alpha).** There was a live in-class quiz on these, and several Q&A rows.
+
+**The multi-tenant use case.** One base model serves many clients by hot-swapping their adapters. It's the opening story of the lecture and good material for scenario questions.
+
+**Block-wise quantization and outliers.** Several slides covered this, plus some Q&A.
+
+### 🟢 Low: understand the idea, skip the details
+
+**Gradient checkpointing details and the exact NF4 level values.** Know how the mechanism works. The exact numbers won't matter.
 
 ---
 
@@ -94,12 +107,11 @@ This finding is the justification for LoRA. If the needed change lives in a few 
 
 A weight matrix inside a transformer might be 4096 × 4096, which is about 16.8 million numbers. A *low-rank* matrix of the same size can be built by multiplying a **tall, thin** matrix by a **short, wide** one.
 
-The professor asked the class a quick question:
+The professor asked the class a quick question about two small networks.
 
-| Network | Shape | Number of weights |
-|---|---|---|
-| A | one 1000 × 1000 matrix | 1,000,000 |
-| B | a 1000 × 100 matrix followed by a 100 × 1000 matrix | 200,000 |
+**Network A** is a single 1000 × 1000 matrix. That's one million weights.
+
+**Network B** is a 1000 × 100 matrix followed by a 100 × 1000 matrix. That's only 200,000 weights.
 
 Both networks take 1000 numbers in and give 1000 numbers out. But B has **five times fewer** weights, because everything passes through a narrow "waist" of 100.
 
@@ -143,11 +155,11 @@ flowchart LR
 
 ### What is trained and what is frozen
 
-| Part | Trained? | Notes |
-|---|---|---|
-| Original weights W₀ | ❄️ Frozen | Never changes, so no gradients or optimizer states are needed for it |
-| A | 🔥 Trained | Starts as small random numbers |
-| B | 🔥 Trained | **Starts at exactly zero** |
+**The original weights W₀ are frozen ❄️.** They never change during training, so the GPU doesn't need to keep any gradients or optimizer states for them.
+
+**A is trained 🔥.** It starts as small random numbers.
+
+**B is trained 🔥 too, but it starts at exactly zero.** That one detail matters a lot, as the next section explains.
 
 ### Why B starts at zero (a favourite exam point)
 
@@ -186,11 +198,13 @@ So full fine-tuning isn't a separate idea. It's LoRA with the rank dial turned a
 
 ## Concept 4 — The two dials: rank r and alpha α
 
-| Dial | What it controls | Everyday way to think about it |
-|---|---|---|
-| **r (rank)** | How many directions the update can use, which means capacity and parameter count | The number of "factors" in the movie example |
-| **α (alpha)** | How *strongly* the LoRA correction is applied relative to the frozen model | A volume knob for the adapter |
-| **α / r** | The actual scaling factor in the formula | Dividing by r keeps the update's size roughly stable when you change r, so you don't have to re-tune everything |
+LoRA gives you two settings to choose before training. They control different things, so it helps to keep them apart.
+
+**The rank r sets how much the adapter can learn.** It's the number of directions the update is allowed to use, which is the width of the waist from Concept 2. A bigger r means more capacity and more trainable parameters. In the movie example, r is the number of "factors" you keep.
+
+**The alpha α sets how loudly the adapter speaks.** It controls how strongly the LoRA correction is applied on top of the frozen model. Think of it as a volume knob for the adapter.
+
+**In the formula, the two appear together as α / r.** Dividing by r keeps the update's size roughly stable when you change the rank. So if you try r = 8 and then r = 16, you don't have to re-tune everything else from scratch.
 
 **How to choose r:** start with common values (8, 16, 32), then pick the **smallest r that gives acceptable validation performance**. Bigger isn't automatically better: it costs more memory and can overfit small datasets.
 
@@ -222,10 +236,11 @@ The adapters from Chapter 03 (Houlsby-style) are extra layers that **stay in the
 
 ### The nuance: merge *or* hot-swap?
 
-| You want… | Do this |
-|---|---|
-| One task, lowest possible latency | **Merge** the adapter into W₀ |
-| Many clients or tasks on one base model (the 200-client story) | **Keep adapters separate** and hot-swap them per request. Serving systems use routing, caching and batching to do this efficiently |
+Merging isn't always what you want. It depends on how many tasks you're serving.
+
+**If you have one task and want the lowest possible latency, merge.** Fold the adapter into W₀ and deploy the result like an ordinary model.
+
+**If many clients or tasks share one base model, keep the adapters separate.** This is the 200-client story. The base model stays in memory, and the right adapter is swapped in for each request. Serving systems use routing, caching and batching to make this efficient.
 
 Both are correct uses of LoRA. Read the scenario carefully to see which one it describes.
 
@@ -233,28 +248,21 @@ Both are correct uses of LoRA. Read the scenario carefully to see which one it d
 
 ## Concept 6 — Where the GPU memory actually goes
 
-To see why LoRA and QLoRA save so much, you need to know what full fine-tuning keeps in GPU memory **for every trainable parameter**:
+To see why LoRA and QLoRA save so much, you need to know what full fine-tuning keeps in GPU memory **for every weight it trains**.
 
-| Item | Why it's needed | Size per parameter (FP16 + Adam) |
-|---|---|---|
-| The weight itself | To run the model | 2 bytes |
-| Its gradient | To know which way to update it | 2 bytes |
-| Adam's two running averages (momentum and variance) | Adam's update rule needs them | 8 bytes (2 × 4 bytes, kept in FP32) |
-| **Total** | | **≈ 12 bytes per parameter**, plus activations |
+**The weight itself.** The model needs it to run. In 16-bit, that's 2 bytes per weight.
 
-Notice that the **optimizer states are the biggest part**, bigger than the weights themselves.
+**Its gradient.** To learn, the model has to know which way to nudge each weight. That "direction" is the gradient, and it takes another 2 bytes.
+
+**Adam's two running averages.** The Adam optimizer remembers a momentum and a variance for every weight, kept in 32-bit. That's 8 more bytes, the biggest share of all.
+
+So each trained weight costs about **12 bytes**, plus the activations. Notice that **most of that isn't the weight**: the optimizer states alone are bigger than the weights themselves.
 
 **Why LoRA saves memory:** the frozen W₀ still has to be loaded, but it needs **no gradient and no Adam states**. Those exist only for the tiny A and B. That's the main saving. It's *not* that A and B are small on disk.
 
 **Why QLoRA saves even more:** it also shrinks the frozen W₀ itself from 16 bits to 4 bits.
 
-The course's headline comparison for a **70B model**:
-
-| Method | Approx. memory | Hardware |
-|---|---|---|
-| Full fine-tuning | ~840 GB | ~20 data-centre GPUs |
-| LoRA | ~154 GB | ~4 data-centre GPUs |
-| QLoRA | ~46 GB | **1** data-centre GPU |
+The course's headline comparison uses a **70B model**. Full fine-tuning needs about 840 GB, which is around 20 data-centre GPUs. LoRA brings that down to about 154 GB, or around 4 GPUs. QLoRA brings it to about 46 GB, which fits on **a single** data-centre GPU.
 
 You won't be asked to calculate these numbers, but you should recognise the pattern: **each step cuts memory dramatically, and QLoRA is what makes a single GPU possible.**
 
@@ -384,14 +392,15 @@ Borrow the idea of **paging** from operating systems. The Adam optimizer states 
 
 ## Putting it together: what QLoRA actually does
 
-QLoRA (Dettmers et al., 2023) = **LoRA** + three ingredients (+ gradient checkpointing):
+QLoRA (Dettmers et al., 2023) is **LoRA plus three ingredients**, usually with gradient checkpointing switched on as well. Each one attacks a different part of the memory bill.
 
-| Ingredient | What it saves |
-|---|---|
-| 1. **NF4** storage of the frozen base weights | Shrinks the biggest thing in memory, the base model, about 4× |
-| 2. **Double quantization** | Shrinks the scaling constants that block-wise quantization needs |
-| 3. **Paged optimizer** | Absorbs sudden memory spikes by spilling optimizer states to CPU RAM |
-| (+) **Gradient checkpointing** | Shrinks activation memory |
+**First, NF4 storage of the frozen base.** The base model is the biggest thing in memory, and storing it in 4 bits shrinks it about 4×.
+
+**Second, double quantization.** Block-wise quantization needs a scaling constant for every block, and this shrinks those constants too.
+
+**Third, the paged optimizer.** When memory suddenly spikes, optimizer states spill over to CPU RAM instead of crashing the run.
+
+**And alongside them, gradient checkpointing.** It shrinks the memory used by activations.
 
 The professor used a **pizza** picture: NF4 is the dough, double quantization is the sauce, and the paged optimizer is the cheese. All three together make QLoRA.
 
@@ -415,17 +424,19 @@ flowchart TD
 
 ---
 
-## Choosing a PEFT method: quick decision table
+## Choosing a PEFT method
 
-This combines Chapter 03 and this chapter. The rules of thumb come from the course's Q&A answers.
+This brings Chapter 03 and this chapter together. The rules of thumb come from the course's Q&A answers.
 
-| Situation | Good choice | Why |
-|---|---|---|
-| General instruction tuning or domain adaptation | **LoRA** | The default today ("nowadays LoRA is mostly used" — professor) |
-| Very large model, limited GPU memory | **QLoRA** | The 4-bit base makes it fit |
-| Lowest inference latency for a single task | **LoRA, merged** | No extra modules after merging |
-| Many tasks or clients sharing one base model | **LoRA adapters, hot-swapped** (or task adapters) | Tiny per-task files, one resident base model |
-| Generation tasks such as summarisation or dialogue, with very few trainable parameters | **Prefix tuning** (Chapter 03) | Learned key/value prefixes at every layer |
+**For general instruction tuning or domain adaptation, start with LoRA.** It's the default choice today. In the professor's words, "nowadays LoRA is mostly used".
+
+**If the model is very large and GPU memory is tight, use QLoRA.** Storing the base in 4 bits is what makes it fit.
+
+**If you have a single task and need the lowest inference latency, use LoRA and merge it.** After merging there are no extra modules to slow things down.
+
+**If many tasks or clients share one base model, keep LoRA adapters separate and hot-swap them.** Task adapters work too. Each task gets a tiny file, and only one base model has to stay in memory.
+
+**For generation tasks such as summarisation or dialogue, with very few trainable parameters, consider prefix tuning** (Chapter 03). It learns key/value prefixes at every layer.
 
 ---
 
@@ -443,17 +454,25 @@ The Colab notebook for this session was shared only as a link, so these points c
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "Does 'change in weights' mean reducing the number of weights?" | No. It means changing their *values*. ΔW is a learned correction. |
-| "How are the parameters ranked?" | They aren't. "Rank" means the width r of the B·A waist. |
-| "Is information lost through the narrow bottleneck?" | Potentially, but most tasks don't need to change everything. The important change fits in a small subspace (intrinsic dimension). |
-| "Is QLoRA just converting FP32 to FP16?" | No. LLM quantization goes down to INT8, INT4 or NF4. |
-| "In QLoRA, are A and B quantized too?" | No. Only the frozen W₀. A and B stay in BF16/FP16. |
-| "Do quantization errors add up over training steps?" | No. W₀ is quantized once and dequantized temporarily each time it's used. |
-| "Isn't block-wise quantization redundant with NF4?" | No. Block-wise handles scale (outliers); NF4 handles distribution shape. |
-| "Do adapters get ranked by client importance in multi-tenant serving?" | No. Each client has its own adapter, picked by a router using the client ID. |
-| "Will fine-tuning fix my slow PDF-extraction pipeline?" | No. The bottleneck there is OCR/parsing, not the model. |
+These are real questions students asked during the session, with the answers they were given.
+
+**"Does 'change in weights' mean reducing the number of weights?"** No. It means changing their *values*. ΔW is a learned correction added on top of the original weights.
+
+**"How are the parameters ranked?"** They aren't. "Rank" here means the width r of the B·A waist, not a ranking.
+
+**"Is information lost through the narrow bottleneck?"** It can be, but most tasks don't need to change everything. The important change fits in a small space, which is the intrinsic-dimension idea.
+
+**"Is QLoRA just converting FP32 to FP16?"** No. LLM quantization goes much further, down to INT8, INT4 or NF4.
+
+**"In QLoRA, are A and B quantized too?"** No. Only the frozen W₀ is. A and B stay in BF16 or FP16.
+
+**"Do quantization errors add up over training steps?"** No. W₀ is quantized once, and each time it's used it's dequantized into a temporary copy.
+
+**"Isn't block-wise quantization redundant with NF4?"** No. Block-wise quantization deals with scale (outliers), while NF4 deals with the shape of the distribution.
+
+**"Do adapters get ranked by client importance in multi-tenant serving?"** No. Each client simply has its own adapter, and a router picks it using the client ID.
+
+**"Will fine-tuning fix my slow PDF-extraction pipeline?"** No. The bottleneck there is the OCR and parsing step, not the model.
 
 ---
 

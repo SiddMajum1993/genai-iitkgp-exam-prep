@@ -19,21 +19,39 @@ If you remember one sentence, make it this one: **"Split the work only when it c
 
 ## Exam radar
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| When to split into multiple agents (specialisation, parallelism, context isolation, verification) and when **not** to | 🔴 High | Slides, pre-read, post-read and reflection questions |
-| Single agent vs multi-agent comparison table | 🔴 High | A full slide; easy MCQ material |
-| Contract vs handoff: what a handoff contains; "minimum sufficient context" | 🔴 High | Two slides plus ~8 Q&A questions |
-| The coordination cycle: decompose → execute → attribute → reconcile (→ re-plan) | 🔴 High | Slides plus the "sub-tasks collide" story |
-| Bounding the loop: round limit, token budget, deadlock check, escalate to a human | 🔴 High | Dedicated slide with code |
-| Supervisor vs peer-to-peer: pros, cons, examples | 🔴 High | Slide plus Q&A on single point of failure and debate |
-| Parallel vs sequential execution | 🔴 High | Dedicated slide plus Q&A |
-| Safety: inter-agent messages are untrusted; least privilege; human approval for writes; fail closed | 🔴 High | Three slides |
-| MCP vs A2A (plus ANP, AGNTCY) | 🟠 Medium | Standards slide; a natural "which connects what" MCQ |
-| Shared state: the coordinator holds it and sends each agent only its slice | 🟠 Medium | Slide plus Q&A |
-| What to log at every handoff; evaluation metrics | 🟠 Medium | One slide each |
-| Cost of extra agents (messages, tokens, latency) | 🟠 Medium | Slide; concept matters, numbers don't |
-| Reinforcement-learning tangents from the Q&A | 🟢 Low | Q&A only |
+How likely each topic is to be tested, based on slide time, how often it appears across the pre-read, slides and post-read, and how many student questions it drew.
+
+### 🔴 High: expect questions here
+
+**When to split into multiple agents, and when not to.** The reasons are specialisation, parallelism, context isolation and verification. This is in the slides, the pre-read, the post-read and the reflection questions.
+
+**The single-agent vs multi-agent comparison.** It fills a full slide, and it's easy MCQ material.
+
+**Contract vs handoff.** What a handoff contains, and the idea of "minimum sufficient context". Two slides cover it, plus about 8 Q&A questions.
+
+**The coordination cycle.** Decompose → execute → attribute → reconcile (→ re-plan). It's in the slides and in the "sub-tasks collide" story.
+
+**Bounding the loop.** A round limit, a token budget, a deadlock check, and escalating to a human. It has a dedicated slide with code.
+
+**Supervisor vs peer-to-peer.** Their pros, cons and examples. There's a slide, plus Q&A on the single point of failure and on debate.
+
+**Parallel vs sequential execution.** There's a dedicated slide, plus Q&A.
+
+**Safety.** Inter-agent messages are untrusted, agents get least privilege, writes need human approval, and the system fails closed. This takes up three slides.
+
+### 🟠 Medium: likely to show up in one question
+
+**MCP vs A2A** (plus ANP and AGNTCY). There's a standards slide, and it makes a natural "which connects what" MCQ.
+
+**Shared state.** The coordinator holds it and sends each agent only its slice. It's on a slide and came up in the Q&A.
+
+**What to log at every handoff, and the evaluation metrics.** Each gets one slide.
+
+**The cost of extra agents** in messages, tokens and latency. It's on a slide; the concept matters, the numbers don't.
+
+### 🟢 Low: understand the idea, skip the details
+
+**The reinforcement-learning tangents from the Q&A.** They came up only in the Q&A.
 
 !!! note "About the numbers in this chapter"
     The slides use the same Paris trip as Chapter 10, but the figures differ between slides and notebooks (₹80,000 vs ₹1,00,000 budgets; hotel caps of ₹7,000, ₹8,000 and ₹9,000). None of the ideas depend on the exact figures, so this chapter talks about "the budget" and "the hotel cap". Where a number appears, it's only to make the story concrete.
@@ -69,13 +87,17 @@ A Q&A clarification: giving both agents shared context up front does **not** gua
 
 ## Concept 1 — Single agent vs multi-agent
 
-| | Single agent | Multi-agent |
-|---|---|---|
-| **Ownership** | One agent plans and executes | The coordinator owns the goal; specialists own sub-tasks |
-| **Context** | One large working context | Small contexts linked by explicit messages |
-| **Work** | Mostly sequential tool calls | Independent sub-tasks run in parallel |
-| **Failure** | The one agent must recover | The coordinator retries, replaces or reassigns |
-| **Ends when** | The agent reaches a decision | The coordinator judges the goal met, or impossible |
+The difference between one agent and a team shows up in five places.
+
+**Ownership.** A single agent plans and executes everything itself. In a multi-agent system, the coordinator owns the goal and specialists own the sub-tasks.
+
+**Context.** A single agent works in one large context. A multi-agent system uses several small contexts, linked by explicit messages.
+
+**Work.** A single agent mostly makes tool calls one after another. A multi-agent system runs independent sub-tasks in parallel.
+
+**Failure.** A single agent has to recover on its own. In a multi-agent system, the coordinator can retry, replace or reassign the agent that failed.
+
+**When it ends.** A single agent stops when it reaches a decision. A multi-agent system stops when the coordinator judges the goal met, or impossible.
 
 The progression from the pre-read:
 
@@ -115,13 +137,17 @@ A Q&A point: the motivation for multi-agent is **specialisation and decompositio
 
 ### Five parts
 
-| Part | Meaning | Paris flight agent |
-|---|---|---|
-| **Role** | Its responsibility | "Find flights to Paris" |
-| **Model** | The LLM that reasons for it | A small, cheap model is fine |
-| **Tools** | The **only** functions it may call | `search_flights` |
-| **State** | What it keeps between steps | Its shortlist of flights |
-| **Contract** | Its interface: what it accepts, returns and promises | Input: date and max price. Output: top 3 ranked flights. Limits: economy only, read-only |
+Every agent is built from the same five parts. The Paris flight agent shows each one.
+
+**Role: its responsibility.** For the flight agent, that's "Find flights to Paris".
+
+**Model: the LLM that reasons for it.** For a narrow job like this, a small, cheap model is fine.
+
+**Tools: the *only* functions it may call.** The flight agent gets just `search_flights`.
+
+**State: what it keeps between steps.** Here, its shortlist of flights.
+
+**Contract: its interface, meaning what it accepts, returns and promises.** The flight agent's input is a date and a max price. Its output is the top 3 ranked flights. Its limits are economy only, and read-only.
 
 Different agents can use **different models**. A simple specialist can run on a small model, while the coordinator uses a stronger one.
 
@@ -224,12 +250,15 @@ if state.tokens > MAX_TOKENS: escalate(state, "over budget")
 if repeats_conflict(state):   escalate(state, "deadlock")
 ```
 
-| Guard | What it stops |
-|---|---|
-| **Round limit** | Endless delegation rounds (at most 3 here) |
-| **Token / cost budget** | Runaway spending |
-| **Deadlock check** | Agents undoing each other: the **same conflict seen twice** stops early, without waiting for the round limit |
-| **Escalate** | Instead of failing silently or looping forever, hand the **best partial plan plus the unresolved conflict** to a person |
+Each guard in the code stops a different way of running out of control.
+
+**The round limit stops endless delegation rounds.** Here it's set to at most 3.
+
+**The token or cost budget stops runaway spending.**
+
+**The deadlock check stops agents undoing each other's work.** If the **same conflict is seen twice**, the loop stops early, without waiting for the round limit.
+
+**Escalation replaces silent failure and endless looping.** Instead of either, the system hands the **best partial plan plus the unresolved conflict** to a person.
 
 **A deadlock example:** the flight agent switches to an earlier, pricier flight to fix the late check-in. The budget agent rejects the total. The coordinator asks for a cheaper flight, which lands late again. Round and round.
 
@@ -242,11 +271,9 @@ if repeats_conflict(state):   escalate(state, "deadlock")
 
 ## Concept 7 — Parallel vs sequential
 
-| | Parallel | Sequential |
-|---|---|---|
-| Code shape | `flight, hotel, policy = await gather(...)` | flight → hotel → budget(combine(flight, hotel)) |
-| Use when | Tasks **don't need each other's output** | One task **needs another's result** |
-| Risk | Wasted work if a later check fails | Latency adds up |
+**Run tasks in parallel when they don't need each other's output.** In code this looks like `flight, hotel, policy = await gather(...)`. The risk is wasted work if a later check fails.
+
+**Run tasks in sequence when one needs another's result.** In code this looks like flight → hotel → budget(combine(flight, hotel)). The risk is that the latency adds up.
 
 **The rule:** default to parallel where tasks are independent, and keep dependent decisions sequential. A common hybrid is parallel first, then sequential on the combined outputs. In the notebook, the flight and hotel agents ran in parallel, then the policy and budget agents ran in parallel on the chosen pair.
 
@@ -268,11 +295,9 @@ One coordinator decomposes, delegates, combines and re-plans; workers (sub-agent
 
 ### Supervisor vs peer-to-peer
 
-| | **Supervisor** | **Peer-to-peer** |
-|---|---|---|
-| Pro | Simple governance, easy tracing, clear ownership | Flexible, fewer hops |
-| Con | All messages go through one hub: a **bottleneck** and a **single point of failure** | Communication paths are harder to control and debug |
-| Good for | Support triage, research orchestrators, coding planners, **anything with approvals or spending** | Multi-agent **debate**, simulations, **writer–reviewer loops**, decentralised control (traffic signals, robot swarms) |
+**The supervisor design gives you simple governance, easy tracing and clear ownership.** The downside is that every message goes through one hub. That hub is a **bottleneck** and a **single point of failure**. It's a good fit for support triage, research orchestrators, coding planners and **anything with approvals or spending**.
+
+**The peer-to-peer design is flexible and needs fewer hops.** The downside is that communication paths are harder to control and debug. It's a good fit for multi-agent **debate**, simulations, **writer–reviewer loops** and decentralised control, such as traffic signals or robot swarms.
 
 **Rule of thumb: ask who is accountable for the final answer.** If one party must be accountable (for example, someone spending money), use a supervisor. Many real systems are **hybrids**: a supervisor owns the goal, and peers negotiate inside one sub-task.
 
@@ -307,10 +332,11 @@ Q&A clarifications:
 
 ### Least privilege
 
-| Kind of action | Examples | Rule |
-|---|---|---|
-| **Read / analyse** | Search flights, search hotels, check policy | Auto-approved, within limits; no irreversible side effects |
-| **Write** | `book_flight`, `book_hotel`, `send_itinerary` | **A human confirms first.** The coordinator proposes; a person approves |
+Actions fall into two kinds, and they get very different permissions.
+
+**Read and analyse actions are auto-approved, within limits.** Examples are searching flights, searching hotels and checking policy. They have no irreversible side effects.
+
+**Write actions need a human to confirm first.** Examples are `book_flight`, `book_hotel` and `send_itinerary`. The coordinator proposes, and a person approves.
 
 **"Specialisation does not remove the need for least privilege. Approval stays outside the specialist's authority."** Also:
 
@@ -347,27 +373,37 @@ Every agent result is **validated** (correct format, required fields present, bu
 
 ### What to log at every handoff
 
-| Field | Why |
-|---|---|
-| Delegation + context (who asked whom, for what) | Trace the request |
-| Tool call + arguments | Reconstruct exactly what was asked |
-| Raw result | Tell a bad *call* apart from a bad *answer* |
-| Validation outcome | Know why a result was dropped |
-| Latency + retries | Find slow or flaky agents |
-| Approval of any write | Accountability for spending |
+Each field you log answers a different debugging question.
+
+**Log the delegation and its context** (who asked whom, for what), so you can trace the request.
+
+**Log the tool call and its arguments**, so you can reconstruct exactly what was asked.
+
+**Log the raw result**, so you can tell a bad *call* apart from a bad *answer*.
+
+**Log the validation outcome**, so you know why a result was dropped.
+
+**Log latency and retries**, so you can find slow or flaky agents.
+
+**Log the approval of any write**, so there's accountability for spending.
 
 **"If it isn't logged, the team cannot be debugged."** Failures can come from delegation, tool choice, argument generation, external execution, interpreting results, or the final write-up.
 
 ### How to evaluate a multi-agent system
 
-| Metric | Checks | Paris example |
-|---|---|---|
-| Selection accuracy | The right agent and tool | `search_flights`, not `search_trains` |
-| Argument correctness | The right parameters | Date = next week, not today |
-| Task completion | A valid booking or a clear refusal | Booked within budget, or explained why not |
-| Groundedness | Every number traces to a tool result | The quoted fare matches what the tool returned |
-| Conflicts caught | Clashes found before booking | 23:50 arrival vs 23:00 check-in |
-| Rounds + cost to finish | Coordination effort | How many rounds, how many tokens |
+Each metric checks a different part of the system. The Paris trip gives an example of each.
+
+**Selection accuracy checks that the right agent and tool were used.** For example, `search_flights`, not `search_trains`.
+
+**Argument correctness checks that the right parameters were passed.** For example, date = next week, not today.
+
+**Task completion checks for a valid booking or a clear refusal.** Either it's booked within budget, or the system explains why not.
+
+**Groundedness checks that every number traces back to a tool result.** For example, the quoted fare matches what the tool returned.
+
+**Conflicts caught checks that clashes were found before booking.** For example, a 23:50 arrival vs a 23:00 check-in.
+
+**Rounds and cost to finish measure the coordination effort.** How many rounds did it take, and how many tokens?
 
 **"A fluent final answer is not enough."** You evaluate the whole system: success, correct actions, steps and tokens, latency, robustness and safety.
 
@@ -381,12 +417,15 @@ Ways to keep costs down (Q&A): use cheaper models for simple tasks; make fewer c
 
 ## Concept 12 — Standards for agent communication: MCP vs A2A
 
-| Standard | Connects | Key idea |
-|---|---|---|
-| **A2A** (Agent2Agent; started by Google, now under the Linux Foundation) | **Agent ↔ agent** | **Agent Cards** for discovery; **Tasks** with a lifecycle (submitted, working, input-required, completed, canceled, failed) |
-| **MCP** (Model Context Protocol; started by Anthropic, now under the Linux Foundation) | **Agent ↔ tools and data** | The "capability layer". It reaches tools, not peers. Complements A2A |
-| **ANP** (Agent Network Protocol, open community) | Agent ↔ agent on the open web | Decentralised identities (W3C DIDs); agents negotiate the protocol. *Proposed* |
-| **AGNTCY** (started by Cisco, Linux Foundation) | Discovery, identity, messaging | An agent directory, verifiable identity, secure messaging, observability. Builds on A2A + MCP |
+There are four standards worth knowing. The key question for each is *what does it connect?*
+
+**A2A (Agent2Agent) connects agent ↔ agent.** Google started it, and it's now under the Linux Foundation. Agents discover each other through **Agent Cards**, and work is passed as **Tasks** with a lifecycle: submitted, working, input-required, completed, canceled, failed.
+
+**MCP (Model Context Protocol) connects agent ↔ tools and data.** Anthropic started it, and it's now under the Linux Foundation too. It's the "capability layer": it reaches tools, not peers. It complements A2A rather than competing with it.
+
+**ANP (Agent Network Protocol) connects agent ↔ agent on the open web.** It comes from the open community. It uses decentralised identities (W3C DIDs), and agents negotiate the protocol between themselves. It's still only *proposed*.
+
+**AGNTCY covers discovery, identity and messaging.** Cisco started it, under the Linux Foundation. It provides an agent directory, verifiable identity, secure messaging and observability, and builds on A2A + MCP.
 
 Key A2A facts:
 
@@ -403,19 +442,27 @@ Key A2A facts:
 
 ---
 
-## Choosing a design: quick decision table
+## Choosing a design
 
-| Situation | Good choice | Why |
-|---|---|---|
-| Simple or deterministic task | One agent or a workflow | Extra agents only add cost and failure points |
-| One agent with too many tools or a crowded context | Try fewer tools, clearer descriptions or isolated context first; then split | Go multi-agent when the problem is structural |
-| Sub-tasks that don't depend on each other | Run them in parallel | Lower latency |
-| One step needs another's output | Run them in sequence | Correct dependencies |
-| Spending money, approvals, a need for clear accountability | Supervisor architecture | Simple governance, easy tracing |
-| Debate, critique, writer–reviewer, simulations | Peer-to-peer | Flexible, fewer hops |
-| Coordinating with another company's agent | A2A | Agent ↔ agent standard (Agent Cards, Tasks) |
-| Giving an agent access to tools or data | MCP | Agent ↔ tools standard |
-| Booking, paying, sending | Human approval + least privilege | Write actions can't be undone |
+Start simple, and add agents only when the problem's structure demands it.
+
+**For a simple or deterministic task, use one agent or a workflow.** Extra agents would only add cost and failure points.
+
+**If one agent has too many tools or a crowded context, first try fewer tools, clearer descriptions or isolated context. Split only after that.** Go multi-agent when the problem is structural.
+
+**When sub-tasks don't depend on each other, run them in parallel.** That lowers latency.
+
+**When one step needs another's output, run them in sequence.** That keeps the dependencies correct.
+
+**When money is spent, approvals are needed or accountability must be clear, use a supervisor architecture.** It gives simple governance and easy tracing.
+
+**For debate, critique, writer–reviewer loops and simulations, use peer-to-peer.** It's flexible and needs fewer hops.
+
+**To coordinate with another company's agent, use A2A.** It's the agent ↔ agent standard, with Agent Cards and Tasks.
+
+**To give an agent access to tools or data, use MCP.** It's the agent ↔ tools standard.
+
+**For booking, paying or sending, require human approval and least privilege.** Write actions can't be undone.
 
 ---
 
@@ -435,21 +482,33 @@ The notebook "Multi-Agent Orchestration + MCP: Corporate Travel Planning" ran fo
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "Does each agent get the whole conversation?" | No. Each gets a small task-specific slice; the coordinator holds the shared state. |
-| "What's the weakness of the supervisor design?" | The coordinator is a single point of failure and a bottleneck. |
-| "How does the coordinator know the constraints?" | They're given explicitly (system prompt, user input, schemas). Critical ones are enforced by external validators, not left to the model. |
-| "How does the coordinator know which agents exist?" | Through a registry or configuration, matching sub-tasks to roles, tools, contracts and permissions. |
-| "Is the contract the same as a handoff?" | No. The contract is the stable interface; a handoff is one task instance (task_id, goal, constraints, return format). |
-| "Is a handoff an agent?" | No. It's a structured message. |
-| "Can the bounds just go in the prompt?" | They can be mentioned there, but must be enforced in code or by the runtime. |
-| "Can a single agent run things in parallel?" | Yes. It can emit several tool calls that the runtime executes at the same time. |
-| "Is logging enough for safety?" | No. You also need validation, least privilege and human approval; an agent never approves its own high-impact action. |
-| "Is a multi-head attention head an agent?" | No. |
-| "Do I need MCP for agents to talk to each other?" | No. MCP is for tools and data; agents can call each other directly or use A2A. |
-| "LangGraph vs MCP?" | LangGraph decides **what happens next** (routing, loops, retries, state). MCP provides a standard **interface to external capabilities**. |
-| "Coordinator vs harness?" | The coordinator is the decision layer; the harness is the wider infrastructure (state, tool access, monitoring, retries, permissions, safety). |
+These are real questions students asked during the session, with the answers they were given.
+
+**"Does each agent get the whole conversation?"** No. Each gets a small, task-specific slice, and the coordinator holds the shared state.
+
+**"What's the weakness of the supervisor design?"** The coordinator is a single point of failure and a bottleneck.
+
+**"How does the coordinator know the constraints?"** They're given to it explicitly, through the system prompt, user input or schemas. Critical ones are enforced by external validators, not left to the model.
+
+**"How does the coordinator know which agents exist?"** Through a registry or configuration, which matches sub-tasks to roles, tools, contracts and permissions.
+
+**"Is the contract the same as a handoff?"** No. The contract is the stable interface. A handoff is one task instance, with a task_id, goal, constraints and return format.
+
+**"Is a handoff an agent?"** No. It's a structured message.
+
+**"Can the bounds just go in the prompt?"** They can be mentioned there, but they must be enforced in code or by the runtime.
+
+**"Can a single agent run things in parallel?"** Yes. It can emit several tool calls that the runtime executes at the same time.
+
+**"Is logging enough for safety?"** No. You also need validation, least privilege and human approval. An agent never approves its own high-impact action.
+
+**"Is a multi-head attention head an agent?"** No.
+
+**"Do I need MCP for agents to talk to each other?"** No. MCP is for tools and data. Agents can call each other directly, or use A2A.
+
+**"LangGraph vs MCP?"** LangGraph decides **what happens next**: routing, loops, retries and state. MCP provides a standard **interface to external capabilities**.
+
+**"Coordinator vs harness?"** The coordinator is the decision layer. The harness is the wider infrastructure around it: state, tool access, monitoring, retries, permissions and safety.
 
 ---
 

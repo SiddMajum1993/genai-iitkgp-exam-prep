@@ -22,19 +22,33 @@ If you remember one sentence, make it this one: **"Good data, a gentle learning 
 
 ## Exam radar
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| Catastrophic forgetting: what it is, why it is "silent", and the mitigations | 🔴 High | 10 slides, pre-read, post-read, a notebook and the biggest Q&A cluster (~15 rows) |
-| Reading loss curves: overfitting vs underfitting vs healthy vs no learning | 🔴 High | A dedicated "ultimate guide" section, pre-read and post-read, and the Chapter 01 notebook overfitted live |
-| Learning rate, warm-up and schedules (cosine, linear, constant, WSD, restarts, step) | 🔴 High | 14 slides; called "the single most important hyperparameter" |
-| Training instability: loss spike vs gradient explosion vs divergence; gradient clipping; bf16 vs fp16 | 🔴 High | 8 slides plus a "stability checklist" table |
-| Data quality: the five data challenges, the curation pipeline, "quality beats quantity" | 🔴 High | Agenda, pre-read, post-read and 13 slides |
-| Batch size: small vs large trade-off, gradient accumulation, "bigger batch → raise LR" | 🟠 Medium | 8 slides. The formulas exist, but we don't expect arithmetic |
-| Imbalanced data and the accuracy paradox; which metrics to use | 🟠 Medium | Classic MCQ material |
-| Data splitting and leakage (70/15/15, time-based and group splits) | 🟠 Medium | One dense slide |
-| Domain shift: usage, temporal, domain | 🟠 Medium | One slide plus post-read |
-| Label-error detection with out-of-fold predictions (cleanlab demo) | 🟢 Low | Notebook only |
-| One training step end to end (tokenise → loss → backprop → update) | 🟢 Low | Recap-style slides, though students asked many questions |
+### 🔴 High: expect questions here
+
+**Catastrophic forgetting: what it is, why it's "silent", and the mitigations.** It got 10 slides, the pre-read, the post-read and a notebook, plus the biggest Q&A cluster (about 15 rows).
+
+**Reading loss curves: overfitting vs underfitting vs healthy vs no learning.** There's a dedicated "ultimate guide" section, the pre-read and post-read cover it, and the Chapter 01 notebook overfitted live.
+
+**Learning rate, warm-up and schedules (cosine, linear, constant, WSD, restarts, step).** 14 slides, and the course calls the learning rate "the single most important hyperparameter".
+
+**Training instability: loss spike vs gradient explosion vs divergence; gradient clipping; bf16 vs fp16.** 8 slides plus a "stability checklist".
+
+**Data quality: the five data challenges, the curation pipeline, "quality beats quantity".** It's in the agenda, the pre-read, the post-read and 13 slides.
+
+### 🟠 Medium: likely to show up in one question
+
+**Batch size: the small vs large trade-off, gradient accumulation, "bigger batch → raise LR".** 8 slides. The formulas exist, but we don't expect arithmetic.
+
+**Imbalanced data and the accuracy paradox; which metrics to use.** This is classic MCQ material.
+
+**Data splitting and leakage (70/15/15, time-based and group splits).** One dense slide.
+
+**Domain shift: usage, temporal, domain.** One slide plus the post-read.
+
+### 🟢 Low: understand the idea, skip the details
+
+**Label-error detection with out-of-fold predictions (the cleanlab demo).** Notebook only.
+
+**One training step end to end (tokenise → loss → backprop → update).** Recap-style slides, though students asked many questions about it.
 
 ---
 
@@ -52,15 +66,21 @@ flowchart LR
     U --> MB
 ```
 
-| Term | Plain meaning |
-|---|---|
-| **Mini-batch** | A small group of examples used for **one** update. It's the sweet spot between "whole dataset" (exact but impossibly slow) and "one example" (cheap but very noisy) |
-| **Step** | One mini-batch → one weight update |
-| **Epoch** | One full pass over the whole training set |
-| **Loss** | One number per batch saying "how wrong were we". Lower is better |
-| **Gradient** | For every parameter, which direction (and how much) to move to reduce the loss |
-| **Learning rate (η)** | How big a step to take in that direction |
-| **Seed** | A fixed starting number for randomness (shuffling, initialisation) so runs can be reproduced |
+A handful of words come up constantly in training, so it's worth pinning them down.
+
+**Mini-batch.** A small group of examples used for **one** update. It's the sweet spot between "the whole dataset", which is exact but impossibly slow, and "one example", which is cheap but very noisy.
+
+**Step.** One mini-batch gives one weight update.
+
+**Epoch.** One full pass over the whole training set.
+
+**Loss.** One number per batch that says "how wrong were we". Lower is better.
+
+**Gradient.** For every parameter, which direction (and how much) to move it to reduce the loss.
+
+**Learning rate (η).** How big a step to take in that direction.
+
+**Seed.** A fixed starting number for randomness (shuffling, initialisation), so that runs can be reproduced.
 
 **Why the loss curve wiggles:** each mini-batch is a random sample, so its loss is a noisy estimate. A wiggle is normal; a trend is what matters.
 
@@ -85,12 +105,13 @@ The course cites **LIMA**: about **1,000 carefully curated examples** can outper
 
 **Four quality dimensions** (from the pre-read):
 
-| Dimension | Question to ask |
-|---|---|
-| **Correctness** | Is the answer actually right? |
-| **Relevance** | Does it match the task we want? |
-| **Consistency** | Do similar inputs get similarly formatted answers? |
-| **Diversity** | Does it cover different phrasings, cases and edge cases? |
+**Correctness.** Is the answer actually right?
+
+**Relevance.** Does it match the task we want?
+
+**Consistency.** Do similar inputs get similarly formatted answers?
+
+**Diversity.** Does it cover different phrasings, cases and edge cases?
 
 !!! example "Everyday analogy"
     Learning to cook from 20 recipes by a great chef vs 2,000 random recipes from the internet, half of them wrong. The 20 good ones teach you more.
@@ -102,14 +123,17 @@ flowchart LR
     A[Sourcing] --> B[Cleaning] --> C[Deduplication] --> D[Filtering] --> E[Annotation review] --> F[Formatting]
 ```
 
-| Stage | What happens | Example |
-|---|---|---|
-| **Sourcing** | Collect raw data | Support tickets, internal docs, public datasets |
-| **Cleaning** | Remove junk | Menus, cookie banners, broken HTML, OCR errors |
-| **Deduplication** | Remove exact and near-duplicates | The same FAQ copied 500 times |
-| **Filtering** | Keep only what meets quality rules | Length, language, heuristic or LLM-based quality scores |
-| **Annotation review** | Humans check labels and answers | Spot-check a sample for wrong answers |
-| **Formatting** | Convert to the exact structure the model expects | JSON records with system/user/assistant messages |
+**Sourcing.** Collect the raw data, such as support tickets, internal docs and public datasets.
+
+**Cleaning.** Remove the junk: menus, cookie banners, broken HTML, OCR errors.
+
+**Deduplication.** Remove exact and near-duplicates, such as the same FAQ copied 500 times.
+
+**Filtering.** Keep only what meets your quality rules, for example on length, language, or heuristic or LLM-based quality scores.
+
+**Annotation review.** Humans check the labels and answers, for example by spot-checking a sample for wrong answers.
+
+**Formatting.** Convert everything to the exact structure the model expects, such as JSON records with system/user/assistant messages.
 
 ### The golden rule of formatting
 
@@ -117,13 +141,15 @@ flowchart LR
 
 ### Concept 3 — Five data challenges that quietly break models
 
-| # | Challenge | What it looks like | Main fixes |
-|---|---|---|---|
-| 1 | **Data quality issues** | Noisy text, wrong labels or facts, duplicates, mixed formats, outdated info | The curation pipeline above |
-| 2 | **Insufficient data** | Too few examples, missing edge cases, lack of diversity | Transfer learning (fine-tune a pre-trained model), augmentation such as paraphrasing, synthetic data (always validate it), **active learning** |
-| 3 | **Imbalanced data** | One class vastly outnumbers others | Right metrics, resampling, class weights (see below) |
-| 4 | **Bad data splitting** | Information leaks from test into training | Split first, stratify, time- and group-aware splits |
-| 5 | **Domain / distribution shift** | Training data ≠ real-world usage | Blend broader data, retrieval, monitoring |
+**1. Data quality issues.** This looks like noisy text, wrong labels or facts, duplicates, mixed formats and outdated information. The fix is the curation pipeline above.
+
+**2. Insufficient data.** You have too few examples, missing edge cases or a lack of diversity. The main fixes are transfer learning (fine-tune a pre-trained model), augmentation such as paraphrasing, synthetic data (always validate it) and **active learning**.
+
+**3. Imbalanced data.** One class vastly outnumbers the others. Fix it with the right metrics, resampling and class weights (see below).
+
+**4. Bad data splitting.** Information leaks from the test set into training. Split first, stratify, and use time- and group-aware splits.
+
+**5. Domain or distribution shift.** The training data doesn't match real-world usage. Blend in broader data, use retrieval, and monitor.
 
 Duplicates deserve a special mention. They **waste compute, increase memorisation** (a privacy and copyright risk) and can **contaminate benchmarks**: if test questions are in the training data, scores look better than they really are.
 
@@ -146,20 +172,21 @@ That's the **accuracy paradox**: on skewed data, accuracy looks great while the 
 
 The slide's default split:
 
-| Split | Share | Purpose |
-|---|---|---|
-| **Train** | 70% | Fit the weights |
-| **Validation** | 15% | Tune hyperparameters, decide when to stop |
-| **Test** | 15% | **Touch once**, at the very end |
+**Train, 70%.** This is what the weights are fitted on.
+
+**Validation, 15%.** Use it to tune hyperparameters and decide when to stop.
+
+**Test, 15%.** **Touch it once**, at the very end.
 
 **Ways leakage sneaks in:**
 
-| Leak | Example | Fix |
-|---|---|---|
-| Preprocessing before splitting | Scaling using statistics from the whole dataset | **Split first**, fit transforms on train only |
-| Duplicates across splits | The same ticket appears in train and test | Deduplicate before splitting |
-| Random split of time data | The model is trained on next month and tested on last month, so it "sees the future" | **Time-based** split |
-| Grouped data split randomly | The same patient appears in train and test | **Group-aware** split |
+**Preprocessing before splitting.** For example, scaling with statistics computed from the whole dataset. The fix is to **split first** and fit transforms on the training set only.
+
+**Duplicates across splits.** The same ticket appears in both train and test. Deduplicate before splitting.
+
+**A random split of time data.** The model is trained on next month and tested on last month, so it "sees the future". Use a **time-based** split.
+
+**Grouped data split randomly.** The same patient appears in both train and test. Use a **group-aware** split.
 
 Also: **stratify** (keep class proportions the same in every split), and for small datasets use **k-fold cross-validation**. That means splitting into k parts, training on k−1 and testing on the one left out, rotating so every example gets tested once.
 
@@ -167,11 +194,11 @@ Also: **stratify** (keep class proportions the same in every split), and for sma
 
 The model was trained on one kind of data but is used on another.
 
-| Kind of shift | Plain meaning | Example |
-|---|---|---|
-| **Usage shift** | Documents → dialogue | A raw base model *continues* your text instead of answering it |
-| **Temporal shift** | The world moved on after the cutoff | It suggests deprecated library functions |
-| **Domain shift** | General → specialist | It doesn't understand your company's internal jargon |
+**Usage shift: documents → dialogue.** A raw base model *continues* your text instead of answering it.
+
+**Temporal shift: the world moved on after the cutoff.** The model suggests deprecated library functions.
+
+**Domain shift: general → specialist.** The model doesn't understand your company's internal jargon.
 
 **Fixes:** instruction tuning plus alignment (bridges documents → dialogue), domain-adaptive continued pre-training *with replay*, retrieval and tools for fresh facts, and monitoring in production.
 
@@ -183,12 +210,15 @@ The model was trained on one kind of data but is used on another.
 
 Always plot **training loss** and **validation loss** together.
 
-| What you see | Name | What it means | What to do |
-|---|---|---|---|
-| Both fall together; small, stable gap | ✅ **Healthy** | Learning and generalising | Stop at the **validation minimum** and keep that checkpoint |
-| Train loss keeps falling towards 0; **validation turns back up** | ⚠️ **Overfitting** | Memorising the training set. Outputs may echo training examples verbatim | Early stopping, fewer epochs, regularisation, more or more varied data |
-| **Both stay high** and flatten early | ⚠️ **Underfitting** | Not learning enough | Train longer, bigger model, higher LR, smaller batch |
-| **Both flat** at the starting value | ❌ **No learning** | Nothing is updating | Check for a bug, frozen parameters, or an LR far too low |
+There are four patterns to recognise.
+
+**✅ Healthy.** Both losses fall together, with a small, stable gap. The model is learning and generalising. Stop at the **validation minimum** and keep that checkpoint.
+
+**⚠️ Overfitting.** Training loss keeps falling towards 0, but **validation loss turns back up**. The model is memorising the training set, and its outputs may echo training examples word for word. Use early stopping, fewer epochs, regularisation, or more and more varied data.
+
+**⚠️ Underfitting.** **Both losses stay high** and flatten early. The model isn't learning enough. Train longer, or use a bigger model, a higher LR or a smaller batch.
+
+**❌ No learning.** **Both losses stay flat** at the starting value. Nothing is updating. Check for a bug, frozen parameters, or an LR that's far too low.
 
 !!! example "Everyday analogy"
     A student preparing for an exam with past papers (training) and a mock test (validation).
@@ -207,10 +237,9 @@ Always plot **training loss** and **validation loss** together.
 
 Typical peak values to *recognise* (not compute):
 
-| Method | Typical peak learning rate |
-|---|---|
-| Full fine-tuning | 1e-5 to 2e-5 (that is, 0.00001–0.00002) |
-| LoRA | 1e-4 to 2e-4 (about ten times higher, since far fewer weights train) |
+**Full fine-tuning** usually peaks at 1e-5 to 2e-5 (that is, 0.00001–0.00002).
+
+**LoRA** usually peaks at 1e-4 to 2e-4, about ten times higher, because far fewer weights are trained.
 
 ### Concept 9 — Warm-up and LR schedules
 
@@ -229,14 +258,17 @@ Typical peak values to *recognise* (not compute):
 
 **Six schedule shapes:**
 
-| Shape | Picture it as | Best for |
-|---|---|---|
-| **Constant (+ warm-up)** | Flat line | **Short runs only** (for example, short LoRA runs). Spike-prone in long runs |
-| **Linear decay** | Straight ramp down to zero | The simple, "no-surprises" default |
-| **Cosine decay** | Smooth curve: stays near the peak, then glides down | **The modern default** for standard fine-tuning of known length |
-| **Step decay** | Staircase. Often reactive: drop when validation loss stops improving | Validation-driven control; data arriving in waves |
-| **Cosine with restarts** | Cosine that jumps back to the peak several times | Getting **several candidate models** from one budget. It does *not* reset the weights |
-| **Warmup–Stable–Decay (WSD)** | Trapezoid: warm up, hold the peak for most of the run, decay sharply at the end | **Unknown run length / continual training**. You can start the decay whenever you decide to stop |
+**Constant (with warm-up).** Picture a flat line. It's for **short runs only**, for example short LoRA runs. In long runs it's prone to spikes.
+
+**Linear decay.** A straight ramp down to zero. It's the simple, "no-surprises" default.
+
+**Cosine decay.** A smooth curve that stays near the peak, then glides down. It's **the modern default** for standard fine-tuning when you know the run length.
+
+**Step decay.** A staircase. It's often reactive: drop the LR when validation loss stops improving. It suits validation-driven control and data that arrives in waves.
+
+**Cosine with restarts.** A cosine curve that jumps back to the peak several times. It's for getting **several candidate models** from one budget. It does *not* reset the weights.
+
+**Warmup–Stable–Decay (WSD).** A trapezoid: warm up, hold the peak for most of the run, then decay sharply at the end. It's for an **unknown run length or continual training**, because you can start the decay whenever you decide to stop.
 
 **If training is unstable at any point:** first **lengthen the warm-up**, then **lower the peak LR**. Tweaking the shape beats swapping it.
 
@@ -244,11 +276,11 @@ Typical peak values to *recognise* (not compute):
 
 When one update is too big, it damages the weights. That causes bigger errors, bigger gradients and an even bigger next update: a vicious cycle.
 
-| Stage | What happens | Recovers by itself? |
-|---|---|---|
-| **Loss spike** | One bad batch gives a huge gradient and the loss jumps | **Yes**, after hundreds of wasted steps. Spikes cluster just after warm-up, when the LR is highest |
-| **Gradient explosion** | The feedback loop takes hold: gradient sizes grow and grow; in fp16 they end as Inf, then NaN | It's the warning stage before divergence |
-| **Divergence** | The weights have left every good region; the loss keeps rising and outputs turn to gibberish or repetition | **No** |
+**Loss spike.** One bad batch gives a huge gradient and the loss jumps. **It recovers by itself**, but only after hundreds of wasted steps. Spikes cluster just after warm-up, when the LR is highest.
+
+**Gradient explosion.** The feedback loop takes hold, and gradient sizes grow and grow. In fp16 they end up as Inf, then NaN. This is the warning stage before divergence.
+
+**Divergence.** The weights have left every good region. The loss keeps rising, and outputs turn to gibberish or repetition. **It doesn't recover.**
 
 **Causes:** sharp, narrow valleys in pre-trained models; **fp16 overflow** (fp16 can't store numbers above about 65,000, so they become Inf); one weird outlier batch; and deep networks amplifying small errors.
 
@@ -260,22 +292,27 @@ When one update is too big, it damages the weights. That causes bigger errors, b
 
 **The stability checklist** (each layer adds protection):
 
-| Setting | Prevents |
-|---|---|
-| Gradient clipping `max_grad_norm=1.0` | Loss spikes; starves the explosion loop |
-| Cosine schedule | Late-run spikes |
-| Warm-up `warmup_ratio=0.03` | Spikes and divergence at step 0 |
-| **bf16 instead of fp16** | Overflow → Inf/NaN (bf16 has a much wider range) |
-| Conservative peak LR | Overshooting narrow valleys |
-| Log the gradient size; alert at 5–10× the usual | Catching an explosion before divergence |
-| Save checkpoints regularly (keep the last 3) | Losing the run if it diverges |
+**Gradient clipping, `max_grad_norm=1.0`,** prevents loss spikes and starves the explosion loop.
+
+**A cosine schedule** prevents late-run spikes.
+
+**Warm-up, `warmup_ratio=0.03`,** prevents spikes and divergence at step 0.
+
+**bf16 instead of fp16** prevents overflow → Inf/NaN, because bf16 has a much wider range.
+
+**A conservative peak LR** prevents overshooting narrow valleys.
+
+**Logging the gradient size and alerting at 5–10× the usual** catches an explosion before it becomes divergence.
+
+**Saving checkpoints regularly (keep the last 3)** means you don't lose the run if it diverges.
 
 ### Concept 11 — Batch size
 
-| | Smaller batch | Larger batch |
-|---|---|---|
-| **Pros** | Often **generalises better** (the noise helps it avoid sharp minima); more frequent updates | Smoother, more stable gradients; faster throughput; better GPU use |
-| **Cons** | Noisy gradients; slower convergence | Can generalise worse; fewer updates; usually needs a higher LR |
+Batch size is a trade-off, and each side wins something.
+
+**Smaller batches often generalise better.** Their noise helps the model avoid sharp minima, and you get more frequent updates. The downside is noisy gradients and slower convergence.
+
+**Larger batches give smoother, more stable gradients.** They also give faster throughput and better GPU use. The downside is that they can generalise worse, give fewer updates, and usually need a higher LR.
 
 Key ideas to *recognise*:
 
@@ -316,14 +353,17 @@ The metric you're watching (the target task) **improves**, while general skills 
 
 #### The mitigations, and when to use each
 
-| Mitigation | How it works | Extra cost | When to reach for it |
-|---|---|---|---|
-| **Conservative hyperparameters** | Low LR (1e-5 to 2e-5 for full FT), only 1–2 epochs, warm-up + cosine, early-stop on general evals | None | **Always**, as the default baseline |
-| **Rehearsal / replay (data mixing)** | Mix a slice (about 1–10%) of general data into every batch, so the model keeps practising old skills | Collecting general data | When you have general (or proxy) data |
-| **Regularise towards pre-trained weights (L2-SP, EWC)** | Add a penalty for moving away from the original weights. **EWC** holds the weights *most important* for old skills more tightly (importance measured by Fisher information) | Memory to store the original weights (+ importance scores for EWC) | When full FT is required and no general data is available |
-| **Weight averaging (WiSE-FT)** | After fine-tuning, **blend** the fine-tuned weights with the original ones | One merge pass | The model is already fine-tuned and has degraded |
-| **Freeze layers** | Freeze the embeddings and lower layers (general knowledge); train only the top ~25–50% of blocks | None | Tight compute or very small datasets |
-| **Layer-wise learning rates** (Q&A) | Lower LR for lower layers, higher LR for upper layers | None | A gentler version of freezing |
+**Conservative hyperparameters.** Use a low LR (1e-5 to 2e-5 for full FT), only 1–2 epochs, warm-up plus cosine, and early stopping on general evals. It costs nothing, so use it **always**, as the default baseline.
+
+**Rehearsal or replay (data mixing).** Mix a slice of general data (about 1–10%) into every batch, so the model keeps practising its old skills. The cost is collecting that general data. Reach for it when you have general (or proxy) data.
+
+**Regularise towards the pre-trained weights (L2-SP, EWC).** Add a penalty for moving away from the original weights. **EWC** holds the weights that are *most important* for old skills more tightly, with importance measured by Fisher information. The cost is the memory to store the original weights (plus the importance scores for EWC). Use it when full FT is required and no general data is available.
+
+**Weight averaging (WiSE-FT).** After fine-tuning, **blend** the fine-tuned weights with the original ones. It costs one merge pass. Use it when the model is already fine-tuned and has degraded.
+
+**Freeze layers.** Freeze the embeddings and lower layers, which hold general knowledge, and train only the top ~25–50% of blocks. It costs nothing. Use it with tight compute or very small datasets.
+
+**Layer-wise learning rates** (from the Q&A). Use a lower LR for the lower layers and a higher LR for the upper ones. It costs nothing and is a gentler version of freezing.
 
 The Q&A also noted that **PEFT (for example LoRA) + replay** is among the most effective combinations, because PEFT barely touches the original weights at all (Chapters 03 and 04). And if forgetting has already happened, you can **go back to an earlier checkpoint**.
 
@@ -334,11 +374,11 @@ The Q&A also noted that **PEFT (for example LoRA) + replay** is among the most e
 
 ### The three failure modes side by side
 
-| Failure | How you detect it | How you fix it |
-|---|---|---|
-| **Overfitting** | Train loss falls, validation loss flattens or rises | Early stopping, fewer epochs, regularisation, more or more varied data |
-| **Catastrophic forgetting** | Great on the new domain, worse on general tasks | Lower LR, replay/data mixing, evaluate on general benchmarks too |
-| **Domain shift** | Behaviour narrows to the fine-tuning domain | Blend broader data; test with out-of-domain prompts |
+**Overfitting.** You spot it when training loss falls while validation loss flattens or rises. Fix it with early stopping, fewer epochs, regularisation, or more and more varied data.
+
+**Catastrophic forgetting.** You spot it when the model is great on the new domain but worse on general tasks. Fix it with a lower LR and replay/data mixing, and evaluate on general benchmarks too.
+
+**Domain shift.** You spot it when the model's behaviour narrows to the fine-tuning domain. Blend in broader data, and test with out-of-domain prompts.
 
 ---
 
@@ -374,20 +414,31 @@ The Q&A also noted that **PEFT (for example LoRA) + replay** is among the most e
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "Is a mini-batch the same as the validation split?" | No. It's a small piece of the *training* set used for one update. |
-| "Are batches processed in parallel?" | Examples *within* a batch are, but batches run one after another, because each depends on the previous update. |
-| "Does reshuffling cause leakage?" | No. Leakage is test or validation information entering training. |
-| "Is the loss one number or one per parameter?" | One loss per batch; backprop then gives one gradient per parameter. |
-| "Why is fp16 risky?" | It overflows above ~65,000 and becomes Inf, then NaN. bf16 has a much wider range. |
-| "How do we know which weights hold general knowledge?" | You can't see it directly. It's *estimated*, for example with Fisher information (EWC). |
-| "Regularisation vs freezing?" | Regularisation penalises drift; freezing forbids any update. |
-| "Do gradients flow through frozen layers?" | Yes, so the trainable layers get the right signal. The frozen weights just don't change. |
-| "Best single fix for forgetting?" | There's no single best. LoRA + replay is among the most effective. Suggested order: regularisation → replay → parameter isolation. |
-| "Does cosine-with-restarts reset the weights?" | No. Only the learning rate jumps back up. |
-| "Why do small batches generalise better?" | Their noisier updates help avoid sharp minima and settle in flatter ones. |
-| "How much data is enough?" | There's no formula. Fine-tune on 10%, 25%, 50% and 100% and plot how the results change. |
+These are real questions students asked during the session, with the answers they were given.
+
+**"Is a mini-batch the same as the validation split?"** No. It's a small piece of the *training* set used for one update.
+
+**"Are batches processed in parallel?"** The examples *within* a batch are, but batches run one after another, because each depends on the previous update.
+
+**"Does reshuffling cause leakage?"** No. Leakage means test or validation information entering training.
+
+**"Is the loss one number or one per parameter?"** There's one loss per batch. Backprop then gives one gradient per parameter.
+
+**"Why is fp16 risky?"** It overflows above ~65,000 and becomes Inf, then NaN. bf16 has a much wider range.
+
+**"How do we know which weights hold general knowledge?"** You can't see it directly. It's *estimated*, for example with Fisher information (EWC).
+
+**"Regularisation vs freezing?"** Regularisation penalises drift. Freezing forbids any update.
+
+**"Do gradients flow through frozen layers?"** Yes, so that the trainable layers get the right signal. The frozen weights just don't change.
+
+**"Best single fix for forgetting?"** There's no single best. LoRA plus replay is among the most effective. The suggested order is regularisation → replay → parameter isolation.
+
+**"Does cosine-with-restarts reset the weights?"** No. Only the learning rate jumps back up.
+
+**"Why do small batches generalise better?"** Their noisier updates help avoid sharp minima and settle in flatter ones.
+
+**"How much data is enough?"** There's no formula. Fine-tune on 10%, 25%, 50% and 100% of the data and plot how the results change.
 
 ---
 

@@ -28,19 +28,33 @@ If you remember one sentence: **"RAG changes what the model *knows* at runtime; 
 
 ## Exam radar
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| Prompt vs RAG vs Fine-tuning: which to use for a given scenario | 🔴 High | 5 slides, a decision matrix, pre-read and post-read, ~25 Q&A questions (the most-asked topic). It also suits the 1st exam's "a team wants X" question style |
-| The decision matrix: which approach is strong on what | 🔴 High | A single slide that packs the whole comparison into a table, which makes it perfect MCQ material |
-| SFT vs Instruction Fine-tuning (IFT) | 🔴 High | A dedicated comparison slide, two notebooks and several Q&A rows |
-| The taxonomy: unsupervised, supervised and alignment vs full and PEFT (two *independent* axes) | 🔴 High | The professor's own clarification, repeated by the TAs |
-| PEFT's three families: additive, selective, re-parameterization | 🟠 Medium | A preview here, taught in depth in Chapters 03 and 04 |
-| Multi-task fine-tuning: shared body plus a head per task | 🟠 Medium | Slides and a notebook |
-| Curriculum fine-tuning: easy → hard, and why it helps | 🟠 Medium | 6 slides, with named strategies |
-| Layer-wise vs block-wise vs progressive fine-tuning | 🟠 Medium | Diagram slides plus a notebook in the next session |
-| Why full fine-tuning is expensive (memory) and why it causes forgetting | 🟠 Medium | Slides and Q&A. The exact numbers are inconsistent (see Concept 9) |
-| Encoder-only vs decoder-only vs encoder-decoder (recap) | 🟢 Low | A recap from the 1st exam, but students still asked about it |
-| Med-PaLM and BloombergGPT facts | 🟢 Low | Examples only |
+### 🔴 High: expect questions here
+
+**Prompt vs RAG vs fine-tuning: which to use for a given scenario.** This got 5 slides, a decision matrix, the pre-read and the post-read, and about 25 Q&A questions, which makes it the most-asked topic. It also suits the 1st exam's "a team wants X" question style.
+
+**The decision matrix: which approach is strong on what.** A single slide packs the whole comparison into one grid, which makes it perfect MCQ material.
+
+**SFT vs Instruction Fine-tuning (IFT).** There's a dedicated comparison slide, two notebooks and several Q&A rows.
+
+**The taxonomy: unsupervised, supervised and alignment vs full and PEFT.** These are two *independent* axes. The professor clarified this himself, and the TAs repeated it.
+
+### 🟠 Medium: likely to show up in one question
+
+**PEFT's three families: additive, selective, re-parameterization.** This is a preview here, taught in depth in Chapters 03 and 04.
+
+**Multi-task fine-tuning: a shared body plus a head per task.** It's on the slides and in a notebook.
+
+**Curriculum fine-tuning: easy → hard, and why it helps.** Six slides, with named strategies.
+
+**Layer-wise vs block-wise vs progressive fine-tuning.** Diagram slides, plus a notebook in the next session.
+
+**Why full fine-tuning is expensive (memory) and why it causes forgetting.** It's on the slides and in the Q&A. The exact numbers are inconsistent (see Concept 9).
+
+### 🟢 Low: understand the idea, skip the details
+
+**Encoder-only vs decoder-only vs encoder-decoder.** This is a recap from the 1st exam, but students still asked about it.
+
+**Med-PaLM and BloombergGPT facts.** These were used as examples only.
 
 ---
 
@@ -67,12 +81,13 @@ Real-world specialists built this way:
 
 The slides give **four reasons**:
 
-| Reason | Plain meaning | Example |
-|---|---|---|
-| **Domain expertise** | Learn the jargon and conventions of a field | Medical, legal or finance terms |
-| **Consistent behaviour** | Always follow a tone, format or policy that prompting can't *guarantee* | Every reply in your company's support style |
-| **Higher accuracy** | A small fine-tuned model can beat a much bigger general model on one narrow task | A 3B model trained on your ticket categories |
-| **Lower cost and latency** | No long instructions in every prompt, and a smaller model | Faster, cheaper inference |
+**Domain expertise.** Fine-tuning helps a model learn the jargon and conventions of a field, such as medical, legal or finance terms.
+
+**Consistent behaviour.** It makes the model always follow a tone, format or policy, which prompting can't *guarantee*. For example, every reply comes out in your company's support style.
+
+**Higher accuracy.** A small fine-tuned model can beat a much bigger general model on one narrow task. Think of a 3B model trained on your own ticket categories.
+
+**Lower cost and latency.** You no longer need long instructions in every prompt, and you can use a smaller model, so inference is faster and cheaper.
 
 ### What fine-tuning is *not* good at
 
@@ -86,11 +101,13 @@ Fine-tuning shapes **behaviour and format**. It is an **unreliable way to add lo
 
 ## Concept 2 — The three pathways: Prompting, RAG, Fine-tuning
 
-| Pathway | What you change | How it works | Best for |
-|---|---|---|---|
-| **Prompt engineering** | The *instructions* | Write clear instructions, a role, examples and an output format; check the output; refine. The model is frozen. | Quick prototypes, standard tasks, zero setup |
-| **RAG** | What the model *sees* | Documents → vector DB. At question time, retrieve the top-k chunks → put them in the prompt → answer | Large, private, frequently changing knowledge |
-| **Fine-tuning** | The model's *weights* | Train the pre-trained model further on your examples | Deep customisation, strict style or format, domain language |
+There are three ways to get a model to do what you want. Each one changes something different.
+
+**Prompt engineering changes the *instructions*.** You write clear instructions, a role, examples and an output format, then check the output and refine. The model itself stays frozen. It's best for quick prototypes and standard tasks, with zero setup.
+
+**RAG changes what the model *sees*.** Your documents go into a vector DB. At question time, the top-k chunks are retrieved and put into the prompt, and the model answers from them. It's best for large, private or frequently changing knowledge.
+
+**Fine-tuning changes the model's *weights*.** You train the pre-trained model further on your own examples. It's best for deep customisation, strict style or format, and domain language.
 
 !!! example "Everyday analogy"
     You're getting a new employee to answer customer questions.
@@ -99,15 +116,19 @@ Fine-tuning shapes **behaviour and format**. It is an **unreliable way to add lo
     - **RAG:** you give them access to the company handbook and let them look things up for each question.
     - **Fine-tuning:** you send them on a training course until the company way of answering becomes a habit.
 
-### The decision matrix (learn this table)
+### The decision matrix (learn this one)
 
-| Dimension | Prompt engineering | RAG | Fine-tuning |
-|---|---|---|---|
-| Primary goal | Directing behaviour, framing the task | Accessing external, up-to-date facts | Adapting style, format and core behaviour |
-| External knowledge | Very low (limited by the context window) | **Extremely high** | Low to medium |
-| Style / format control | Medium | Low | **Extremely high** |
-| Cost to set up | **Minimal** | Medium | **High** (clean data and GPU time) |
-| Latency impact | Low | Medium (adds a retrieval step) | **Very low** (shorter prompts) |
+The matrix compares the three approaches on five dimensions.
+
+**Primary goal.** Prompt engineering is for directing behaviour and framing the task. RAG is for accessing external, up-to-date facts. Fine-tuning is for adapting style, format and core behaviour.
+
+**External knowledge.** Prompt engineering is very low here, because it's limited by the context window. RAG is **extremely high**. Fine-tuning is low to medium.
+
+**Style and format control.** Prompt engineering is medium and RAG is low. Fine-tuning is **extremely high**.
+
+**Cost to set up.** Prompt engineering is **minimal** and RAG is medium. Fine-tuning is **high**, because it needs clean data and GPU time.
+
+**Latency impact.** Prompt engineering is low. RAG is medium, because it adds a retrieval step. Fine-tuning is **very low**, because prompts get shorter.
 
 How to read it: **RAG wins on knowledge, fine-tuning wins on style and format, and prompting wins on cost and speed of setup.**
 
@@ -125,10 +146,9 @@ How to read it: **RAG wins on knowledge, fine-tuning wins on style and format, a
 
 ### Two classification traps the TAs clarified
 
-| Situation | What it is |
-|---|---|
-| Pasting a whole document straight into the prompt | **Prompt engineering** with in-context information. It's *not* RAG, because there's no retrieval step choosing what to include |
-| Copilot Studio with a knowledge base, prompts and tool flows | **Prompting + RAG + agentic orchestration**. It's *not* fine-tuning, because no weights are retrained |
+**Pasting a whole document straight into the prompt is *prompt engineering* with in-context information.** It's *not* RAG, because there's no retrieval step choosing what to include.
+
+**Copilot Studio with a knowledge base, prompts and tool flows is *prompting + RAG + agentic orchestration*.** It's *not* fine-tuning, because no weights are retrained.
 
 Also: RAG doesn't *require* a vector database. Keyword search, SQL or rules can do the retrieval too. And combining RAG with fine-tuning does **not** increase the context window.
 
@@ -138,10 +158,9 @@ Also: RAG doesn't *require* a vector database. Keyword search, SQL or rules can 
 
 The slides split fine-tuning approaches into two groups. The professor stressed that they **answer different questions**.
 
-| Axis | Question it answers | Options |
-|---|---|---|
-| **Task / style adaptation** | *What* signal are we learning from? | Unsupervised FT · Supervised FT · Safety/Alignment FT |
-| **Parameter-update strategy** | *How many* weights do we change? | Full FT · Parameter-efficient FT (PEFT) |
+**The task or style axis asks *what* signal we're learning from.** The options are unsupervised FT, supervised FT and safety/alignment FT.
+
+**The parameter-update axis asks *how many* weights we change.** The options are full FT and parameter-efficient FT (PEFT).
 
 Because the axes are independent, you can mix them freely: unsupervised + full, supervised + PEFT (for example SFT with LoRA), alignment + PEFT, and so on.
 
@@ -150,20 +169,19 @@ Because the axes are independent, you can mix them freely: unsupervised + full, 
 
 ### The three kinds by *learning signal*
 
-| Kind | Data | What it teaches | Example |
-|---|---|---|---|
-| **Unsupervised (continued pre-training)** | Raw, unlabelled domain text, with the *same objective as pre-training* (predict the next or masked token) | Domain vocabulary, jargon and style. Cheapest data: wikis, filings, papers | Feed a model thousands of legal contracts |
-| **Supervised (SFT)** | Human-written (input → output) **demonstrations** | Behaviour and format: following instructions, tone, JSON, task skills | InstructGPT's SFT stage |
-| **Safety / Alignment** | **Feedback** on outputs: rankings, (chosen, rejected) pairs, or self-critique against principles | Safe, preferred, human-aligned answers | RLHF with PPO, DPO, Constitutional-AI-style revision (Chapter 05) |
+**Unsupervised fine-tuning (continued pre-training) learns from raw, unlabelled domain text.** It uses the *same objective as pre-training*: predict the next or masked token. It teaches domain vocabulary, jargon and style, and its data is the cheapest to get: wikis, filings, papers. For example, you feed a model thousands of legal contracts.
+
+**Supervised fine-tuning (SFT) learns from human-written (input → output) *demonstrations*.** It teaches behaviour and format: following instructions, tone, JSON and task skills. InstructGPT's SFT stage is the classic example.
+
+**Safety or alignment fine-tuning learns from *feedback* on outputs.** The feedback can be rankings, (chosen, rejected) pairs, or self-critique against principles. It teaches safe, preferred, human-aligned answers. Examples are RLHF with PPO, DPO and Constitutional-AI-style revision (Chapter 05).
 
 For a brand-new domain, a common recipe is to **first** do unsupervised continued pre-training on domain text, **then** supervised fine-tuning on labelled examples.
 
 ### The two kinds by *how many weights change*
 
-| Kind | What changes | Pros | Cons |
-|---|---|---|---|
-| **Full fine-tuning** | **Every** parameter | Maximum capacity to adapt; usually the strongest results with enough data and compute | Huge GPU memory; one full model copy per task; **catastrophic forgetting** of general skills |
-| **PEFT** | Only a small set of (new or chosen) parameters | Far less memory, tiny per-task files (MBs), less forgetting, easy to swap per task | Slightly less capacity |
+**Full fine-tuning changes *every* parameter.** That gives maximum capacity to adapt, and usually the strongest results when you have enough data and compute. The costs are huge GPU memory, one full model copy per task, and **catastrophic forgetting** of general skills.
+
+**PEFT changes only a small set of new or chosen parameters.** It needs far less memory, produces tiny per-task files (MBs), causes less forgetting and is easy to swap per task. The cost is slightly less capacity.
 
 **PEFT has three families** (taught in Chapters 03 and 04):
 
@@ -219,19 +237,23 @@ The data looks like this:
 
 ### Before vs after
 
-| Prompt | Before IFT (base model just *continues text*) | After IFT (model *follows the instruction*) |
-|---|---|---|
-| "Translate to French: Good morning" | "French is a Romance language spoken by millions…" | "Bonjour" |
-| "Write a Python function to compute factorial" | "Python is a programming language. A factorial is…" | Working `def factorial(n): …` code |
+Two prompts show the difference clearly.
 
-### SFT vs IFT (this table is on the slides)
+**"Translate to French: Good morning."** Before IFT, the base model just *continues the text*: "French is a Romance language spoken by millions…". After IFT, the model *follows the instruction* and replies "Bonjour".
 
-| SFT | IFT |
-|---|---|
-| General training on labelled input–output pairs | A specialised form of SFT using **instruction–response** pairs |
-| May train on **one task** (for example, sentiment) | Trains on **many tasks**, each phrased as an instruction |
-| Input can be plain text | Input includes an instruction (and often extra context) |
-| Goal: better **task performance** | Goal: better **instruction-following** |
+**"Write a Python function to compute factorial."** Before IFT, you get "Python is a programming language. A factorial is…". After IFT, you get working `def factorial(n): …` code.
+
+### SFT vs IFT (straight from the slides)
+
+IFT is a kind of SFT, so the differences are about scope and goal.
+
+**What it trains on.** SFT is general training on labelled input–output pairs. IFT is a specialised form of SFT that uses **instruction–response** pairs.
+
+**How many tasks.** SFT may train on **one task**, for example sentiment. IFT trains on **many tasks**, each phrased as an instruction.
+
+**What the input looks like.** In SFT the input can be plain text. In IFT the input includes an instruction, and often extra context.
+
+**The goal.** SFT aims for better **task performance**. IFT aims for better **instruction-following**.
 
 **Facts to remember:**
 
@@ -250,12 +272,12 @@ The data looks like this:
 
 Fine-tune **one model on several related tasks at the same time**, instead of one model per task.
 
-| Input | Task | Output |
-|---|---|---|
-| "I love this movie." | Sentiment | Positive |
-| "Who discovered gravity?" | Question answering | Isaac Newton |
-| A long article | Summarisation | A short summary |
-| "Google is in California." | Named entities | Google → Organisation, California → Location |
+For example, one model might handle all four of these at once:
+
+- "I love this movie." is a **sentiment** task, and the output is *Positive*.
+- "Who discovered gravity?" is **question answering**, and the output is *Isaac Newton*.
+- A long article is a **summarisation** task, and the output is a short summary.
+- "Google is in California." is **named-entity** tagging, and the output is *Google → Organisation, California → Location*.
 
 ### How it works (from the notebook)
 
@@ -291,13 +313,15 @@ It needs two ingredients:
 
 ### Scheduling strategies (recognise the names)
 
-| Strategy | What it does |
-|---|---|
-| **Baby Steps** | Train on the easiest bucket, then *add* the next one while keeping the earlier ones. Robust against forgetting |
-| **One-Pass** | Each bucket once, in order, and *throw away* earlier ones. Cheap, but risks forgetting |
-| **Self-Paced** | The *model* decides what's easy (low loss), and the threshold rises over time |
-| **Competence-Based** | A pacing function grows over time; sample from the easiest fraction available so far |
-| **Anti-curriculum (hard-first)** | Start with hard examples. Occasionally useful when easy data adds little signal |
+**Baby Steps.** Train on the easiest bucket, then *add* the next one while keeping the earlier ones. It's robust against forgetting.
+
+**One-Pass.** Go through each bucket once, in order, and *throw away* the earlier ones. It's cheap, but it risks forgetting.
+
+**Self-Paced.** The *model* decides what's easy (low loss), and the difficulty threshold rises over time.
+
+**Competence-Based.** A pacing function grows over time, and you sample from the easiest fraction available so far.
+
+**Anti-curriculum (hard-first).** Start with the hard examples. This is occasionally useful when easy data adds little signal.
 
 Enterprise uses mentioned: fraud detection, medical diagnosis, industrial fault detection and atmospheric science (learn from clean conditions first, then extreme cases).
 
@@ -308,13 +332,13 @@ Enterprise uses mentioned: fraud detection, medical diagnosis, industrial fault 
 
 ## Concept 8 — Encoder, decoder, or both? (quick recap)
 
-Students still asked about this, so here is the one table you need:
+Students still asked about this, so here is the short version you need.
 
-| Type | Sees | Trained by | Good at | Examples |
-|---|---|---|---|---|
-| **Encoder-only** | Whole sentence, both directions | Masked-word prediction (fill the [MASK]) | **Understanding:** classification, NER, embeddings | BERT, RoBERTa, DeBERTa |
-| **Decoder-only** | Only earlier tokens (causal mask) | Next-token prediction | **Generation:** chat, code, agents | GPT, Claude, LLaMA, Mistral |
-| **Encoder-decoder** | Encoder: all input. Decoder: earlier outputs plus cross-attention to the encoder | Denoising / paired data | **Input → output transformation:** translation, summarisation | T5, BART |
+**Encoder-only models see the whole sentence in both directions.** They're trained by masked-word prediction (fill in the [MASK]), and they're good at **understanding**: classification, NER and embeddings. Examples are BERT, RoBERTa and DeBERTa.
+
+**Decoder-only models see only earlier tokens**, because of a causal mask. They're trained by next-token prediction, and they're good at **generation**: chat, code and agents. Examples are GPT, Claude, LLaMA and Mistral.
+
+**Encoder-decoder models do both.** The encoder sees all of the input. The decoder sees its earlier outputs plus cross-attention to the encoder. They're trained on denoising or paired data, and they're good at **input → output transformation** such as translation and summarisation. Examples are T5 and BART.
 
 **A common confusion:** BERT's "[MASK]" means hiding a word and predicting it from *both* sides. A decoder's "causal mask" means blocking *future* tokens. Same word, different idea.
 
@@ -338,11 +362,11 @@ The slides' bottom line: full FT is very expensive in time and memory, **but ada
 
 Shared principle: **frozen layers need no gradients and no optimizer states**, so if fewer layers train at a time, the memory per step is smaller. Over the full schedule, the whole network still gets tuned.
 
-| Strategy | What happens in each phase | Key feature |
-|---|---|---|
-| **Layer-wise** | Unfreeze **exactly one** layer (or small group), train it, freeze it again, move to the next | Only one layer has optimizer state at any time |
-| **Block-wise** | Split the network into **contiguous blocks** (for example, 32 layers → 4 blocks of 8); train one block per phase | Like layer-wise, in bigger chunks |
-| **Progressive (gradual unfreezing)** | Start with **only the top layer(s)**; each phase **unfreezes more, deeper layers, and the earlier ones stay trainable** | Unfreezing is *cumulative*. Introduced in ULMFiT |
+**Layer-wise.** Unfreeze **exactly one** layer (or a small group), train it, freeze it again and move to the next. The key feature is that only one layer has optimizer state at any time.
+
+**Block-wise.** Split the network into **contiguous blocks** (for example, 32 layers → 4 blocks of 8) and train one block per phase. It's like layer-wise, in bigger chunks.
+
+**Progressive (gradual unfreezing).** Start with **only the top layer(s)**. Each phase **unfreezes more, deeper layers, and the earlier ones stay trainable**. So the unfreezing is *cumulative*. This was introduced in ULMFiT.
 
 !!! example "Everyday analogy"
     Renovating a 6-floor building.
@@ -355,19 +379,27 @@ Shared principle: **frozen layers need no gradients and no optimizer states**, s
 
 ---
 
-## Decision table: which approach when?
+## Which approach when?
 
-| Situation | Choose | Why |
-|---|---|---|
-| The model can do it, but needs clearer direction | **Prompt engineering** | Zero cost, instant |
-| Answers need private, current or frequently changing facts | **RAG** | Fresh knowledge, cheap updates, traceable sources |
-| Need a consistent style, strict format or narrow repeated task | **Supervised fine-tuning** | Bakes the behaviour into the weights |
-| Model must follow many kinds of instructions | **Instruction fine-tuning** | Generalises to unseen instructions |
-| Model doesn't know the domain's language at all | **Unsupervised continued pre-training**, then SFT | Raw text is cheap and teaches vocabulary |
-| Several related tasks, one model to serve | **Multi-task fine-tuning** | Shared representation, one deployment |
-| Limited GPU memory | **PEFT (LoRA/QLoRA)** | Train a tiny fraction of parameters |
-| Lots of data and compute, big domain shift | **Full fine-tuning** | Maximum adaptation |
-| Outputs must be safe and match human preferences | **Alignment fine-tuning** (RLHF/DPO) | Learns from feedback (Chapter 05) |
+Here's how to match a situation to an approach.
+
+**If the model can already do it but needs clearer direction, use prompt engineering.** It costs nothing and works instantly.
+
+**If answers need private, current or frequently changing facts, use RAG.** You get fresh knowledge, cheap updates and traceable sources.
+
+**If you need a consistent style, a strict format or a narrow repeated task, use supervised fine-tuning.** It bakes the behaviour into the weights.
+
+**If the model must follow many kinds of instructions, use instruction fine-tuning.** It generalises to instructions it hasn't seen.
+
+**If the model doesn't know the domain's language at all, use unsupervised continued pre-training first, then SFT.** Raw text is cheap and teaches the vocabulary.
+
+**If several related tasks must be served by one model, use multi-task fine-tuning.** You get a shared representation and one deployment.
+
+**If GPU memory is limited, use PEFT (LoRA/QLoRA).** You train only a tiny fraction of the parameters.
+
+**If you have lots of data and compute and a big domain shift, use full fine-tuning.** It gives maximum adaptation.
+
+**If outputs must be safe and match human preferences, use alignment fine-tuning (RLHF/DPO).** It learns from feedback (Chapter 05).
 
 ---
 
@@ -386,19 +418,29 @@ Three notebooks, all using small models so they run on Colab:
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "When should I use RAG instead of fine-tuning?" | RAG when knowledge is missing, private or changing. FT for stable style, format or behaviour. Try prompting first. |
-| "If I put the whole document in the prompt, is that RAG?" | No. It's prompt engineering with in-context information. RAG needs a retrieval step. |
-| "Can I fine-tune GPT or Claude myself?" | Not their weights directly. Some providers offer a fine-tuning API (watch data exposure). Open-weight models (Llama, Qwen, Mistral, Gemma) can be fine-tuned locally if the licence allows. |
-| "Is Ollama a fine-tuning tool?" | No. It's for running and serving models (inference). |
-| "Isn't unsupervised FT the opposite of full FT?" | No. Different axes: *learning signal* vs *how many weights change*. |
-| "Is multi-task FT a form of additive PEFT?" | No. Multi-task describes the data; additive describes which parameters train. |
-| "Is fine-tuning the same as retraining?" | Full FT is a type of retraining that starts from pre-trained weights. Retraining in general can start from random weights. |
-| "In full FT, which parts change?" | Everything: embeddings, attention, feed-forward, norms and the output head, unless you freeze them explicitly. |
-| "My training loss is exactly 0. Great?" | Suspicious. Likely overfitting, data leakage or a too-easy task. |
-| "Does combining RAG with fine-tuning increase the context window?" | No. |
-| "To teach the model a new syntax, is it supervised or unsupervised?" | It was debated in class. Self-supervised data teaches the pattern; supervised data teaches when and how to use it. Expect any question on this to be worded carefully. |
+These are real questions students asked during the session, with the answers they were given.
+
+**"When should I use RAG instead of fine-tuning?"** Use RAG when knowledge is missing, private or changing. Use FT for stable style, format or behaviour. Try prompting first.
+
+**"If I put the whole document in the prompt, is that RAG?"** No. It's prompt engineering with in-context information. RAG needs a retrieval step.
+
+**"Can I fine-tune GPT or Claude myself?"** Not their weights directly. Some providers offer a fine-tuning API (watch out for data exposure). Open-weight models such as Llama, Qwen, Mistral and Gemma can be fine-tuned locally if the licence allows.
+
+**"Is Ollama a fine-tuning tool?"** No. It's for running and serving models, which is inference.
+
+**"Isn't unsupervised FT the opposite of full FT?"** No. They sit on different axes: *learning signal* vs *how many weights change*.
+
+**"Is multi-task FT a form of additive PEFT?"** No. Multi-task describes the data. Additive describes which parameters train.
+
+**"Is fine-tuning the same as retraining?"** Full FT is a type of retraining that starts from pre-trained weights. Retraining in general can start from random weights.
+
+**"In full FT, which parts change?"** Everything: embeddings, attention, feed-forward, norms and the output head, unless you freeze some of them explicitly.
+
+**"My training loss is exactly 0. Great?"** That's suspicious. It likely means overfitting, data leakage or a task that's too easy.
+
+**"Does combining RAG with fine-tuning increase the context window?"** No.
+
+**"To teach the model a new syntax, is it supervised or unsupervised?"** This was debated in class. Self-supervised data teaches the pattern, and supervised data teaches when and how to use it. Expect any question on this to be worded carefully.
 
 ---
 

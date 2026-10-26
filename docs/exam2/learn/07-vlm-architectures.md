@@ -9,12 +9,13 @@
 
 A **vision-language model (VLM)** takes an image (plus some text) and produces text, a label, a similarity score or a mask. This lecture covered four famous models, and each one stands for a *different way* of combining vision and language:
 
-| Model | One-line job | Output |
-|---|---|---|
-| **CLIP** | *Match* images and text in one shared space | A similarity score or label |
-| **LLaVA** | *Describe and chat* about an image | Free-form text |
-| **Qwen-VL** | Chat, but also *point and read* (grounding and OCR) | Text plus bounding boxes |
-| **SAM** | *Cut out* exactly the object you point at | A pixel mask |
+**CLIP matches.** It places images and text in one shared space, and its output is a similarity score or a label.
+
+**LLaVA describes and chats.** You show it an image and talk about it, and it replies in free-form text.
+
+**Qwen-VL chats, but can also point and read.** On top of conversation it does grounding and OCR, so its output is text plus bounding boxes.
+
+**SAM cuts out.** You point at an object and it returns exactly that object as a pixel mask.
 
 They all share one ingredient: a **Vision Transformer (ViT)** that turns an image into a sequence of patch tokens. What differs is **the connector** (how vision meets language) and **what the output is used for**.
 
@@ -26,17 +27,31 @@ If you remember one sentence, make it this one: **same eyes (ViT), different job
 
 How likely each topic is to be tested, based on slide time, the in-class quick-check quizzes, the 39-question Q&A sheet and whether it came back in the next lecture (Chapter 08).
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| CLIP's contrastive training: the image–text grid, positives vs negatives, temperature, zero-shot classification | 🔴 High | Heaviest slide time, a 6-question quick check, ~12 Q&A questions |
-| LLaVA: frozen CLIP encoder + projector + LLM, and **what is trained in Stage 1 vs Stage 2** | 🔴 High | 6-question quick check; classic "which part is frozen" question |
-| Qwen-VL: the cross-attention adapter with **256 learned queries**, grounding tokens, 3 training stages | 🔴 High | A stated learning objective: "trace how a pixel becomes a token" |
-| Choosing the paradigm (contrastive vs generative vs promptable) and "where fusion happens" | 🔴 High | The anchor table of the lecture; easy scenario material |
-| SAM: heavy encoder run once, light decoder per prompt, 3 candidate masks, prompt types, data engine | 🟠 Medium–High | 6-question quick check, and re-taught in the next lecture |
-| ViT basics: patches, positional embeddings, [CLS] | 🟠 Medium | Several Q&A questions |
-| LLaVA's GPT-4-generated data, LLaVA-1.5 and LLaVA-NeXT upgrades | 🟠 Medium | Quick-check items |
-| Limitations of each model | 🟠 Medium | "Why does it fail?" scenario questions |
-| Variant tables, exact parameter counts, history dates | 🟢 Low | Professor said "no need to remember" |
+### 🔴 High: expect questions here
+
+**CLIP's contrastive training.** The image–text grid, positives vs negatives, temperature and zero-shot classification. It got the heaviest slide time, a 6-question quick check and about 12 Q&A questions.
+
+**LLaVA, and what is trained in Stage 1 vs Stage 2.** LLaVA is a frozen CLIP encoder, a projector and an LLM. It had a 6-question quick check, and "which part is frozen" is a classic question.
+
+**Qwen-VL's cross-attention adapter with 256 learned queries.** Also its grounding tokens and three training stages. One of the lecture's stated learning objectives was to "trace how a pixel becomes a token".
+
+**Choosing the paradigm and "where fusion happens".** Contrastive vs generative vs promptable. This was the anchor comparison of the lecture and is easy material for scenario questions.
+
+### 🟠 Medium–High
+
+**SAM.** A heavy encoder that runs once, a light decoder per prompt, 3 candidate masks, the prompt types and the data engine. It had a 6-question quick check and was taught again in the next lecture.
+
+### 🟠 Medium: likely to show up in one question
+
+**ViT basics: patches, positional embeddings and [CLS].** Several Q&A questions were about these.
+
+**LLaVA's GPT-4-generated data, and the LLaVA-1.5 and LLaVA-NeXT upgrades.** These appeared in the quick-check items.
+
+**The limitations of each model.** Expect "why does it fail?" scenario questions.
+
+### 🟢 Low: understand the idea, skip the details
+
+**Lists of model variants, exact parameter counts and history dates.** The professor said there was "no need to remember" these.
 
 ---
 
@@ -55,19 +70,19 @@ flowchart LR
 
 The most useful lens is **where the two modalities meet** ("where fusion happens"):
 
-| Fusion style | How it works | Model |
-|---|---|---|
-| **No fusion (dual encoder)** | Two separate towers. They only "meet" in a final similarity score | CLIP |
-| **Early fusion into an LLM** | Image tokens are fed into the LLM alongside the words, and ordinary self-attention mixes them | LLaVA, Qwen-VL |
-| **Cross-attention module** | A dedicated attention block lets one set of tokens look at another | Qwen-VL's adapter, SAM's mask decoder |
+**No fusion (dual encoder).** There are two separate towers, one for images and one for text, and they only "meet" in a final similarity score. This is CLIP.
 
-And the three **paradigms**:
+**Early fusion into an LLM.** Image tokens are fed into the LLM alongside the words, and ordinary self-attention mixes them. This is LLaVA and Qwen-VL.
 
-| Paradigm | Input | Output | Example |
-|---|---|---|---|
-| Contrastive | Image + candidate text labels | Similarity scores | CLIP |
-| Generative / instruction-following | Image + a free-text instruction | Generated text | LLaVA, Qwen-VL |
-| Promptable dense prediction | Image + a spatial prompt (click or box) | Pixel mask | SAM |
+**A cross-attention module.** A dedicated attention block lets one set of tokens look at another. Qwen-VL's adapter and SAM's mask decoder both work this way.
+
+On top of that, the models fall into three **paradigms**, depending on what goes in and what comes out.
+
+**Contrastive.** You give it an image plus candidate text labels, and it gives back similarity scores. Example: CLIP.
+
+**Generative / instruction-following.** You give it an image plus a free-text instruction, and it generates text. Examples: LLaVA and Qwen-VL.
+
+**Promptable dense prediction.** You give it an image plus a spatial prompt (a click or a box), and it returns a pixel mask. Example: SAM.
 
 ---
 
@@ -126,11 +141,11 @@ The professor's framing: *treat labels as text, put them as points in the same s
 
 Take a batch of N image–caption pairs. Compare **every image with every caption**, which makes an N × N grid of similarity scores.
 
-| | Caption 1: "two dogs running across a frosty field" | Caption 2: "whale fin above the ocean" | Caption 3: "dirt path in a pine forest" |
-|---|---|---|---|
-| **Image 1 (dogs)** | ✅ match | ✖ | ✖ |
-| **Image 2 (whale)** | ✖ | ✅ match | ✖ |
-| **Image 3 (forest)** | ✖ | ✖ | ✅ match |
+Picture a batch of three images and their three captions: a photo of dogs with "two dogs running across a frosty field", a photo of a whale with "whale fin above the ocean", and a photo of a forest with "dirt path in a pine forest".
+
+CLIP scores **every image against every caption**, so three images and three captions give nine pairings. Only three of them are true ✅: image 1 with caption 1, image 2 with caption 2, and image 3 with caption 3. The other six, like the dog photo with the whale caption, are mismatches ✖.
+
+The slides draw these nine pairings as a square grid, with images down the side and captions along the top. The true pairs are the ones where the image number equals the caption number, so they run corner to corner. That's why the course calls them the **diagonal**.
 
 - The **diagonal** cells are the true pairs (**positives**).
 - Every **off-diagonal** cell is a wrong pair (a **negative**). For each image, the other N − 1 captions in the batch are its negatives, so **no one has to hand-pick negatives**.
@@ -140,12 +155,13 @@ Take a batch of N image–caption pairs. Compare **every image with every captio
 
 ### Two small details that get asked
 
-| Detail | What it means |
-|---|---|
-| **L2-normalised embeddings** | Every vector is scaled to length 1, so the dot product equals the **cosine similarity** |
-| **Temperature τ (tau), learned** | Rescales the scores before the softmax. **Lower τ = sharper, more confident choices; higher τ = softer.** CLIP *learns* τ instead of fixing it |
-| **Projection layers** | The image and text encoders output different-sized vectors. Small learned projection layers map both into the same shared size |
-| **Text embedding taken at the [EOS] token** | The caption's vector is the text encoder's output at the end-of-sequence token, not an average over all tokens |
+**Embeddings are L2-normalised.** Every vector is scaled to length 1, so the dot product equals the **cosine similarity**.
+
+**The temperature τ (tau) is learned.** It rescales the scores before the softmax. **Lower τ = sharper, more confident choices; higher τ = softer.** CLIP *learns* τ instead of fixing it.
+
+**Projection layers make the sizes match.** The image and text encoders output different-sized vectors. Small learned projection layers map both into the same shared size.
+
+**The text embedding is taken at the [EOS] token.** The caption's vector is the text encoder's output at the end-of-sequence token, not an average over all tokens.
 
 ### Common misunderstandings
 
@@ -174,10 +190,9 @@ Take a batch of N image–caption pairs. Compare **every image with every captio
 
 ### Zero-shot vs linear probe
 
-| | Linear probe | Zero-shot |
-|---|---|---|
-| What you do | Freeze the encoder and train a small classifier on labelled target data | No training at all. Class names are embedded as text |
-| Needs labels? | Yes | No |
+**A linear probe needs labels.** You freeze the encoder and train a small classifier on labelled target data.
+
+**Zero-shot needs no labels.** There is no training at all. The class names are simply embedded as text.
 
 The headline result: zero-shot CLIP reached **76.2% top-1 on ImageNet**, matching a fully supervised ResNet-50. It was also much more robust on shifted data such as sketches.
 
@@ -235,10 +250,9 @@ No dataset of (image, instruction, answer) existed. The trick: take COCO image *
 
 ### The two training stages (very likely to be asked)
 
-| Stage | Goal | Vision encoder | Projector | LLM | Data |
-|---|---|---|---|---|---|
-| **1 · Feature alignment** | Teach the projector to map image features into the LLM's word space | ❄️ Frozen | 🔥 Trained | ❄️ Frozen | ~595K image–caption pairs |
-| **2 · Instruction tuning** | Teach the whole system to follow instructions and chat | ❄️ Frozen | 🔥 Trained | 🔥 Trained | ~158K GPT-4-generated samples |
+**Stage 1 · Feature alignment.** The goal is to teach the projector to map image features into the LLM's word space. The vision encoder is ❄️ frozen, the projector is 🔥 trained and the LLM is ❄️ frozen. The data is about 595K image–caption pairs.
+
+**Stage 2 · Instruction tuning.** The goal is to teach the whole system to follow instructions and chat. The vision encoder stays ❄️ frozen, the projector is 🔥 trained and the LLM is now 🔥 trained too. The data is about 158K GPT-4-generated samples.
 
 - The loss is ordinary next-token prediction, computed **only on the assistant's answer tokens**.
 - The projector carries over from Stage 1 into Stage 2. It isn't reset.
@@ -288,13 +302,15 @@ flowchart LR
 
 ### LLaVA vs Qwen-VL connector
 
-| | LLaVA | Qwen-VL |
-|---|---|---|
-| Connector | Linear / MLP projector (keeps every patch) | Cross-attention adapter with 256 queries |
-| Visual token count | Grows with resolution or tiles | **Fixed** (256) regardless of resolution |
-| Grounding | Not built in | **Native**, via special tokens |
-| Multi-image | Limited in the base model | Designed in |
-| Training stages | 2 | 3 |
+**The connector.** LLaVA uses a linear / MLP projector that keeps every patch. Qwen-VL uses a cross-attention adapter with 256 queries.
+
+**The visual token count.** In LLaVA it grows with resolution or tiles. In Qwen-VL it is **fixed** at 256 regardless of resolution.
+
+**Grounding.** LLaVA doesn't have it built in. Qwen-VL has it **natively**, via special tokens.
+
+**Multiple images.** Support is limited in the base LLaVA model. Qwen-VL was designed for it.
+
+**Training stages.** LLaVA has 2. Qwen-VL has 3.
 
 ### Grounding with special tokens
 
@@ -310,11 +326,9 @@ The model learns to write these coordinates from **region-annotated training dat
 
 ### Three training stages
 
-| Stage | Resolution | What's trained | Data |
-|---|---|---|---|
-| 1 · Pre-training | 224 px | Vision encoder + adapter. **LLM frozen** | ~1.4B weakly labelled web image–text pairs |
-| 2 · Multi-task pre-training | 448 px | **Whole model** | Seven tasks together: captioning, VQA, grounding, OCR and more |
-| 3 · Supervised instruction fine-tuning | 448 px | LLM + adapter. Vision encoder frozen again | Chat, multi-image and multi-round data → **Qwen-VL-Chat** |
+1. **Pre-training, at 224 px.** The vision encoder and adapter are trained, and the **LLM is frozen**. The data is about 1.4B weakly labelled web image–text pairs.
+2. **Multi-task pre-training, at 448 px.** The **whole model** is trained, on seven tasks together: captioning, VQA, grounding, OCR and more.
+3. **Supervised instruction fine-tuning, at 448 px.** The LLM and adapter are trained, and the vision encoder is frozen again. The data is chat, multi-image and multi-round conversations, and the result is **Qwen-VL-Chat**.
 
 ### Limitations
 
@@ -336,11 +350,11 @@ Language had prompt-driven foundation models; segmentation didn't. Old segmentat
 
 ### The three parts
 
-| Part | What it does | Cost |
-|---|---|---|
-| **Image encoder** (big ViT-H, MAE-pretrained) | Turns the image into an embedding, **once per image**, and caches it | Heavy, ~0.15 s. **The most expensive step** |
-| **Prompt encoder** | Encodes clicks and boxes (positional encodings + learned type embeddings), or a rough mask (convolutions). Text is only experimental | Light |
-| **Mask decoder** (2-layer transformer, **two-way attention**) | Prompt tokens look at image tokens *and* image tokens look at prompt tokens, then it outputs masks | Light, ~50 ms per prompt |
+**The image encoder is heavy.** It's a big ViT-H, MAE-pretrained. It turns the image into an embedding **once per image** and caches it. This takes about 0.15 s and is **the most expensive step**.
+
+**The prompt encoder is light.** It encodes clicks and boxes (with positional encodings + learned type embeddings), or a rough mask (with convolutions). Text is only experimental.
+
+**The mask decoder is light too.** It's a 2-layer transformer with **two-way attention**: prompt tokens look at image tokens *and* image tokens look at prompt tokens, and then it outputs masks. It takes about 50 ms per prompt.
 
 **Why it feels instant:** the heavy encoder runs once, and every new click only re-runs the cheap decoder.
 
@@ -353,12 +367,13 @@ One click on a shirt button could mean *the button*, *the shirt* or *the whole p
 
 ### Prompt types
 
-| Prompt | Good for |
-|---|---|
-| Point (foreground or background click) | Fast interactive selection |
-| Box | Precisely selecting one object |
-| Rough mask | Refining an existing mask |
-| Text (experimental) | Uses a CLIP text embedding |
+**A point** (a foreground or background click) is good for fast interactive selection.
+
+**A box** is good for precisely selecting one object.
+
+**A rough mask** is good for refining an existing mask.
+
+**Text** is experimental, and uses a CLIP text embedding.
 
 **Not a prompt:** audio. (This was a quick-check question.)
 
@@ -384,26 +399,27 @@ SAM knows **"where"**, not **"what"**. It gives a precise outline but doesn't na
 
 ## Putting it together: the four models side by side
 
-| | CLIP | LLaVA | Qwen-VL | SAM |
-|---|---|---|---|---|
-| Who / when | OpenAI, 2021 | Wisconsin / Microsoft, 2023 | Alibaba, 2023 | Meta AI, 2023 |
-| Paradigm | Contrastive | Generative (chat) | Generative + grounded | Promptable segmentation |
-| Vision backbone | ResNet or ViT, trained from scratch | **Frozen** CLIP ViT-L/14 | ViT initialised from OpenCLIP | MAE-pretrained ViT-H |
-| Connector / fusion | Shared embedding space (no fusion) | Linear / MLP projector | Cross-attention adapter (256 tokens) | Two-way attention decoder |
-| Output | Similarity or label | Free text | Text + boxes | Mask + quality score |
-| Training signal | 400M web pairs | 158K GPT-4 instructions | 1.4B pairs + multi-task + instructions | 1.1B masks from a data engine |
+**CLIP** (OpenAI, 2021) is contrastive. Its vision backbone is a ResNet or ViT trained from scratch. There's no fusion, only a shared embedding space. It outputs a similarity or a label, and it was trained on 400M web pairs.
+
+**LLaVA** (Wisconsin / Microsoft, 2023) is generative (chat). Its vision backbone is a **frozen** CLIP ViT-L/14, connected through a linear / MLP projector. It outputs free text, and its training signal was 158K GPT-4 instructions.
+
+**Qwen-VL** (Alibaba, 2023) is generative + grounded. Its vision backbone is a ViT initialised from OpenCLIP, connected through a cross-attention adapter (256 tokens). It outputs text + boxes, and it was trained on 1.4B pairs + multi-task data + instructions.
+
+**SAM** (Meta AI, 2023) does promptable segmentation. Its vision backbone is an MAE-pretrained ViT-H, and its fusion happens in a two-way attention decoder. It outputs a mask + a quality score, and it was trained on 1.1B masks from a data engine.
 
 The professor's summary: *"What differs is not how we see, but what we do with what we saw: match, describe, ground, segment."*
 
 ### Which one when?
 
-| You need… | Choose | Why |
-|---|---|---|
-| Image search, tagging, zero-shot labels, content moderation | **CLIP** | Fast similarity, no generation needed |
-| A conversational description or general visual Q&A | **LLaVA-style** | Frozen encoder + LLM = chat |
-| Pointing at regions, reading text, documents, multiple images | **Qwen-VL** | Grounding tokens, OCR training, fixed token budget |
-| The exact pixel outline of an object | **SAM** (often with a detector or VLM for the "what") | Promptable, ambiguity-aware masks |
-| Grounding added to a LLaVA-like model with minimal change | Emit coordinates **as text tokens**, Qwen-VL style | No new output head needed |
+**For image search, tagging, zero-shot labels or content moderation, choose CLIP.** It gives fast similarity, and no generation is needed.
+
+**For a conversational description or general visual Q&A, choose a LLaVA-style model.** A frozen encoder + an LLM = chat.
+
+**For pointing at regions, reading text, documents or multiple images, choose Qwen-VL.** It has grounding tokens, OCR training and a fixed token budget.
+
+**For the exact pixel outline of an object, choose SAM**, often with a detector or VLM for the "what". It gives promptable, ambiguity-aware masks.
+
+**To add grounding to a LLaVA-like model with minimal change, emit coordinates as text tokens, Qwen-VL style.** No new output head is needed.
 
 ### Design trade-offs to recognise
 
@@ -423,22 +439,35 @@ The professor's summary: *"What differs is not how we see, but what we do with w
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "How many tokens does a 224 × 224 image give with 16 × 16 patches?" | 196 patch tokens (plus 1 if there's a [CLS] token). |
-| "Is the positional encoding just a number per patch?" | No. It's a *vector* per position, added to the patch vector. |
-| "Why does ViT need [CLS] but GPT doesn't?" | ViT needs one global image summary. A decoder-only GPT produces outputs token by token. |
-| "Is CLIP a Siamese network?" | Related idea, but Siamese networks share one encoder. CLIP has two separate ones. |
-| "Encoders give different-sized vectors. How do they match?" | Learned projection layers map both into the same shared space. |
-| "What does temperature do?" | Lower τ = sharper softmax; higher τ = softer. |
-| "Is a wrongly captioned web image a negative?" | No. That's label noise. Negatives are the other pairs in the batch. |
-| "Can PCA align image and text spaces?" | No. Alignment must be learned with the contrastive objective. |
-| "Is zero-shot the same as unsupervised learning?" | No. Zero-shot means no task-specific examples; training was still supervised by captions. |
-| "Can LLaVA output a mask or an image?" | The original LLaVA outputs text only. |
-| "Why is LLaVA Stage 2 needed if the LLM is already instruction-tuned?" | The LLM has never learned to interpret visual tokens. |
-| "Is the projector reset between stages?" | No. It's trained in both stages. |
-| "How do I make LLaVA cheaper to train?" | Use a smaller or quantised LLM and fewer visual tokens, and keep the encoder frozen. |
-| "How does Qwen-VL output boxes?" | It writes coordinates as text inside `<box>` tags, learned from region-annotated data. |
+These are real questions students asked during the session, with the answers they were given.
+
+**"How many tokens does a 224 × 224 image give with 16 × 16 patches?"** 196 patch tokens (plus 1 if there's a [CLS] token).
+
+**"Is the positional encoding just a number per patch?"** No. It's a *vector* per position, added to the patch vector.
+
+**"Why does ViT need [CLS] but GPT doesn't?"** ViT needs one global image summary. A decoder-only GPT produces outputs token by token.
+
+**"Is CLIP a Siamese network?"** Related idea, but Siamese networks share one encoder. CLIP has two separate ones.
+
+**"Encoders give different-sized vectors. How do they match?"** Learned projection layers map both into the same shared space.
+
+**"What does temperature do?"** Lower τ = sharper softmax; higher τ = softer.
+
+**"Is a wrongly captioned web image a negative?"** No. That's label noise. Negatives are the other pairs in the batch.
+
+**"Can PCA align image and text spaces?"** No. Alignment must be learned with the contrastive objective.
+
+**"Is zero-shot the same as unsupervised learning?"** No. Zero-shot means no task-specific examples; training was still supervised by captions.
+
+**"Can LLaVA output a mask or an image?"** The original LLaVA outputs text only.
+
+**"Why is LLaVA Stage 2 needed if the LLM is already instruction-tuned?"** The LLM has never learned to interpret visual tokens.
+
+**"Is the projector reset between stages?"** No. It's trained in both stages.
+
+**"How do I make LLaVA cheaper to train?"** Use a smaller or quantised LLM and fewer visual tokens, and keep the encoder frozen.
+
+**"How does Qwen-VL output boxes?"** It writes coordinates as text inside `<box>` tags, learned from region-annotated data.
 
 ---
 

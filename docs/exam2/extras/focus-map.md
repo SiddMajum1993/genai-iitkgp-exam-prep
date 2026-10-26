@@ -1,8 +1,8 @@
 # Focus map: where the questions will likely come from
 
-**How to use this page.** This page pulls together the "Exam radar" tables from all 13 chapters into one ranked list, so you can decide where to spend your time.
+**How to use this page.** This page pulls together the "Exam radar" sections from all 13 chapters into one ranked list, so you can decide where to spend your time.
 
-- Start with the 🔴 table. Every row is something you should be able to explain in one sentence and recognise inside a scenario.
+- Start with the 🔴 list. You should be able to explain every item in one sentence and recognise it inside a scenario.
 - Then skim the 🟠 list. Leave the 🟢 items for the end, if you have time.
 - The rankings come from how much class time a topic got, how often it appeared in the pre-read, slides and post-read, how many student questions it drew, and whether it was re-taught in the revision session.
 - They are **our estimate, not an official blueprint**.
@@ -13,97 +13,175 @@
 
 Ranked roughly by how strong the evidence is. Topics that were also **re-taught in the revision session** (Chapter 06) are marked ♻️ and sit near the top.
 
-| # | Topic | Ch | What to know (one line) | Evidence |
-|---|---|---|---|---|
-| 1 | Prompt vs RAG vs fine-tuning ♻️ | [01](../learn/01-ft-decisions.md) | RAG for missing or changing **knowledge**; fine-tuning for **style, format and behaviour**; prompting first, because it's cheapest | ~25 Q&A rows (most-asked topic), decision matrix, re-taught |
-| 2 | How LoRA works ♻️ | [04](../learn/04-lora-qlora.md) | Freeze W₀, train a side path B·A (B starts at 0), scaled by α/r | Pre-read, slides, ~10 Q&A rows, re-taught |
-| 3 | Why LoRA saves memory ♻️ | [04](../learn/04-lora-qlora.md) | Frozen weights need **no gradients and no Adam states**; that's the main saving | Slides and Q&A, re-taught |
-| 4 | QLoRA's ingredients ♻️ | [04](../learn/04-lora-qlora.md) | NF4 base + double quantization + paged optimizer (+ gradient checkpointing). **Only the frozen base is 4-bit**; A and B stay BF16 | Half a lecture; asked 4 ways in the Q&A |
-| 5 | Merge → no extra latency ♻️ | [04](../learn/04-lora-qlora.md) | B·A folds into W₀ after training; adapters (Houlsby) stay in the network and add latency | Pre-read: "the fundamental advantage" |
-| 6 | DPO ♻️ | [05](../learn/05-rlhf-dpo.md) | Learns from (prompt, chosen, rejected); **no reward model, no RL**, but **keeps a frozen reference**; β controls the pull | Pre-read, slides, full notebook, re-taught |
-| 7 | RLHF's three stages ♻️ | [05](../learn/05-rlhf-dpo.md) | SFT → reward model (from comparisons) → RL with PPO + KL penalty | InstructGPT slide, re-taught |
-| 8 | The 4 models in PPO ♻️ | [05](../learn/05-rlhf-dpo.md) | Policy, reference, reward, value. DPO needs just 2 (policy + frozen reference) | Natural "which is NOT" question |
-| 9 | Reward hacking + KL penalty ♻️ | [05](../learn/05-rlhf-dpo.md) | The policy exploits flaws in the reward model; KL keeps it close to the reference | Memorable slide example |
-| 10 | Workflow vs agent | [10](../learn/10-rag-to-agents.md), [12](../learn/12-langchain-langgraph.md) | Who decides the next step? You (workflow) or the model at run time (agent). "If you can draw the flowchart in advance, you don't need an agent" | Two chapters, pre-reads, post-reads, many Q&A threads |
-| 11 | Tool calling | [10](../learn/10-rag-to-agents.md) | The model **emits** a request; **your code executes** it. Safety checks live at that boundary | "The model never touches the API" |
-| 12 | MCP | [10](../learn/10-rag-to-agents.md) | `list_tools()` / `call_tool()`, discovery at run time, the server owns the schema; MCP = agent ↔ tools | 10+ Q&A questions (most in that session) |
-| 13 | CLIP | [07](../learn/07-vlm-architectures.md) | Two encoders, one shared space; contrastive grid; zero-shot via "a photo of a {label}"; **cannot generate text** | Heaviest slide time, 6-question quick check |
-| 14 | LLaVA's two stages | [07](../learn/07-vlm-architectures.md) | Stage 1 trains **only the projector**; Stage 2 trains projector + LLM; the vision encoder is **always frozen** | 6-question quick check |
-| 15 | Qwen-VL | [07](../learn/07-vlm-architectures.md) | Cross-attention adapter with **256 learned queries** (fixed count, positions kept); boxes are text tokens | Stated learning objective |
-| 16 | Parse-then-embed vs ColPali | [09](../learn/09-multimodal-rag.md) | OCR pipelines break on charts and tables; ColPali embeds the **page image** as ~1,000 patch vectors (no OCR) | Lecture quiz, pre-read, post-read, Q&A |
-| 17 | Late interaction | [09](../learn/09-multimodal-rag.md) | Each query token finds its best-matching patch, then the scores are added; many vectors per page, not one | Lecture quiz |
-| 18 | Checkpointer vs Store | [12](../learn/12-langchain-langgraph.md) | Checkpointer = one thread (`thread_id`): resume, human-in-the-loop, time travel. Store = long-term, across threads | Largest Q&A cluster in that session |
-| 19 | Idempotency | [12](../learn/12-langchain-langgraph.md) | A derived key (thread + intent) so a retried booking never happens twice | Slide, Mentimeter quiz, notebook demo |
-| 20 | Contract vs handoff | [11](../learn/11-multi-agent.md) | Contract = role, inputs, outputs, constraints, permissions. Handoff = a small structured message with **minimum sufficient context** | Two slides, ~8 Q&A rows |
-| 21 | Five essential RAI controls | [13](../learn/13-responsible-ai.md) | Guardrails (permission, not instruction), privacy, hallucination management, cost control (cap, not alert), system documentation | Centrepiece of agenda and pre-read |
-| 22 | Catastrophic forgetting | [02](../learn/02-ft-data-training.md), [03](../learn/03-peft-adapters-prompts.md) | It's **silent**: the target task improves while general skills drop. Fixes: low LR, replay, L2-SP/EWC, weight averaging, freezing, PEFT | Biggest Q&A cluster in Ch 02 |
-| 23 | Reading loss curves | [02](../learn/02-ft-data-training.md) | Train ↓ + validation ↑ = overfit; both high = underfit; both flat = no learning | "Ultimate guide" section |
-| 24 | Learning rate, warm-up, schedules | [02](../learn/02-ft-data-training.md) | Most important knob; small for fine-tuning; warm up, then decay (cosine is the default; WSD for unknown run length) | 14 slides |
-| 25 | Training instability | [02](../learn/02-ft-data-training.md) | A spike self-repairs; divergence doesn't; gradient clipping is a seatbelt; prefer bf16 | Stability checklist |
-| 26 | Data quality and curation | [02](../learn/02-ft-data-training.md) | Quality beats quantity (LIMA ~1,000 examples); source → clean → dedupe → filter → review → format | Agenda, pre-read, post-read |
-| 27 | SFT vs instruction fine-tuning | [01](../learn/01-ft-decisions.md) | IFT is a kind of SFT on many tasks phrased as instructions; the goal is instruction-following | Comparison slide, two notebooks |
-| 28 | Two independent taxonomy axes | [01](../learn/01-ft-decisions.md) | Learning signal (unsupervised / supervised / alignment) × how many weights change (full / PEFT) | Professor's own clarification |
-| 29 | The PEFT families | [03](../learn/03-peft-adapters-prompts.md) | Additive (adapters), soft prompt, re-parameterization (LoRA), selective (BitFit) | Concept map, revision |
-| 30 | Adapter structure | [03](../learn/03-peft-adapters-prompts.md) | Down-project → non-linearity → up-project + residual, starting near identity | "Two requirements" slide |
-| 31 | Houlsby vs Lin adapters | [03](../learn/03-peft-adapters-prompts.md) | Sequential (adds latency) vs parallel / residual | Limitations slide |
-| 32 | Prefix vs prompt tuning | [03](../learn/03-peft-adapters-prompts.md) | Prompt tuning = input layer only; prefix tuning = K and V of **every** layer | Highest-volume confusion in that Q&A |
-| 33 | HHH and its trade-offs | [05](../learn/05-rlhf-dpo.md) | Helpful, Honest, Harmless often pull against each other | Opening slides |
-| 34 | SLM vs large model | [06](../learn/06-revision-slm-guardrails.md) | Narrow + high volume + private / on-device + good data → a fine-tuned SLM wins | Pre-read table, post-read rules |
-| 35 | Guardrails | [06](../learn/06-revision-slm-guardrails.md) | Check **input and output** (content filters, PII redaction), because alignment isn't a security boundary | Half the hands-on |
-| 36 | Choosing the VLM paradigm | [07](../learn/07-vlm-architectures.md), [08](../learn/08-vlm-applications.md) | Tag → CLIP; free text → LLaVA; read, point or documents → Qwen-VL; pixel outline → SAM | The anchor table of both lectures |
-| 37 | Prompting per VLM task | [08](../learn/08-vlm-applications.md) | Scoped fixed templates for captions; CoT for counting; explicit JSON schema for extraction; allow "not present" | Every quick check |
-| 38 | VLM failure modes | [08](../learn/08-vlm-applications.md) | Hallucination, presupposition hallucination, compounding errors, hallucinated fields → human review | Pitfall slide in every section |
-| 39 | Which retrieval strategy when | [09](../learn/09-multimodal-rag.md) | Plain text → text RAG; clean tables on a budget → PDF parser; charts and scans → ColPali; production → hybrid | Dedicated slide |
-| 40 | RAG pitfalls | [09](../learn/09-multimodal-rag.md) | Retrieval and generation fail independently; grounding **reduces** hallucination but doesn't eliminate it | Lecture quiz |
-| 41 | Text and image search basics | [09](../learn/09-multimodal-rag.md) | Keyword vs semantic vs hybrid; bi-encoder; ANN for speed; reranking; CLIP shared space for images | Two sets of five quick-check questions |
-| 42 | The six-rung ladder | [10](../learn/10-rag-to-agents.md) | LLM → RAG → assistant → tool-using assistant → agent → multi-agent; each adds one thing | Opening and closing slides |
-| 43 | Agent loop + guards | [10](../learn/10-rag-to-agents.md) | Think → Act → Observe → Remember; bounded, observable, recoverable; verify success in code | Slide plus notebook guards |
-| 44 | ReAct vs Plan-and-Execute vs Reflection | [10](../learn/10-rag-to-agents.md) | ReAct is cheapest; Plan-and-Execute is predictable; Reflection costs the most tokens | Side-by-side slide |
-| 45 | When to go multi-agent | [11](../learn/11-multi-agent.md) | Specialisation, parallelism, context isolation, verification. Otherwise stay with one agent | Slides, pre-read, post-read |
-| 46 | Coordination cycle + loop bounds | [11](../learn/11-multi-agent.md) | Decompose → execute → attribute → reconcile → re-plan; round limit, token budget, deadlock check, escalate | Dedicated slides with code |
-| 47 | Supervisor vs peer-to-peer; parallel vs sequential | [11](../learn/11-multi-agent.md) | Supervisor for accountability (but a single point of failure); P2P for debate; parallel when independent | Slides plus Q&A |
-| 48 | Multi-agent safety | [11](../learn/11-multi-agent.md) | Inter-agent messages are untrusted; least privilege; human approval for writes; fail closed | Three slides |
-| 49 | State and reducers | [12](../learn/12-langchain-langgraph.md) | Nodes return partial updates; reducers merge them (overwrite by default; `add` appends) | Its own slide, many Q&A rows |
-| 50 | `interrupt()` / `Command(resume=...)` | [12](../learn/12-langchain-langgraph.md) | Pause for a human; on resume **the node re-runs from the top** | Slide plus Mentimeter |
-| 51 | Retry vs hand back to the model | [12](../learn/12-langchain-langgraph.md) | Retry infrastructure failures; return meaning-based failures to the model as observations | Two slides, post-read |
-| 52 | LangChain vs LangGraph | [12](../learn/12-langchain-langgraph.md) | Toolbox vs flowchart; `create_agent` *is* a LangGraph graph | Pre-read, takeaway slide |
-| 53 | Responsible vs trustworthy AI | [13](../learn/13-responsible-ai.md) | Promise vs proof | Agenda and pre-read |
-| 54 | Five leader questions | [13](../learn/13-responsible-ai.md) | Works as intended? Who could it harm? Whose data? Explainable? Who is accountable? Answer with evidence | Pre-read table |
-| 55 | Provider vs deployer | [13](../learn/13-responsible-ai.md) | The deploying organisation answers for the outcome, even if the vendor's model erred (Air Canada) | Repeated several times |
-| 56 | Case → control matching | [13](../learn/13-responsible-ai.md) | DPD → guardrails; Samsung → privacy; fake citations → hallucination management; huge bill → cost control; MyCity → documentation | Every case is paired with a control |
+### Ranks 1–9: also re-taught in revision ♻️
+
+**1. Prompt vs RAG vs fine-tuning ♻️** ([Ch 01](../learn/01-ft-decisions.md)). Use RAG when knowledge is missing or keeps changing, and fine-tuning when you need a particular style, format or behaviour. Try prompting first, because it's cheapest. *Why it ranks here:* it was the most-asked topic, with about 25 Q&A rows, it has its own decision matrix, and it was re-taught.
+
+**2. How LoRA works ♻️** ([Ch 04](../learn/04-lora-qlora.md)). Freeze W₀ and train a side path B·A, where B starts at zero, scaled by α/r. *Why it ranks here:* it's in the pre-read and the slides, drew about 10 Q&A rows, and was re-taught.
+
+**3. Why LoRA saves memory ♻️** ([Ch 04](../learn/04-lora-qlora.md)). Frozen weights need **no gradients and no Adam states**, and that's the main saving. *Why it ranks here:* it's repeated in the slides and the Q&A, and was re-taught.
+
+**4. QLoRA's ingredients ♻️** ([Ch 04](../learn/04-lora-qlora.md)). An NF4 base, double quantization and the paged optimizer, plus gradient checkpointing. **Only the frozen base is stored in 4 bits**; A and B stay in BF16. *Why it ranks here:* it took half a lecture, and students asked about it four different ways in the Q&A.
+
+**5. Merging means no extra latency ♻️** ([Ch 04](../learn/04-lora-qlora.md)). After training, B·A folds into W₀. Houlsby adapters stay in the network and add latency. *Why it ranks here:* the pre-read calls it "the fundamental advantage".
+
+**6. DPO ♻️** ([Ch 05](../learn/05-rlhf-dpo.md)). It learns from (prompt, chosen, rejected) examples with **no reward model and no RL**, but it **keeps a frozen reference**, and β controls how strongly it pulls. *Why it ranks here:* it's in the pre-read and the slides, has a full notebook, and was re-taught.
+
+**7. RLHF's three stages ♻️** ([Ch 05](../learn/05-rlhf-dpo.md)). SFT first, then a reward model trained from comparisons, then RL with PPO and a KL penalty. *Why it ranks here:* the InstructGPT slide covers it, and it was re-taught.
+
+**8. The 4 models in PPO ♻️** ([Ch 05](../learn/05-rlhf-dpo.md)). Policy, reference, reward and value. DPO needs only two: the policy and a frozen reference. *Why it ranks here:* it makes a natural "which is NOT" question.
+
+**9. Reward hacking and the KL penalty ♻️** ([Ch 05](../learn/05-rlhf-dpo.md)). The policy exploits flaws in the reward model, and the KL penalty keeps it close to the reference. *Why it ranks here:* the slide example is memorable.
+
+### Ranks 10–56
+
+**10. Workflow vs agent** ([Ch 10](../learn/10-rag-to-agents.md), [12](../learn/12-langchain-langgraph.md)). Ask who decides the next step: you (a workflow) or the model at run time (an agent). "If you can draw the flowchart in advance, you don't need an agent." *Why it ranks here:* it spans two chapters, their pre-reads and post-reads, and many Q&A threads.
+
+**11. Tool calling** ([Ch 10](../learn/10-rag-to-agents.md)). The model **emits** a request and **your code executes** it, so the safety checks live at that boundary. *Why it ranks here:* the course stresses that "the model never touches the API".
+
+**12. MCP** ([Ch 10](../learn/10-rag-to-agents.md)). `list_tools()` and `call_tool()`, with tools discovered at run time and the server owning the schema. MCP connects an agent to its tools. *Why it ranks here:* it drew 10+ Q&A questions, the most in that session.
+
+**13. CLIP** ([Ch 07](../learn/07-vlm-architectures.md)). Two encoders share one space and are trained with a contrastive grid. It does zero-shot classification with prompts like "a photo of a {label}", but it **cannot generate text**. *Why it ranks here:* it got the most slide time and a 6-question quick check.
+
+**14. LLaVA's two stages** ([Ch 07](../learn/07-vlm-architectures.md)). Stage 1 trains **only the projector**; Stage 2 trains the projector and the LLM. The vision encoder is **always frozen**. *Why it ranks here:* it had its own 6-question quick check.
+
+**15. Qwen-VL** ([Ch 07](../learn/07-vlm-architectures.md)). It uses a cross-attention adapter with **256 learned queries**, a fixed count that keeps position information, and writes bounding boxes as text tokens. *Why it ranks here:* it's a stated learning objective.
+
+**16. Parse-then-embed vs ColPali** ([Ch 09](../learn/09-multimodal-rag.md)). OCR pipelines break on charts and tables. ColPali skips OCR and embeds the **page image** as about 1,000 patch vectors. *Why it ranks here:* it appears in a lecture quiz, the pre-read, the post-read and the Q&A.
+
+**17. Late interaction** ([Ch 09](../learn/09-multimodal-rag.md)). Each query token finds its best-matching patch, and those scores are added up. A page is many vectors, not one. *Why it ranks here:* it was in the lecture quiz.
+
+**18. Checkpointer vs Store** ([Ch 12](../learn/12-langchain-langgraph.md)). The checkpointer covers one thread (`thread_id`) and enables resuming, human-in-the-loop and time travel. The Store is long-term memory shared across threads. *Why it ranks here:* it was the largest Q&A cluster in that session.
+
+**19. Idempotency** ([Ch 12](../learn/12-langchain-langgraph.md)). Use a key derived from the thread and the intent, so a retried booking never happens twice. *Why it ranks here:* it has a slide, a Mentimeter quiz and a notebook demo.
+
+**20. Contract vs handoff** ([Ch 11](../learn/11-multi-agent.md)). A contract defines an agent's role, inputs, outputs, constraints and permissions. A handoff is a small structured message carrying the **minimum sufficient context**. *Why it ranks here:* it has two slides and about 8 Q&A rows.
+
+**21. The five essential Responsible-AI controls** ([Ch 13](../learn/13-responsible-ai.md)). Guardrails (a permission, not an instruction), privacy, hallucination management, cost control (a cap, not an alert) and system documentation. *Why it ranks here:* it's the centrepiece of the agenda and the pre-read.
+
+**22. Catastrophic forgetting** ([Ch 02](../learn/02-ft-data-training.md), [03](../learn/03-peft-adapters-prompts.md)). It's **silent**: the target task improves while general skills drop. The fixes are a low learning rate, replay, L2-SP or EWC, weight averaging, freezing layers, and PEFT. *Why it ranks here:* it was the biggest Q&A cluster in Chapter 02.
+
+**23. Reading loss curves** ([Ch 02](../learn/02-ft-data-training.md)). Training loss falling while validation loss rises means overfitting. Both staying high means underfitting. Both flat means nothing is being learned. *Why it ranks here:* it has its own "ultimate guide" section.
+
+**24. Learning rate, warm-up and schedules** ([Ch 02](../learn/02-ft-data-training.md)). The learning rate is the most important knob, and it should be small for fine-tuning. Warm up, then decay. Cosine is the default; WSD suits runs of unknown length. *Why it ranks here:* it took 14 slides.
+
+**25. Training instability** ([Ch 02](../learn/02-ft-data-training.md)). A spike repairs itself; divergence doesn't. Gradient clipping is a seatbelt, and bf16 is the safer number format. *Why it ranks here:* it has a stability checklist.
+
+**26. Data quality and curation** ([Ch 02](../learn/02-ft-data-training.md)). Quality beats quantity: LIMA used only about 1,000 examples. The pipeline is source → clean → dedupe → filter → review → format. *Why it ranks here:* it's in the agenda, the pre-read and the post-read.
+
+**27. SFT vs instruction fine-tuning** ([Ch 01](../learn/01-ft-decisions.md)). Instruction fine-tuning is a kind of SFT that uses many tasks phrased as instructions, with the goal of following instructions in general. *Why it ranks here:* it has a comparison slide and two notebooks.
+
+**28. Two independent taxonomy axes** ([Ch 01](../learn/01-ft-decisions.md)). One axis is the learning signal (unsupervised, supervised or alignment). The other is how many weights change (full or PEFT). *Why it ranks here:* the professor clarified it personally.
+
+**29. The PEFT families** ([Ch 03](../learn/03-peft-adapters-prompts.md)). Additive (adapters), soft prompt, re-parameterization (LoRA) and selective (BitFit). *Why it ranks here:* it's on the concept map and came back in revision.
+
+**30. Adapter structure** ([Ch 03](../learn/03-peft-adapters-prompts.md)). Down-project, apply a non-linearity, up-project, and add a residual connection, starting close to the identity. *Why it ranks here:* the "two requirements" slide.
+
+**31. Houlsby vs Lin adapters** ([Ch 03](../learn/03-peft-adapters-prompts.md)). Houlsby adapters are sequential and add latency; Lin adapters are parallel, on a residual path. *Why it ranks here:* the limitations slide.
+
+**32. Prefix vs prompt tuning** ([Ch 03](../learn/03-peft-adapters-prompts.md)). Prompt tuning works at the input layer only. Prefix tuning adds learned keys and values at **every** layer. *Why it ranks here:* it was the biggest source of confusion in that session's Q&A.
+
+**33. HHH and its trade-offs** ([Ch 05](../learn/05-rlhf-dpo.md)). Helpful, honest and harmless often pull against each other. *Why it ranks here:* it's in the opening slides.
+
+**34. SLM vs large model** ([Ch 06](../learn/06-revision-slm-guardrails.md)). A fine-tuned small model wins when the task is narrow and high-volume, has to stay private or run on-device, and good data exists. *Why it ranks here:* it has a pre-read table and post-read rules.
+
+**35. Guardrails** ([Ch 06](../learn/06-revision-slm-guardrails.md)). Check **both input and output**, with content filters and PII redaction, because alignment isn't a security boundary. *Why it ranks here:* it was half the hands-on.
+
+**36. Choosing the VLM paradigm** ([Ch 07](../learn/07-vlm-architectures.md), [08](../learn/08-vlm-applications.md)). For tags, use CLIP. For free text, LLaVA. For reading, pointing or documents, Qwen-VL. For a pixel outline, SAM. *Why it ranks here:* it's the anchor table of both lectures.
+
+**37. Prompting per VLM task** ([Ch 08](../learn/08-vlm-applications.md)). Use scoped, fixed templates for captions, chain-of-thought for counting, and an explicit JSON schema for extraction, and allow the answer "not present". *Why it ranks here:* it's in every quick check.
+
+**38. VLM failure modes** ([Ch 08](../learn/08-vlm-applications.md)). Hallucination, presupposition hallucination, compounding errors and hallucinated fields, all of which call for human review. *Why it ranks here:* every section has a pitfall slide.
+
+**39. Which retrieval strategy when** ([Ch 09](../learn/09-multimodal-rag.md)). Plain text calls for text RAG. Clean tables on a budget call for a PDF parser. Charts and scans call for ColPali. Production systems use a hybrid. *Why it ranks here:* it has a dedicated slide.
+
+**40. RAG pitfalls** ([Ch 09](../learn/09-multimodal-rag.md)). Retrieval and generation fail independently, and grounding **reduces** hallucination but doesn't eliminate it. *Why it ranks here:* it was in the lecture quiz.
+
+**41. Text and image search basics** ([Ch 09](../learn/09-multimodal-rag.md)). Keyword vs semantic vs hybrid search, bi-encoders, ANN for speed, reranking, and CLIP's shared space for images. *Why it ranks here:* it had two sets of five quick-check questions.
+
+**42. The six-rung ladder** ([Ch 10](../learn/10-rag-to-agents.md)). LLM → RAG → assistant → tool-using assistant → agent → multi-agent, with each rung adding one thing. *Why it ranks here:* it opens and closes the lecture.
+
+**43. The agent loop and its guards** ([Ch 10](../learn/10-rag-to-agents.md)). Think → act → observe → remember. The loop must be bounded, observable and recoverable, and success must be verified in code. *Why it ranks here:* it has a slide plus guards in the notebook.
+
+**44. ReAct vs Plan-and-Execute vs Reflection** ([Ch 10](../learn/10-rag-to-agents.md)). ReAct is the cheapest, Plan-and-Execute the most predictable, and Reflection costs the most tokens. *Why it ranks here:* it has a side-by-side slide.
+
+**45. When to go multi-agent** ([Ch 11](../learn/11-multi-agent.md)). For specialisation, parallelism, context isolation or verification. Otherwise, stay with one agent. *Why it ranks here:* it's in the slides, the pre-read and the post-read.
+
+**46. The coordination cycle and loop bounds** ([Ch 11](../learn/11-multi-agent.md)). Decompose → execute → attribute → reconcile → re-plan, bounded by a round limit, a token budget and a deadlock check, with escalation when stuck. *Why it ranks here:* it has dedicated slides with code.
+
+**47. Supervisor vs peer-to-peer, and parallel vs sequential** ([Ch 11](../learn/11-multi-agent.md)). A supervisor gives accountability but is a single point of failure. Peer-to-peer suits debate. Run steps in parallel when they're independent. *Why it ranks here:* it's in the slides and the Q&A.
+
+**48. Multi-agent safety** ([Ch 11](../learn/11-multi-agent.md)). Messages between agents are untrusted. Use least privilege, require human approval for writes, and fail closed. *Why it ranks here:* it has three slides.
+
+**49. State and reducers** ([Ch 12](../learn/12-langchain-langgraph.md)). Nodes return partial updates, and reducers merge them: overwrite by default, or append with `add`. *Why it ranks here:* it has its own slide and many Q&A rows.
+
+**50. `interrupt()` and `Command(resume=...)`** ([Ch 12](../learn/12-langchain-langgraph.md)). Pause for a human; on resume, **the node re-runs from the top**. *Why it ranks here:* it has a slide and a Mentimeter question.
+
+**51. Retry vs hand back to the model** ([Ch 12](../learn/12-langchain-langgraph.md)). Retry infrastructure failures. Return failures about meaning to the model as observations. *Why it ranks here:* it has two slides and post-read coverage.
+
+**52. LangChain vs LangGraph** ([Ch 12](../learn/12-langchain-langgraph.md)). A toolbox vs a flowchart. `create_agent` *is* a LangGraph graph. *Why it ranks here:* it's in the pre-read and the takeaway slide.
+
+**53. Responsible vs trustworthy AI** ([Ch 13](../learn/13-responsible-ai.md)). Promise vs proof. *Why it ranks here:* it's in the agenda and the pre-read.
+
+**54. The five leader questions** ([Ch 13](../learn/13-responsible-ai.md)). Does it work as intended? Who could it harm? Whose data is it? Can it be explained? Who is accountable? Answer each with evidence. *Why it ranks here:* the pre-read has a table of them.
+
+**55. Provider vs deployer** ([Ch 13](../learn/13-responsible-ai.md)). The organisation that deploys the system answers for the outcome, even when the vendor's model got it wrong, as in the Air Canada case. *Why it ranks here:* it's repeated several times.
+
+**56. Matching a case to its control** ([Ch 13](../learn/13-responsible-ai.md)). DPD maps to guardrails, Samsung to privacy, fake citations to hallucination management, a huge bill to cost control, and MyCity to documentation. *Why it ranks here:* every case in the session is paired with a control.
 
 ---
 
 ## 🟠 Medium: understand the idea
 
-- **Ch 01:** multi-task fine-tuning (shared body, one head per task); curriculum (easy → hard); layer-wise vs block-wise vs progressive unfreezing; why full fine-tuning is costly; the PEFT families preview.
-- **Ch 02:** batch size and gradient accumulation; imbalanced data and the accuracy paradox; splitting without leakage (split first; time and group splits); domain shift.
-- **Ch 03:** soft prompt vs discrete prompt vs system prompt vs RAG; SMoP / APT / IDPG (what each fixes); adapter routing and AdapterFusion; choosing a PEFT method.
-- **Ch 04:** intrinsic dimension; the r and α dials; multi-tenant hot-swapping; block-wise quantization and outliers.
-- **Ch 05:** the RL vocabulary for LLMs (state, action, policy); why policy gradients are noisy (reward-to-go, baseline, advantage); PPO's "proximal" idea.
-- **Ch 06:** red-teaming loop (attack → find gap → fix → re-test, and check for over-blocking); "alignment is not a security boundary"; the 5-step SLM workflow; loss curves again.
-- **Ch 07:** SAM (Medium–High: encoder once, 3 masks, data engine); ViT basics; LLaVA data and upgrades; limits of each model.
-- **Ch 08:** SAM loss (focal + Dice, Medium–High); composing models (VLM finds, SAM cuts); datasets and metrics (COCO, VQAv2, DocVQA/ANLS, CIDEr, CLIPScore); resolution as the main lever for documents.
-- **Ch 09:** Recall@K, nDCG@5, ViDoRe (what they mean); ColPali's bigger index and GPU cost; three storage designs; chunking; "fine-tune the LLM for a domain? Usually no".
-- **Ch 10:** three kinds of memory (conversation, task state, long-term); Agentic RAG; why the loop gets expensive; write tools need approval.
-- **Ch 11:** MCP vs A2A (+ ANP, AGNTCY); shared state in slices; what to log at each handoff; cost of extra agents.
-- **Ch 12:** super-steps and `recursion_limit`; nested timeouts and fallbacks; structured output, `@tool`, chains; time travel and streaming; `Command` handoffs and `Send` fan-out.
-- **Ch 13:** the agentic shift (AI that *does* vs *says*); three 90-day priorities; governance as one system; framework one-liners (NIST AI RMF, EU AI Act, ISO/IEC 42001, DPDP, India AI Governance Guidelines).
+**Chapter 01.** Multi-task fine-tuning (a shared body with one head per task), curriculum learning (easy to hard), layer-wise vs block-wise vs progressive unfreezing, why full fine-tuning is costly, and the preview of the PEFT families.
+
+**Chapter 02.** Batch size and gradient accumulation, imbalanced data and the accuracy paradox, splitting data without leakage (split first; use time and group splits), and domain shift.
+
+**Chapter 03.** Soft prompts vs discrete prompts vs system prompts vs RAG; what SMoP, APT and IDPG each fix; adapter routing and AdapterFusion; and choosing a PEFT method.
+
+**Chapter 04.** Intrinsic dimension, the r and α dials, multi-tenant hot-swapping, and block-wise quantization with outliers.
+
+**Chapter 05.** The RL vocabulary for LLMs (state, action, policy), why policy gradients are noisy (reward-to-go, baseline, advantage), and PPO's "proximal" idea.
+
+**Chapter 06.** The red-teaming loop (attack → find the gap → fix → re-test, and check for over-blocking), "alignment is not a security boundary", the 5-step SLM workflow, and loss curves again.
+
+**Chapter 07.** SAM, which is Medium–High (it runs the encoder once, returns 3 masks, and was built with a data engine); ViT basics; LLaVA's data and upgrades; and the limits of each model.
+
+**Chapter 08.** SAM's loss (focal plus Dice, Medium–High); composing models (a VLM finds the object, SAM cuts it out); datasets and metrics (COCO, VQAv2, DocVQA/ANLS, CIDEr, CLIPScore); and resolution as the main lever for documents.
+
+**Chapter 09.** What Recall@K, nDCG@5 and ViDoRe mean; ColPali's bigger index and GPU cost; the three storage designs; chunking; and "should you fine-tune the LLM for a domain? Usually no".
+
+**Chapter 10.** The three kinds of memory (conversation, task state, long-term), Agentic RAG, why the loop gets expensive, and why write tools need approval.
+
+**Chapter 11.** MCP vs A2A (plus ANP and AGNTCY), sharing state in slices, what to log at each handoff, and the cost of extra agents.
+
+**Chapter 12.** Super-steps and `recursion_limit`; nested timeouts and fallbacks; structured output, `@tool` and chains; time travel and streaming; `Command` handoffs and `Send` fan-out.
+
+**Chapter 13.** The agentic shift (AI that *does* rather than *says*), the three 90-day priorities, governance as one system, and a one-line summary of each framework (NIST AI RMF, the EU AI Act, ISO/IEC 42001, DPDP, and India's AI Governance Guidelines).
 
 ---
 
 ## 🟢 Low: skim only if time allows
 
-- Encoder vs decoder recap; Med-PaLM and BloombergGPT facts (Ch 01).
-- Label-error detection with cleanlab; the one-training-step walkthrough (Ch 02).
-- Exact GPU tables; paper names like Compacter and P-Tuning v2 (Ch 03).
-- Gradient checkpointing details; exact NF4 level values (Ch 04).
-- Preference data sourcing; the value-head loss (Ch 05).
-- Library names, regex patterns, the Luhn check (Ch 06).
-- Variant tables, parameter counts, history dates (Ch 07); benchmark scores and case studies (Ch 08).
-- Survey details and EM training (Ch 09); framework landscape (Ch 10); RL tangents (Ch 11).
-- Planning architectures beyond ReAct (ReWOO, LLMCompiler) and release dates (Ch 12).
-- Deeper framework details, case figures and dates (Ch 13).
+**Chapter 01:** the encoder vs decoder recap, and the facts about Med-PaLM and BloombergGPT.
+
+**Chapter 02:** label-error detection with cleanlab, and the one-training-step walkthrough.
+
+**Chapter 03:** the exact GPU tables, and paper names like Compacter and P-Tuning v2.
+
+**Chapter 04:** gradient checkpointing details and the exact NF4 level values.
+
+**Chapter 05:** where preference data comes from, and the value-head loss.
+
+**Chapter 06:** library names, regex patterns and the Luhn check.
+
+**Chapters 07 and 08:** variant tables, parameter counts and history dates (Ch 07); benchmark scores and case studies (Ch 08).
+
+**Chapters 09–11:** survey details and EM training (Ch 09), the framework landscape (Ch 10), and the RL tangents (Ch 11).
+
+**Chapter 12:** planning architectures beyond ReAct (ReWOO, LLMCompiler), and release dates.
+
+**Chapter 13:** deeper framework details, case figures and dates.
 
 ---
 
@@ -112,14 +190,13 @@ Ranked roughly by how strong the evidence is. Topics that were also **re-taught 
 !!! warning "This is an estimate, not a known blueprint"
     We don't know how the paper is split. The estimate below assumes questions are spread roughly in proportion to the number of sessions per part, nudged by how much emphasis each part got. Use it to plan your revision time, not to predict the paper.
 
-| Part | Sessions | Chapters | Estimated questions (out of 24) |
-|---|---|---|---|
-| A · Fine-tuning (incl. PEFT, alignment, revision) | 6 | 01–06 | **9–11** |
-| B · Vision-language models & multimodal RAG | 3 | 07–09 | **5–6** |
-| C · Agents (single, multi-agent, LangGraph) | 3 | 10–12 | **5–7** |
-| D · Responsible AI | 1 | 13 | **2–3** |
+**Part A · Fine-tuning (Chapters 01–06): about 9–11 questions.** This part covers PEFT, alignment and the revision session, across 6 sessions, so it's likely to carry the most weight. It was also the only block with a dedicated revision session.
 
-Part A was also the only block with a dedicated revision session, which is another reason to expect it to carry the most weight.
+**Part B · Vision-language models and multimodal RAG (Chapters 07–09): about 5–6 questions.** Three sessions.
+
+**Part C · Agents (Chapters 10–12): about 5–7 questions.** Three sessions, covering single agents, multi-agent systems and LangGraph.
+
+**Part D · Responsible AI (Chapter 13): about 2–3 questions.** One session.
 
 ---
 

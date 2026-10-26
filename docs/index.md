@@ -19,7 +19,7 @@ This site turns twelve dense lectures into a study path you can actually finish 
 </ul>
 
 !!! tip "New: 2nd proctored exam guide"
-    Preparing for **Exam 2**? It has its own guide covering fine-tuning, PEFT (LoRA/QLoRA), RLHF & DPO, vision-language models, multimodal RAG, agents, LangGraph and Responsible AI. There are 13 chapters with practice questions, plus a focus map, decision tables and a glossary.
+    Preparing for **Exam 2**? It has its own guide covering fine-tuning, PEFT (LoRA/QLoRA), RLHF & DPO, vision-language models, multimodal RAG, agents, LangGraph and Responsible AI. There are 13 chapters with practice questions, plus a focus map, decision guides and a glossary.
 
     [:material-arrow-right: Open the Exam 2 guide](exam2/index.md){ .md-button .md-button--primary }
 

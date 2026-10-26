@@ -22,20 +22,35 @@ If you remember one sentence, make it this one: **RLHF learns a judge and then t
 
 How likely each topic is to be tested, based on how much slide time it got, whether it was in the pre-read and hands-on, how many student questions it drew, and whether it came back in the revision session (Chapter 06). **Everything marked 🔴 was re-taught in revision.**
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| DPO: no reward model, no RL, chosen vs rejected pairs, frozen reference, β | 🔴 High | Pre-read, 5 slides, full hands-on notebook, re-taught in revision |
-| RLHF's three stages: SFT → reward model → RL with PPO | 🔴 High | Pre-read, InstructGPT slide, re-taught in revision |
-| The 4 models in the PPO loop (policy, reference, reward, value) | 🔴 High | Slides 38–48, pre-read list, a natural "which is NOT" question |
-| Reward hacking and the KL penalty | 🔴 High | Memorable slide example; pre-read; Q&A |
-| How the reward model learns from comparisons (Bradley-Terry idea) | 🔴 High | Slides, code slide, pre-read, revision |
-| RLHF vs DPO: when to choose which | 🔴 High | Pre-read table, slide 52, several Q&A rows |
-| HHH: Helpful, Honest, Harmless, and their trade-offs | 🔴 High | Opening slides with examples; scenario-question material |
-| Mapping RL words to an LLM (state, action, policy, trajectory) | 🟠 Medium | Several slides; the most student questions of any topic |
-| Why policy gradients are noisy: reward-to-go, baseline, advantage | 🟠 Medium | Slides 27–31; idea matters, formulas don't |
-| PPO's "proximal" idea: don't change the model too much per update | 🟠 Medium | Slides 32–37; restated in revision |
-| Preference data sourcing and evaluation benchmarks | 🟢 Low | Q&A only |
-| The value-function head and its loss | 🟢 Low | One slide |
+### 🔴 High: expect questions here
+
+**DPO.** No reward model and no RL. It learns from chosen vs rejected pairs, keeps a frozen reference, and has a β setting. It's in the pre-read, five slides and a full hands-on notebook, and was re-taught in revision.
+
+**RLHF's three stages: SFT → reward model → RL with PPO.** It's in the pre-read and the InstructGPT slide, and was re-taught in revision.
+
+**The four models in the PPO loop: policy, reference, reward and value.** Slides 38–48 and the pre-read list them. It's a natural "which is NOT" question.
+
+**Reward hacking and the KL penalty.** There's a memorable slide example, plus the pre-read and the Q&A.
+
+**How the reward model learns from comparisons (the Bradley-Terry idea).** It's in the slides, a code slide, the pre-read and the revision session.
+
+**RLHF vs DPO, and when to choose which.** There's a pre-read table, slide 52, and several Q&A rows.
+
+**HHH, meaning Helpful, Honest and Harmless, and the trade-offs between them.** The opening slides give examples, and it's good scenario-question material.
+
+### 🟠 Medium: likely to show up in one question
+
+**Mapping RL words onto an LLM (state, action, policy, trajectory).** Several slides cover it, and it drew more student questions than any other topic.
+
+**Why policy gradients are noisy: reward-to-go, baseline and advantage.** These are slides 27–31. The idea matters, the formulas don't.
+
+**PPO's "proximal" idea: don't change the model too much in one update.** These are slides 32–37, and revision restated it.
+
+### 🟢 Low: understand the idea, skip the details
+
+**Where preference data comes from, and evaluation benchmarks.** These came up in the Q&A only.
+
+**The value-function head and its loss.** One slide.
 
 ---
 
@@ -47,13 +62,13 @@ A pre-trained model optimises one narrow goal: predict the next token. It has no
 
 ### The idea in plain words
 
-The most widely used breakdown is **HHH**:
+The most widely used breakdown is **HHH**.
 
-| Property | Means | Course example |
-|---|---|---|
-| **Helpful** | Actually solves the user's need; specific and actionable, not generic | A user gets `KeyError: 'user_id'`. Helpful: point to the line, explain the missing key, suggest `.get('user_id')` with a default. Unhelpful: "KeyErrors happen when a key doesn't exist, check your code." (True, but useless.) |
-| **Honest** | Truthful and calibrated; no made-up facts, no overconfidence, no telling people what they want to hear (**sycophancy**) | "Did Einstein fail maths?" Honest: "No, that's a myth." Dishonest: agreeing because the user seems to expect it |
-| **Harmless** | Doesn't enable real-world harm, even when asked | Refuse bomb-making steps, even if framed as "for a chemistry class" |
+**Helpful means it actually solves the user's need.** The answer is specific and actionable, not generic. *Course example:* a user gets `KeyError: 'user_id'`. A helpful answer points to the line, explains the missing key and suggests `.get('user_id')` with a default. An unhelpful one says "KeyErrors happen when a key doesn't exist, check your code." That's true, but useless.
+
+**Honest means truthful and calibrated.** No made-up facts, no overconfidence, and no telling people what they want to hear, which is called **sycophancy**. *Course example:* "Did Einstein fail maths?" The honest answer is "No, that's a myth." The dishonest one agrees because the user seems to expect it.
+
+**Harmless means it doesn't enable real-world harm, even when asked.** *Course example:* it refuses to give bomb-making steps, even if the request is framed as "for a chemistry class".
 
 ### The three pull against each other
 
@@ -151,15 +166,17 @@ All three are "correct", but humans prefer **2**. The reward model must learn to
 
 ## Concept 4 — Thinking of an LLM as an RL agent
 
-RL has its own vocabulary. The course mapped each word onto a language model:
+RL has its own vocabulary. The course mapped each word onto a language model.
 
-| RL word | In an LLM | Plain meaning |
-|---|---|---|
-| **State** | The prompt plus the tokens generated so far | "Where we are in the sentence" |
-| **Action** | The next token | "The next word chosen" |
-| **Policy** | The LLM itself | "The decision-maker: which token to pick, given the text so far" |
-| **Trajectory** | The whole sequence of (state, token) steps, i.e. one full generated answer | "One complete attempt" |
-| **Reward** | The reward model's score, usually for the **whole answer** | "How good that attempt was" |
+**The state is the prompt plus the tokens generated so far.** In plain words, "where we are in the sentence".
+
+**An action is the next token.** "The next word chosen."
+
+**The policy is the LLM itself.** It's the decision-maker: which token to pick, given the text so far.
+
+**A trajectory is the whole sequence of (state, token) steps, which is one full generated answer.** "One complete attempt."
+
+**The reward is the reward model's score, usually for the whole answer.** "How good that attempt was."
 
 **Goal:** adjust the policy (the LLM's weights) so it tends to choose tokens that lead to high-reward answers.
 
@@ -224,14 +241,15 @@ So the training goal becomes: **get a high reward, without moving far from the s
 
 ## Concept 7 — The four models in the PPO loop
 
-This is a favourite exam point. Running RLHF with PPO needs **four** models:
+This is a favourite exam point. Running RLHF with PPO needs **four** models.
 
-| # | Model | Role | Trained? |
-|---|---|---|---|
-| 1 | **Policy** | The LLM being aligned; generates answers | 🔥 Yes |
-| 2 | **Reference model** | Frozen copy of the SFT model; used for the KL penalty | ❄️ Frozen |
-| 3 | **Reward model** | Scores each full answer | ❄️ Frozen during PPO (trained earlier, in Stage 2) |
-| 4 | **Value function** ("critic") | Predicts the expected reward from each point in the answer; used to compute the advantage | 🔥 Yes |
+**1. The policy 🔥 is trained.** It's the LLM being aligned, and it generates the answers.
+
+**2. The reference model ❄️ is frozen.** It's a frozen copy of the SFT model, used for the KL penalty.
+
+**3. The reward model ❄️ is frozen during PPO.** It scores each full answer. It was trained earlier, in Stage 2.
+
+**4. The value function 🔥, also called the "critic", is trained.** It predicts the expected reward from each point in the answer, and it's used to compute the advantage.
 
 (The pre-read lists them as "SFT, reward, policy, value function." The SFT model *is* the reference.)
 
@@ -315,17 +333,23 @@ Suppose the starting model actually prefers the rejected answer. DPO's job is to
 
 ---
 
-## RLHF (PPO) vs DPO — decision table
+## RLHF (PPO) vs DPO: which one when?
 
-| | **RLHF with PPO** | **DPO** |
-|---|---|---|
-| Separate reward model | ✅ Yes | ❌ No (it's implicit) |
-| Reinforcement learning loop | ✅ Yes | ❌ No |
-| Models held during training | 4: policy, reference, reward, value | 2: policy + frozen reference |
-| Data | Preference pairs (for the reward model) + prompts for fresh sampling | A fixed set of (prompt, chosen, rejected) |
-| Stability | Unstable, sensitive to hyperparameters, risk of reward hacking | Simpler, generally more stable |
-| Cost and complexity | Higher | Lower |
-| **Choose it when…** | You need **online exploration**; the reward is complex, sequential or changing (e.g. a coding or web agent with a measurable outcome); you don't have a static set of preference pairs | You have a **fixed, offline preference dataset** and want a simpler, cheaper, stable recipe |
+The two approaches differ on almost every practical point.
+
+**A separate reward model.** RLHF with PPO has one ✅. DPO doesn't ❌; the reward is implicit.
+
+**A reinforcement learning loop.** RLHF with PPO has one ✅. DPO doesn't ❌.
+
+**How many models are held during training.** RLHF with PPO holds four: policy, reference, reward and value. DPO holds two: the policy and a frozen reference.
+
+**What data each needs.** RLHF with PPO needs preference pairs to train the reward model, plus prompts for sampling fresh answers. DPO needs a fixed set of (prompt, chosen, rejected) examples.
+
+**Stability.** RLHF with PPO is unstable, sensitive to hyperparameters, and at risk of reward hacking. DPO is simpler and generally more stable.
+
+**Cost and complexity.** Higher for RLHF with PPO, lower for DPO.
+
+**So when do you choose each?** Choose **RLHF with PPO** when you need **online exploration**: the reward is complex, sequential or changing (for example, a coding or web agent with a measurable outcome), or you don't have a static set of preference pairs. Choose **DPO** when you have a **fixed, offline preference dataset** and want a simpler, cheaper, stable recipe.
 
 ---
 
@@ -345,21 +369,33 @@ The notebook implemented **DPO from scratch in plain PyTorch** (not using the TR
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "Are the model's weights the state?" | No. Weights are the policy's parameters. The state is the prompt plus tokens so far. |
-| "Is the KV cache part of the environment state?" | No. It's an implementation detail. |
-| "Is the reward given per token?" | Usually per full answer; the advantage turns it into a per-token signal. |
-| "When does backprop happen: after each token?" | After trajectories are collected, not after every move. |
-| "Is variance reduction a loss function?" | No. It makes the gradient signal less noisy. The PPO objective is the loss. |
-| "Is advantage the same as a z-score?" | Conceptually similar (deviation from an average) but not divided by a standard deviation. |
-| "Is KL the overlap area between two curves?" | No. It's computed from the probabilities and isn't symmetric. |
-| "Why is there a minus sign in the reward-model loss?" | Because we *minimise* loss while wanting the winner–loser gap to be *large*. |
-| "If DPO is better, does anyone still use PPO?" | Yes, especially for online exploration and complex or changing rewards. |
-| "Is fine-tuning required for alignment?" | No. Prompting and system instructions also align. |
-| "Where does preference data come from?" | Human annotators, public datasets, or a stronger LLM as judge (human-reviewed is more reliable). Use multiple annotators to reduce bias. |
-| "How do we evaluate alignment?" | There's no single HHH score. Examples: TruthfulQA (honesty), HarmBench (harm robustness), Chatbot Arena (overall preference). |
-| "Do thumbs-up/down clicks retrain the model instantly?" | No. They're preference signals collected and used later, in batches. |
+These are real questions students asked during the session, with the answers they were given.
+
+**"Are the model's weights the state?"** No. The weights are the policy's parameters. The state is the prompt plus the tokens so far.
+
+**"Is the KV cache part of the environment state?"** No. It's an implementation detail.
+
+**"Is the reward given per token?"** Usually it's given per full answer. The advantage is what turns it into a per-token signal.
+
+**"When does backprop happen: after each token?"** After trajectories have been collected, not after every move.
+
+**"Is variance reduction a loss function?"** No. It makes the gradient signal less noisy. The PPO objective is the loss.
+
+**"Is advantage the same as a z-score?"** Conceptually similar, since both measure deviation from an average, but advantage isn't divided by a standard deviation.
+
+**"Is KL the overlap area between two curves?"** No. It's computed from the probabilities, and it isn't symmetric.
+
+**"Why is there a minus sign in the reward-model loss?"** Because we *minimise* the loss while wanting the gap between winner and loser to be *large*.
+
+**"If DPO is better, does anyone still use PPO?"** Yes, especially for online exploration and for complex or changing rewards.
+
+**"Is fine-tuning required for alignment?"** No. Prompting and system instructions also align a model.
+
+**"Where does preference data come from?"** From human annotators, public datasets, or a stronger LLM acting as judge; human-reviewed data is more reliable. Use multiple annotators to reduce bias.
+
+**"How do we evaluate alignment?"** There's no single HHH score. Examples are TruthfulQA for honesty, HarmBench for harm robustness, and Chatbot Arena for overall preference.
+
+**"Do thumbs-up/down clicks retrain the model instantly?"** No. They're preference signals that are collected and used later, in batches.
 
 ---
 

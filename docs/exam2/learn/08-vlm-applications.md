@@ -24,30 +24,45 @@ If you remember one sentence, make it this one: **match the task's shape to the 
 
 How likely each topic is to be tested, based on slide time, the quick-check quizzes in each section, the recap table and the Q&A sheet.
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| Task → model rules (sentence vs tag; Qwen-VL for OCR, grounding and documents; reasoning comes from the LLM) | 🔴 High | The premise of the whole lecture; perfect scenario-question material |
-| Prompting per task (length-scoped captions, CoT for counting and reasoning, JSON schema for extraction, allow "not present") | 🔴 High | Repeated in every quick check, the recap table and the takeaways |
-| Failure modes (hallucination, presupposition hallucination, compounding errors, hallucinated fields, human review) | 🔴 High | Every section has a pitfalls slide and a quiz item on it |
-| SAM recap: encoder once, 3 masks, prompt types, focal + dice loss, data engine | 🟠 Medium–High | Re-taught with a new loss slide; most of the Q&A questions |
-| Composing models (VLM finds it, SAM cuts it out; extraction vs matching pipelines) | 🟠 Medium | Several long Q&A answers |
-| Datasets and metrics (COCO, VQAv2, DocVQA/ANLS, MMMU, CIDEr, BLEU, CLIPScore) | 🟠 Medium | Listed in tables; matching-style questions possible |
-| How state-of-the-art models are trained per task (resolution as the main lever for documents) | 🟠 Medium | One slide per task |
-| Benchmark scores and the DAVE / DocVLM case studies | 🟢 Low | "Directional" numbers; case studies marked optional |
+### 🔴 High: expect questions here
+
+**The rules for matching a task to a model.** A sentence calls for a different model than a tag. Qwen-VL is the choice for OCR, grounding and documents. Reasoning comes from the LLM. This is the premise of the whole lecture, and perfect material for scenario questions.
+
+**How to prompt for each task.** Captions are scoped by length, counting and reasoning use chain-of-thought (CoT), extraction uses a JSON schema, and the prompt allows "not present". This was repeated in every quick check, the recap table and the takeaways.
+
+**Failure modes.** Hallucination, presupposition hallucination, compounding errors, hallucinated fields, and the need for human review. Every section has a pitfalls slide and a quiz item on it.
+
+### 🟠 Medium: likely to show up in one question
+
+**The SAM recap (🟠 Medium–High).** The encoder runs once, there are 3 masks, several prompt types, the focal + Dice loss and the data engine. It was taught again with a new slide on the loss, and it drew most of the Q&A questions.
+
+**Composing models.** A VLM finds the object and SAM cuts it out, and extraction pipelines differ from matching pipelines. Several long Q&A answers cover this.
+
+**Datasets and metrics.** COCO, VQAv2, DocVQA/ANLS, MMMU, CIDEr, BLEU and CLIPScore. They're listed on the slides, so matching-style questions are possible.
+
+**How state-of-the-art models are trained for each task.** For documents, resolution is the main lever. There's one slide per task.
+
+### 🟢 Low: understand the idea, skip the details
+
+**Benchmark scores and the DAVE / DocVLM case studies.** The numbers are only "directional", and the case studies are marked optional.
 
 ---
 
 ## The application map
 
-| Application | Core task | Primary model | Prompting strategy |
-|---|---|---|---|
-| **Image understanding / captioning** | Describe what's in the image | LLaVA-style (or CLIP for tags) | Zero-shot, scoped and length-constrained |
-| **Visual Q&A** | Answer a specific question about the image | LLaVA-style / Qwen-VL | Zero-shot, or CoT for counting and comparison |
-| **Document intelligence** | Extract structured fields from documents | **Qwen-VL** | Structured output with an explicit JSON schema |
-| **Visual reasoning** | Multi-step inference beyond what's visible | LLaVA-style / Qwen-VL | CoT, decomposed into explicit steps |
-| **Chart & data QA** | Read and reason over charts | Qwen-VL / high-resolution LLaVA | Extract values first, then reason; be honest about uncertainty |
+The lecture's own summary slide covers five applications. For each one, know the task, the model to reach for and how to prompt it.
 
-Memorise this table. It's the lecture's own summary slide.
+**Image understanding and captioning: describe what's in the image.** Use a LLaVA-style model, or CLIP if you only need tags. Prompt zero-shot, and keep the prompt scoped and length-constrained.
+
+**Visual Q&A: answer a specific question about the image.** Use a LLaVA-style model or Qwen-VL. Prompt zero-shot, or use CoT for counting and comparison.
+
+**Document intelligence: extract structured fields from documents.** Use **Qwen-VL**. Ask for structured output with an explicit JSON schema.
+
+**Visual reasoning: multi-step inference beyond what's visible.** Use a LLaVA-style model or Qwen-VL. Prompt with CoT, broken down into explicit steps.
+
+**Chart and data QA: read and reason over charts.** Use Qwen-VL or a high-resolution LLaVA. Have the model extract the values first, then reason, and be honest about uncertainty.
+
+Memorise these five. They're the lecture's own summary slide.
 
 ---
 
@@ -61,10 +76,11 @@ A segmentation mask is **mostly background**. With a plain pixel-by-pixel loss, 
 
 ### The fix: two losses, each for a different imbalance
 
-| Loss | What it focuses on | Plain explanation |
-|---|---|---|
-| **Focal loss** | Pixel-level imbalance | Down-weights the easy background pixels so the hard pixels count more |
-| **Dice loss** | Region-level overlap | Measures how well the predicted shape overlaps the true shape. A tiny object and a huge object matter equally |
+SAM uses two losses, because there are two kinds of imbalance to deal with.
+
+**Focal loss handles imbalance at the pixel level.** It down-weights the easy background pixels, so the hard pixels count for more.
+
+**Dice loss handles overlap at the region level.** It measures how well the predicted shape overlaps the true shape, so a tiny object and a huge object matter equally.
 
 SAM combines them with focal weighted much more heavily (**20 : 1**). A separate **mean-squared-error loss** trains the IoU head that scores the three candidate masks.
 
@@ -102,12 +118,15 @@ Uses: accessibility alt-text, product cataloguing, content moderation, social me
 
 ### What goes wrong
 
-| Pitfall | What it looks like | Fix |
-|---|---|---|
-| **Hallucination** | Mentions objects that aren't there | Use "only what is visually present" prompts and better (higher-resolution) models |
-| **Over-generic captions** | "A photo of a scene." | **Add scope and detail constraints** to the prompt |
-| **Missing the key detail** | Ignores the most important object | Ask for the main subject explicitly |
-| **Inherited bias** | Stereotyped descriptions | Review and curate the data |
+Captioning goes wrong in four typical ways, and each has its own fix.
+
+**Hallucination: the caption mentions objects that aren't there.** Use "only what is visually present" prompts, and better (higher-resolution) models.
+
+**Over-generic captions, such as "A photo of a scene."** **Add scope and detail constraints** to the prompt.
+
+**Missing the key detail: the caption ignores the most important object.** Ask for the main subject explicitly.
+
+**Inherited bias: the descriptions are stereotyped.** Review and curate the data.
 
 **The lecture's model comparison** used a photo of a couple on a motorcycle carrying a satellite dish:
 
@@ -154,11 +173,13 @@ All of these correlate **poorly with human judgment**, which is why platforms li
 
 ### How to prompt
 
-| Situation | Technique |
-|---|---|
-| Everyday questions | Zero-shot: ask directly |
-| **Counting or comparison** | **Chain-of-thought:** "First list every object and its colour, then count how many are red." This makes the steps auditable |
-| Unusual domain vocabulary | Few-shot: show examples |
+The right technique depends on the kind of question.
+
+**For everyday questions, go zero-shot.** Just ask directly.
+
+**For counting or comparison, use chain-of-thought.** For example: "First list every object and its colour, then count how many are red." Listing first makes every step auditable.
+
+**For unusual domain vocabulary, go few-shot.** Show the model a few examples.
 
 !!! example "Worked example"
     **Q:** "How many distinct peaks are visible in this image?"
@@ -166,11 +187,13 @@ All of these correlate **poorly with human judgment**, which is why platforms li
 
 ### What goes wrong
 
-| Pitfall | Example | Fix |
-|---|---|---|
-| **Presupposition hallucination** | "What colour is the cat?" when there's no cat, and the model answers "black" | **Ground the prompt and explicitly allow "not present"** |
-| **Overconfidence** | A confident wrong count | Use CoT; ask the model to verify |
-| **Ambiguous questions** | "Is this good?" | The question **lacks a defined criterion**, so rewrite it |
+VQA has three typical failures.
+
+**Presupposition hallucination.** You ask "What colour is the cat?" when there's no cat, and the model answers "black". The fix is to **ground the prompt and explicitly allow "not present"**.
+
+**Overconfidence, such as a confident wrong count.** Use CoT, and ask the model to verify its answer.
+
+**Ambiguous questions, such as "Is this good?"** The question **lacks a defined criterion**, so rewrite it.
 
 !!! example "Everyday analogy"
     Presupposition hallucination is like a witness asked "What colour was the getaway car?" who invents a colour instead of saying "I didn't see a car." The question itself planted the false assumption.
@@ -225,12 +248,15 @@ Most image tasks work fine at low resolution (224 or 448 px). Documents don't, b
 
 ### What goes wrong
 
-| Pitfall | Fix |
-|---|---|
-| **Layout variability** (every vendor's invoice looks different) | Use layout-aware VLMs and domain fine-tuning |
-| **Poor scans** (skew, blur, low resolution) | Pre-process: deskew, crop, denoise, use higher resolution |
-| **Hallucinated fields:** if a field is missing, the model may invent a plausible value | Allow null or "not found" in the schema |
-| **High stakes** (financial, legal) | **Route through human verification** |
+Document extraction runs into four typical problems.
+
+**Layout variability: every vendor's invoice looks different.** Use layout-aware VLMs and domain fine-tuning.
+
+**Poor scans, with skew, blur or low resolution.** Pre-process first: deskew, crop and denoise, and use a higher resolution.
+
+**Hallucinated fields.** If a field is missing, the model may invent a plausible value. Allow null or "not found" in the schema.
+
+**High stakes, such as financial or legal documents.** **Route the output through human verification.**
 
 Other open challenges: handwriting is weaker than print, multi-page reasoning, complex tables, numbers with no reliable confidence flag, and non-Latin scripts.
 
@@ -261,21 +287,24 @@ Uses: quality inspection, safety audits, interpreting diagrams and comparative a
 
 Make the model **list the relevant observations before it answers**.
 
-| Prompt style | Example | Result |
-|---|---|---|
-| Direct | "Is it safe to park here?" | Higher risk of a confident wrong yes or no |
-| **CoT** | "First list every visible sign and marking, then decide if parking is allowed." | Surfaces the visible "No Parking" sign *before* the answer |
+Compare two ways of asking the same question.
+
+**A direct prompt: "Is it safe to park here?"** This carries a higher risk of a confident wrong yes or no.
+
+**A CoT prompt: "First list every visible sign and marking, then decide if parking is allowed."** This brings the visible "No Parking" sign to the surface *before* the model answers.
 
 !!! example "Everyday analogy"
     A maths teacher who insists you "show your working". The working lets you (and the teacher) spot exactly which step went wrong, instead of seeing only a wrong final number.
 
 ### What goes wrong
 
-| Pitfall | Fix |
-|---|---|
-| **Compounding errors** (one wrong step ruins the rest) | Decompose into small steps |
-| **False confidence** (steps that look rigorous but are wrong) | Check the steps, not just the answer |
-| **No self-check** | **Ask the model to verify its own steps** |
+Reasoning fails in three typical ways.
+
+**Compounding errors: one wrong step ruins the rest.** Break the problem into small steps.
+
+**False confidence: steps that look rigorous but are wrong.** Check the steps, not just the answer.
+
+**No self-check.** **Ask the model to verify its own steps.**
 
 Visual reasoning has the **largest gap** between models and human experts. Benchmarks to recognise: **MMMU** (college-level), **MathVista**, **ScienceQA**, **NLVR2** and **Winoground** (where many models score near random).
 
@@ -293,11 +322,13 @@ The prompting strategy: **extract the values first, then reason, and be honest a
 
 ## Composing models: three patterns from the Q&A
 
-| Problem | Composition |
-|---|---|
-| **Detect and precisely cut out a signature** on a scanned document | A VLM (LLaVA/Qwen-VL) **locates** it → passes a box or point as a prompt → **SAM** produces the pixel mask |
-| **Tell handwritten from printed text** | Use **Qwen-VL**, not SAM. Printed text has uniform letter shapes, even spacing and straight baselines; handwriting varies |
-| **Check whether a design document's requirements are covered by test documents** | **Extraction:** a document VLM with a named JSON schema per page. **Matching: don't use a VLM.** Split into atomic statements, embed, retrieve and rerank, and have an LLM judge label each "covered / partially covered / not covered". Use human review for low-confidence cases |
+Three problems from the Q&A show how models can be combined.
+
+**To detect a signature on a scanned document and cut it out precisely, chain a VLM into SAM.** A VLM (LLaVA or Qwen-VL) **locates** the signature and passes a box or point to SAM as a prompt. **SAM** then produces the pixel mask.
+
+**To tell handwritten text from printed text, use Qwen-VL, not SAM.** Printed text has uniform letter shapes, even spacing and straight baselines, while handwriting varies.
+
+**To check whether a design document's requirements are covered by test documents, split the job in two.** For **extraction**, use a document VLM with a named JSON schema per page. For **matching, don't use a VLM.** Split the text into atomic statements, embed them, retrieve and rerank, and have an LLM judge label each one "covered", "partially covered" or "not covered". Send low-confidence cases to human review.
 
 The pattern: **use the VLM for what only a VLM can do (seeing), then hand off to cheaper text tools.**
 
@@ -309,15 +340,19 @@ Other practical answers from the Q&A:
 
 ---
 
-## Failure modes: quick memory table
+## Failure modes: quick memory list
 
-| Task | Typical failures |
-|---|---|
-| Captioning | Hallucination, over-generic captions |
-| VQA | Presupposition hallucination, overconfidence, ambiguous questions |
-| Documents | Layout variability, poor scans, hallucinated fields → needs human verification |
-| Reasoning | Compounding errors, false confidence, no self-check |
-| Charts | Misreading exact values |
+Here are the typical failures for each task in one place.
+
+**Captioning** suffers from hallucination and over-generic captions.
+
+**VQA** suffers from presupposition hallucination, overconfidence and ambiguous questions.
+
+**Documents** suffer from layout variability, poor scans and hallucinated fields, which is why they need human verification.
+
+**Reasoning** suffers from compounding errors, false confidence and no self-check.
+
+**Charts** suffer from misread exact values.
 
 **A benchmark score tells you what a model did on that test, not on your data.** Always evaluate on your own documents.
 
@@ -334,18 +369,27 @@ A LoRA question from the previous day's lab also came up in the Q&A. A config wi
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "Does SAM use a vocabulary like CLIP?" | No. Its prompts are spatial (clicks, boxes, masks), and they can even be generated automatically (grid points). |
-| "Is a SAM prompt a question like 'what's in this picture'?" | No. It's a way of *pointing* at what to cut out. The output is a mask over the same image, not a zoom or crop. |
-| "Is two-way attention something new?" | It's the same cross-attention idea used in translation, plus the reverse direction (image tokens also attend to prompt tokens). |
-| "What does MAE predict?" | Raw pixel values of the hidden patches, scored with a squared-error loss. Not words from a vocabulary. |
-| "Which part of SAM is expensive?" | The image encoder (ViT-H over the whole image). The decoder is tiny. |
-| "Focal vs Dice?" | Focal = pixel-level (down-weights easy background); Dice = whole-shape overlap (tiny and huge objects count equally). |
-| "How do I find and exactly segment a signature?" | The VLM locates it, then SAM segments it from that box or point. |
-| "Can SAM tell handwriting from print?" | No, SAM doesn't recognise content. Use Qwen-VL. |
-| "Is chart reading image or document understanding?" | Both. It needs high resolution too. |
-| "Do attention heat maps prove the model looked at the right thing?" | No. Focus is a by-product, and right focus can still give a wrong answer. |
+These are real questions students asked during the session, with the answers they were given.
+
+**"Does SAM use a vocabulary like CLIP?"** No. Its prompts are spatial (clicks, boxes, masks), and they can even be generated automatically as grid points.
+
+**"Is a SAM prompt a question like 'what's in this picture'?"** No. It's a way of *pointing* at what to cut out. The output is a mask over the same image, not a zoom or a crop.
+
+**"Is two-way attention something new?"** It's the same cross-attention idea used in translation, plus the reverse direction: image tokens also attend to prompt tokens.
+
+**"What does MAE predict?"** The raw pixel values of the hidden patches, scored with a squared-error loss. It doesn't predict words from a vocabulary.
+
+**"Which part of SAM is expensive?"** The image encoder, which runs ViT-H over the whole image. The decoder is tiny.
+
+**"What's the difference between focal and Dice loss?"** Focal loss works at the pixel level and down-weights the easy background. Dice loss measures whole-shape overlap, so tiny and huge objects count equally.
+
+**"How do I find a signature and segment it exactly?"** The VLM locates it, then SAM segments it from that box or point.
+
+**"Can SAM tell handwriting from print?"** No. SAM doesn't recognise content, so use Qwen-VL.
+
+**"Is chart reading image understanding or document understanding?"** Both. It needs high resolution too.
+
+**"Do attention heat maps prove the model looked at the right thing?"** No. Focus is a by-product, and the right focus can still give a wrong answer.
 
 ---
 

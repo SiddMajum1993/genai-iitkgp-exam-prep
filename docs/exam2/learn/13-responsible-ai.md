@@ -29,18 +29,31 @@ If you remember one sentence, make it this one: **a control is something the sys
 !!! caution "Question style is less predictable here"
     There are no class quizzes or Q&A to tell us how this topic gets tested. The content is governance-oriented, so expect **scenario questions** ("which control would have prevented this?", "who is accountable?") rather than technical detail. Likelihoods below are inferred from the agenda and pre-read only.
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| The five essential controls and the one-line rule for each | 🔴 High | Centrepiece of the agenda and pre-read; very scenario-friendly |
-| Matching a real case to the control that would have helped | 🔴 High | The pre-read pairs every case with a control |
-| Responsible vs trustworthy AI ("promise vs proof") | 🔴 High | Defined in both the agenda and pre-read |
-| The five leader questions and what good evidence looks like | 🔴 High | Pre-read table |
-| Provider vs deployer; the organisation is accountable even when a vendor or chatbot is at fault | 🔴 High | Repeated several times; Air Canada case |
-| Agentic shift: from AI that *says* something wrong to AI that *does* something wrong | 🟠 Medium | PocketOS case; 90-day priority on write/modify/approve/spend authority |
-| The three 90-day priorities | 🟠 Medium | Listed explicitly in the agenda |
-| Governance as one integrated system (data, models, tools, human oversight, evidence) | 🟠 Medium | Agenda item, only briefly described |
-| Framework names and one-liners: NIST AI RMF, EU AI Act, ISO/IEC 42001, DPDP Act, India AI Governance Guidelines | 🟠 Medium | Listed as optional reading |
-| Deeper framework details (EU AI Act tiers, DPDP roles), case figures and dates | 🟢 Low | Not in the course files, or peripheral |
+### 🔴 High: expect questions here
+
+**The five essential controls and the one-line rule for each.** They're the centrepiece of both the agenda and the pre-read, and they fit scenario questions very well.
+
+**Matching a real case to the control that would have helped.** The pre-read pairs every case with a control.
+
+**Responsible vs trustworthy AI ("promise vs proof").** Both the agenda and the pre-read define this.
+
+**The five leader questions, and what good evidence looks like.** These come from a pre-read table.
+
+**Provider vs deployer.** The organisation is accountable even when a vendor or chatbot is at fault. This point is repeated several times, and the Air Canada case illustrates it.
+
+### 🟠 Medium: likely to show up in one question
+
+**The agentic shift.** AI moves from *saying* something wrong to *doing* something wrong. It's shown by the PocketOS case and by the 90-day priority on write/modify/approve/spend authority.
+
+**The three 90-day priorities.** They're listed explicitly in the agenda.
+
+**Governance as one integrated system.** Data, models, tools, human oversight and evidence are governed together. This is an agenda item, only briefly described.
+
+**Framework names and their one-liners.** NIST AI RMF, the EU AI Act, ISO/IEC 42001, the DPDP Act and the India AI Governance Guidelines are listed as optional reading.
+
+### 🟢 Low: understand the idea, skip the details
+
+**Deeper framework details, case figures and dates.** Examples are the EU AI Act tiers and the DPDP roles. They're either not in the course files or peripheral.
 
 ---
 
@@ -67,11 +80,11 @@ The best-known example is in the pre-read.
 
 ## Concept 2 — Responsible AI vs trustworthy AI: promise vs proof
 
-| | Responsible AI | Trustworthy AI |
-|---|---|---|
-| **Meaning** | The obligations and responsibilities an organisation **accepts** | How far the system's behaviour and controls can be **independently examined and substantiated** |
-| **In short** | *What we promise to do* | *What others can check and confirm with evidence* |
-| **Memory aid** | **Promise** | **Proof** |
+**Responsible AI is the promise.** It's the set of obligations and responsibilities an organisation **accepts**. In short, *what we promise to do*.
+
+**Trustworthy AI is the proof.** It's how far the system's behaviour and controls can be **independently examined and substantiated**. In short, *what others can check and confirm with evidence*.
+
+To remember it: responsible = **promise**, trustworthy = **proof**.
 
 !!! example "Everyday example"
     A restaurant says "we follow strict hygiene rules". That's **responsible**: it's a promise. A food-safety inspector can walk into the kitchen and see the temperature logs, cleaning records and certificates. That's **trustworthy**: it's proof that someone else can verify.
@@ -86,13 +99,15 @@ The best-known example is in the pre-read.
 
 The key rule: **a good answer is evidence, not "we believe so".**
 
-| # | Question | What good evidence looks like | Theme |
-|---|---|---|---|
-| 1 | **Does it work as intended?** | A defined purpose, test results against that purpose, performance monitored in production | Performance / validity |
-| 2 | **Who could it harm?** | Affected groups identified, impact assessed, bias and error rates checked **for each group** | Fairness / harm |
-| 3 | **Whose data does it use?** | Data sources, consent or lawful basis, what data leaves the organisation | Privacy / data governance |
-| 4 | **Can a non-engineer understand why it acted?** | A plain-language explanation of inputs, logic and limits; reasons available for individual decisions | Transparency / explainability |
-| 5 | **Who is accountable when it is wrong?** | A **named** owner, an escalation path, a remedy process for affected people | Accountability |
+**1. Does it work as intended?** This is about performance and validity. Good evidence is a defined purpose, test results against that purpose, and performance monitored in production.
+
+**2. Who could it harm?** This is about fairness and harm. Good evidence means the affected groups are identified, the impact is assessed, and bias and error rates are checked **for each group**.
+
+**3. Whose data does it use?** This is about privacy and data governance. Good evidence shows the data sources, the consent or lawful basis, and what data leaves the organisation.
+
+**4. Can a non-engineer understand why it acted?** This is about transparency and explainability. Good evidence is a plain-language explanation of the inputs, logic and limits, with reasons available for individual decisions.
+
+**5. Who is accountable when it is wrong?** This is about accountability. Good evidence is a **named** owner, an escalation path, and a remedy process for affected people.
 
 !!! example "Case: Amazon's AI recruiting tool (2018)"
     An experimental résumé-scoring tool was scrapped after it was found to **downgrade résumés containing the word "women's"** (as in "women's chess club captain"). It had learned from historical hiring data. This is question 2 in action: overall accuracy can look fine while **one group** is harmed, which is why you check error rates **per group**.
@@ -116,10 +131,9 @@ Laws, regulations, standards, guidance and internal incentives each cover **part
 
 **Provider vs deployer:**
 
-| Role | Who | Example |
-|---|---|---|
-| **Provider** | Develops the AI system or places it on the market under its own name | A company building and selling a foundation model or an AI product |
-| **Deployer** | Uses an AI system under its own authority | A bank using a vendor's chatbot on its website |
+**The provider develops the AI system or places it on the market under its own name.** For example, a company that builds and sells a foundation model or an AI product.
+
+**The deployer uses an AI system under its own authority.** For example, a bank that runs a vendor's chatbot on its website.
 
 **Most organisations are deployers, and they still answer for the outcome.**
 
@@ -162,13 +176,15 @@ This connects directly to the agent chapters (10–12): tool permissions, human-
 
 This is the centrepiece of the session. Learn the **one-line rule** for each control and the **case** that goes with it.
 
-| Control | What it is | Key rule | Case |
-|---|---|---|---|
-| **1. Guardrails** | Limits the **system enforces** on what the AI may say or do, **re-tested after every model, prompt or vendor change** | *"An instruction ('don't do X') is not a control; a permission ('cannot do X') is."* | DPD chatbot |
-| **2. Privacy** | Rules and technical controls on what data goes into AI tools, where it goes, and how long it's kept | Under India's **DPDP Act**, the organisation stays responsible **even when a vendor processes the data** | Samsung code leak |
-| **3. Hallucination management** | Hallucination = fluent, confident output that is **false** (invented facts, clauses, citations) | Treat AI output as a **draft**; check it **in proportion to the stakes** | Supreme Court of India fake citations; Deloitte Australia; Air Canada |
-| **4. Cost control** | Budgets, **hard spending caps**, loop limits, and a **named owner** of the AI bill | *"An alert is not a cap."* | US$82,314 Gemini bill in 48 hours |
-| **5. System documentation** | A **one-page system record** for every significant AI system | Records the **owner**, the **boundaries** (what it may and must never do) and **how failures are detected** | NYC MyCity chatbot |
+**1. Guardrails.** These are limits the **system enforces** on what the AI may say or do, and they're **re-tested after every model, prompt or vendor change**. The key rule: *"An instruction ('don't do X') is not a control; a permission ('cannot do X') is."* The case that goes with it is the DPD chatbot.
+
+**2. Privacy.** These are the rules and technical controls on what data goes into AI tools, where it goes, and how long it's kept. The key rule: under India's **DPDP Act**, the organisation stays responsible **even when a vendor processes the data**. The case is the Samsung code leak.
+
+**3. Hallucination management.** A hallucination is fluent, confident output that is **false**: invented facts, clauses or citations. The key rule: treat AI output as a **draft**, and check it **in proportion to the stakes**. The cases are the fake citations at the Supreme Court of India, Deloitte Australia and Air Canada.
+
+**4. Cost control.** This means budgets, **hard spending caps**, loop limits and a **named owner** of the AI bill. The key rule: *"An alert is not a cap."* The case is the US$82,314 Gemini bill run up in 48 hours.
+
+**5. System documentation.** Every significant AI system gets a **one-page system record**. The key rule: it records the **owner**, the **boundaries** (what the system may do and must never do) and **how failures are detected**. The case is the NYC MyCity chatbot.
 
 ### The pattern behind the rules
 
@@ -225,13 +241,15 @@ The session ended with a team exercise. Groups of 5–6 redesigned a realistic A
 
 The pre-read lists these as optional further reading, with one line each. **The course-content line comes first; anything added afterwards is beyond the course.**
 
-| Framework | Course one-liner |
-|---|---|
-| **NIST AI Risk Management Framework** (USA) | Voluntary and widely used; four functions: **Govern, Map, Measure, Manage**; has a Generative AI profile |
-| **EU AI Act** | **Risk-based** regulation with **separate duties for providers and deployers** |
-| **ISO/IEC 42001:2023** | International, **certifiable** standard for an **AI management system** |
-| **India's DPDP Act** | The organisation **remains responsible even when a vendor processes the data** |
-| **India AI Governance Guidelines** (MeitY, Nov 2025) | **Principle-based**, seven "sutras", builds on **existing law** |
+**NIST AI Risk Management Framework (USA).** It's voluntary and widely used, with four functions: **Govern, Map, Measure, Manage**. It also has a Generative AI profile.
+
+**EU AI Act.** This is **risk-based** regulation, with **separate duties for providers and deployers**.
+
+**ISO/IEC 42001:2023.** An international, **certifiable** standard for an **AI management system**.
+
+**India's DPDP Act.** The organisation **remains responsible even when a vendor processes the data**.
+
+**India AI Governance Guidelines (MeitY, Nov 2025).** They're **principle-based**, with seven "sutras", and they build on **existing law**.
 
 !!! note "Beyond the course slides: what these frameworks contain"
     **NIST AI RMF 1.0 (2023): the four functions**
@@ -283,16 +301,23 @@ The pre-read lists these as optional further reading, with one line each. **The 
 
 ## Which control when? (scenario helper)
 
-| Scenario clue | Control to pick |
-|---|---|
-| Bot misbehaves **after an update or model change** | **Guardrails** (re-test after every change) |
-| "We told the model in its prompt never to…" and it did anyway | **Guardrails**: make it a permission, not an instruction |
-| Staff paste confidential or personal data into a public AI tool | **Privacy** |
-| Invented citations, clauses or facts in a report or legal filing | **Hallucination management** (draft + check in proportion to stakes) |
-| A surprise huge bill, a runaway agent loop, a leaked API key | **Cost control** (hard cap, loop limits, named owner) |
-| No one knows who owns the bot; a disclaimer is used instead of a fix | **System documentation** (one-page record: owner, boundaries, failure detection) |
-| An agent deletes, approves or spends without asking | **Permissions + human approval** for write/modify/approve/spend authority (guardrails plus governance) |
-| A chatbot made a promise and the company says "the bot said it, not us" | **Accountability**: the organisation is liable (Air Canada) |
+Scenario questions usually hide a clue that points to one control. Here's how to read the most common ones.
+
+**The bot misbehaves after an update or model change → Guardrails.** Guardrails must be re-tested after every change.
+
+**"We told the model in its prompt never to…", and it did anyway → Guardrails.** Turn the instruction into a permission the system enforces.
+
+**Staff paste confidential or personal data into a public AI tool → Privacy.**
+
+**Invented citations, clauses or facts appear in a report or legal filing → Hallucination management.** Treat output as a draft and check it in proportion to the stakes.
+
+**A surprise huge bill, a runaway agent loop or a leaked API key → Cost control.** Use a hard cap, loop limits and a named owner.
+
+**No one knows who owns the bot, and a disclaimer is used instead of a fix → System documentation.** Write the one-page record: owner, boundaries and failure detection.
+
+**An agent deletes, approves or spends without asking → Permissions plus human approval** for write/modify/approve/spend authority. This is guardrails plus governance.
+
+**A chatbot made a promise and the company says "the bot said it, not us" → Accountability.** The organisation is liable, as in the Air Canada case.
 
 ---
 

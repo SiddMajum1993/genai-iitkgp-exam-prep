@@ -26,20 +26,35 @@ If you remember one sentence, make it this one: **LangChain standardises the com
 
 How likely each topic is to be tested, based on how much slide time it got, how often it appears across the pre-read, slides, post-read and notebook, how many student questions it drew, and whether it was a live Mentimeter quiz.
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| Idempotency: retrying a booking safely (lost reply → duplicate ticket) | 🔴 High | Dedicated slide, a Mentimeter quiz, a notebook demo, and a student asking about the quiz's answer options |
-| What to retry vs what to hand back to the model | 🔴 High | Two slides, a post-read section, several Q&A rows |
-| State and reducers (overwrite vs append/accumulate/add) | 🔴 High | Its own slide; one of the most-asked Q&A topics |
-| Checkpointer vs Store, and `thread_id` | 🔴 High | Slides 18–19, a post-read table, the largest Q&A cluster |
-| Human-in-the-loop: `interrupt()` and `Command(resume=...)` | 🔴 High | Slide plus Mentimeter quiz; a whole notebook part |
-| LangChain vs LangGraph roles; workflow vs agent | 🔴 High | Pre-read, takeaway slide, misconceptions table |
-| Graph anatomy: nodes, fixed vs conditional edges, super-steps, `recursion_limit` | 🟠 Medium | Several slides plus Mentimeter; a common source of misconceptions |
-| Bounding loops; three nested timeouts; fallbacks | 🟠 Medium | One slide each, plus post-read sections |
-| Structured output, `@tool`, chains (`prompt \| model \| parser`) | 🟠 Medium | Slides 4–7, notebook Part 1 |
-| Time travel and streaming modes | 🟠 Medium | One slide, several Q&A rows |
-| Multi-agent as graphs: handoffs (`Command`), fan-out (`Send`) | 🟠 Medium | Slides 21–22. Covered in depth in Chapter 11 |
-| Planning architectures (ReAct, Plan-and-Execute, ReWOO, LLMCompiler), framework comparison, release dates | 🟢 Low | Post-read only |
+### 🔴 High: expect questions here
+
+**Idempotency: retrying a booking safely.** A lost reply can lead to a duplicate ticket. This got a dedicated slide, a Mentimeter quiz and a notebook demo, and a student asked about the quiz's answer options.
+
+**What to retry vs what to hand back to the model.** Two slides, a post-read section and several Q&A rows cover this.
+
+**State and reducers.** This is about overwrite vs append/accumulate/add. It has its own slide and is one of the most-asked Q&A topics.
+
+**Checkpointer vs Store, and `thread_id`.** Slides 18–19 and a post-read table cover these, and they drew the largest cluster of Q&A questions.
+
+**Human-in-the-loop: `interrupt()` and `Command(resume=...)`.** There's a slide plus a Mentimeter quiz, and a whole part of the notebook.
+
+**LangChain vs LangGraph roles, and workflow vs agent.** These appear in the pre-read, the takeaway slide and the misconceptions table.
+
+### 🟠 Medium: likely to show up in one question
+
+**Graph anatomy.** This covers nodes, fixed vs conditional edges, super-steps and `recursion_limit`. Several slides plus a Mentimeter quiz, and it's a common source of misconceptions.
+
+**Bounding loops, the three nested timeouts, and fallbacks.** One slide each, plus post-read sections.
+
+**Structured output, `@tool`, and chains (`prompt | model | parser`).** Slides 4–7 and notebook Part 1.
+
+**Time travel and streaming modes.** One slide and several Q&A rows.
+
+**Multi-agent as graphs: handoffs (`Command`) and fan-out (`Send`).** Slides 21–22. These are covered in depth in Chapter 11.
+
+### 🟢 Low: understand the idea, skip the details
+
+**Planning architectures, the framework comparison and release dates.** ReAct, Plan-and-Execute, ReWOO and LLMCompiler appear in the post-read only.
 
 !!! tip "The professor's only exam hint"
     A student asked whether the notebook code would be in the exam. The answer was: *"You don't have to learn everything. Just focus on the concepts."* So don't memorise code. You should still be able to **read** a short snippet and say what it does.
@@ -54,12 +69,13 @@ The entire session uses one example, a corporate travel agent. The user says:
 
 A simple hand-written agent loop (think → act → remember, repeat) can *plan* this trip. But the professor listed four things it **can't** do, and they are exactly what LangGraph adds:
 
-| The app needs to… | What goes wrong without a framework | LangGraph's answer |
-|---|---|---|
-| 1. **Remember** | The plan lives in local Python variables. If the program crashes, it's gone | Checkpointer + `thread_id` |
-| 2. **Wait for approval** | `input()` blocks the process. A server can't sit for four hours waiting for the manager | `interrupt()` + `Command(resume=...)` |
-| 3. **Recover from errors** | One flaky fare API call crashes the run, and retrying a booking can buy *two* tickets | `RetryPolicy` + idempotency key |
-| 4. **Show its steps** | Nobody can answer "why did it pick this hotel?" | Saved state history, tracing |
+**1. Remember.** Without a framework, the plan lives in local Python variables. If the program crashes, it's gone. LangGraph's answer is a checkpointer plus a `thread_id`.
+
+**2. Wait for approval.** `input()` blocks the whole process, and a server can't sit for four hours waiting for the manager. LangGraph's answer is `interrupt()` plus `Command(resume=...)`.
+
+**3. Recover from errors.** One flaky fare API call crashes the run, and retrying a booking can buy *two* tickets. LangGraph's answer is a `RetryPolicy` plus an idempotency key.
+
+**4. Show its steps.** Nobody can answer "why did it pick this hotel?" LangGraph's answer is the saved state history, plus tracing.
 
 !!! example "Everyday analogy"
     A human travel agent keeps a **file folder** for every trip (the checkpointed state). If they go home for the night, the folder is still on the desk in the morning. If they need the manager's signature, they put the folder in the "waiting" tray instead of standing at the manager's door. When the airline's phone line drops mid-booking, they check the booking reference before calling again, so they don't book twice.
@@ -74,11 +90,9 @@ Keep this story in mind. Many scenario questions are this trip in disguise.
 
 This is the central design question of the whole topic.
 
-| | Workflow | Agent |
-|---|---|---|
-| Who decides the next step | **The developer**, in advance | **The LLM**, at run time |
-| Path | Fixed and predictable | Dynamic |
-| Use it when | You can write the process down ahead of time | The structure can't be fully known in advance |
+**In a workflow, the developer decides the next step, in advance.** The path is fixed and predictable. Use a workflow when you can write the process down ahead of time.
+
+**In an agent, the LLM decides the next step, at run time.** The path is dynamic. Use an agent when the structure can't be fully known in advance.
 
 **Most real systems mix the two:** a fixed workflow with a few agentic steps inside it. In the course notebook, the steps that *must not vary* (manager approval, booking, saving memory) are fixed nodes. Only the jobs that need judgement (planning the trip, checking it against policy) are agents.
 
@@ -133,11 +147,11 @@ def search_flights(origin: str, dest: str, date_from: str, date_to: str,
 
 The `@tool` decorator builds everything the model needs from the function itself:
 
-| The model sees… | …and it comes from |
-|---|---|
-| The tool's **name** | The function name |
-| The **argument schema** | The type hints |
-| The **description** | The docstring. The model reads it to decide *when* to use the tool |
+**The tool's name** comes from the function name.
+
+**The argument schema** comes from the type hints.
+
+**The description** comes from the docstring. The model reads it to decide *when* to use the tool, so write it carefully.
 
 Three consequences the course stressed:
 
@@ -194,12 +208,11 @@ Middleware adds **hooks around the agent loop** (`before_model`, `after_model`, 
 
 ## Concept 3 — LangChain vs LangGraph
 
-| | LangChain | LangGraph |
-|---|---|---|
-| Role | Library of standard components | Control-flow (orchestration) layer |
-| Gives you | Model I/O, tools, messages, prompts, typed output, chains, middleware, `create_agent` | State, nodes, edges, conditional edges, checkpointer, Store, interrupts, streaming |
-| Analogy | **Toolbox** | **Flowchart** |
-| Level | High-level: `create_agent(model, tools, system_prompt)`. Less code, less control | Low-level: you define the graph yourself. More code, full control |
+The two are often mentioned together, but they play different roles.
+
+**LangChain is the toolbox.** It's a library of standard components: model I/O, tools, messages, prompts, typed output, chains, middleware and `create_agent`. It works at a high level. A single `create_agent(model, tools, system_prompt)` call gives you an agent, with less code but less control.
+
+**LangGraph is the flowchart.** It's the control-flow (orchestration) layer: state, nodes, edges, conditional edges, the checkpointer, the Store, interrupts and streaming. It works at a low level. You define the graph yourself, which means more code but full control.
 
 **They aren't competitors.** Since version 1.0 (October 2025), LangChain's `create_agent` **is itself a small LangGraph graph**: a model node and a tool node in a loop. The advice is to start with LangChain's `create_agent` and drop down to LangGraph when you need more control.
 
@@ -216,12 +229,13 @@ Facts from the Q&A:
 
 The professor's slide summed up LangGraph in four words:
 
-| Idea | What it is | In the Paris trip |
-|---|---|---|
-| **State** | One typed record of everything the run knows so far | Budget left, flight candidates, policy verdict, messages |
-| **Nodes** | Plain Python functions: read the state, do one job, return an update | `retrieve_policy`, `llm_call`, `check_policy`, `book` |
-| **Edges** | Decide what runs next. **Fixed** edges always go the same way; **conditional** edges look at the state | After `check_policy`: draft the itinerary, replan, or escalate |
-| **Checkpointer** | Saves the state after every step, so a run can resume or be rewound | Run survives a crash; waits days for the manager |
+**State** is one typed record of everything the run knows so far. In the Paris trip, that's the budget left, the flight candidates, the policy verdict and the messages.
+
+**Nodes** are plain Python functions. Each one reads the state, does one job and returns an update. In the Paris trip, they're `retrieve_policy`, `llm_call`, `check_policy` and `book`.
+
+**Edges** decide what runs next. **Fixed** edges always go the same way, while **conditional** edges look at the state first. In the Paris trip, after `check_policy` a conditional edge picks between drafting the itinerary, replanning or escalating.
+
+**The checkpointer** saves the state after every step, so a run can resume or be rewound. That's how the Paris run survives a crash and can wait days for the manager.
 
 "The graph is state, nodes and edges, nothing more." The checkpointer is what makes it durable.
 
@@ -253,11 +267,11 @@ class TripState(TypedDict, total=False):
 
 The course's three words, and when to use each:
 
-| Merge rule | Meaning | Example field |
-|---|---|---|
-| **Overwrite** | Keep only the latest | `budget_left`, `verdict`, `current_flight` |
-| **Append** | Keep the history | `messages` (the conversation) |
-| **Accumulate / add** | Build a collection or a total from several nodes or steps | `policy_clauses`, `candidates`, `attempts` |
+**Overwrite keeps only the latest value.** Use it for fields like `budget_left`, `verdict` and `current_flight`, where only the current value matters.
+
+**Append keeps the history.** Use it for `messages`, the conversation, where every turn should be kept.
+
+**Accumulate (or add) builds a collection or a total from several nodes or steps.** Use it for fields like `policy_clauses`, `candidates` and `attempts`.
 
 !!! example "Everyday analogy"
     A whiteboard in a shared kitchen. For "Today's special" (overwrite), the new chef wipes the old one and writes the new dish. For the "Shopping list" (append/accumulate), everyone adds items and nobody erases anyone else's. For the "Cups of coffee today" tally (add), each person adds one stroke.
@@ -340,10 +354,9 @@ The model runs. If it asks for a tool, the tool node runs and control goes back 
 
 ### Two more routing tools (preview of Chapter 11)
 
-| Mechanism | What it does | Example |
-|---|---|---|
-| **`Command`** | A node returns a state update **and** where to go next, together | Handoff: "go to the hotel agent, and here's the updated budget" |
-| **`Send`** | Dynamic **fan-out**: start N parallel branches when N is only known at run time | One auditor per receipt: 8 receipts today, 30 next time. Needs accumulating reducers |
+**`Command` lets a node return a state update and where to go next, together.** This is how a handoff works: "go to the hotel agent, and here's the updated budget."
+
+**`Send` starts a dynamic fan-out.** It launches N parallel branches when N is only known at run time. For example, you can start one auditor per receipt: 8 receipts today, 30 next time. Because many branches write back to the same state, it needs accumulating reducers.
 
 ---
 
@@ -375,13 +388,9 @@ The run ends when an edge reaches `END`, or when the **`recursion_limit`** (for 
 
 LangGraph has **two** kinds of memory. Mixing them up is a classic exam trap.
 
-| | **Checkpointer** — short-term | **Store** — long-term |
-|---|---|---|
-| Scope | **One thread** (one conversation or run), identified by `thread_id` | **Across all threads and sessions** |
-| Holds | The full graph state at every super-step | Facts you choose to save: home airport, grade, "avoid Air India", past trips |
-| Gives you | Resume after crash, human-in-the-loop, time travel | Personalisation that carries over to future runs |
-| In the notebook | `SqliteSaver` on `trips.db` | `SqliteStore` on `memory.db` |
-| API | `compile(checkpointer=...)`, `config={"configurable": {"thread_id": tid}}` | `store.put(namespace, key, value)`, `store.get(namespace, key)` |
+**The checkpointer is short-term memory.** Its scope is **one thread**, meaning one conversation or run, identified by `thread_id`. It holds the full graph state at every super-step. That's what gives you resume after a crash, human-in-the-loop and time travel. In the notebook it was a `SqliteSaver` on `trips.db`. You attach it with `compile(checkpointer=...)` and pick the thread with `config={"configurable": {"thread_id": tid}}`.
+
+**The Store is long-term memory.** Its scope is **across all threads and sessions**. It holds only the facts you choose to save, such as the home airport, the employee's grade, "avoid Air India" or past trips. That's what gives you personalisation that carries over to future runs. In the notebook it was a `SqliteStore` on `memory.db`, used through `store.put(namespace, key, value)` and `store.get(namespace, key)`.
 
 ```python
 cfg = {"configurable": {"thread_id": "trip-42"}, "recursion_limit": 60}
@@ -460,12 +469,13 @@ Uses: "What if we had kept the 09:40 fare?" and auditing a disputed itinerary.
 
 **Streaming:** "A ten-second silent turn looks exactly like a hung one." So stream progress to the user:
 
-| Mode | Streams |
-|---|---|
-| `updates` | Each node's change to the state. Best for progress displays; an interrupt shows up here as `"__interrupt__"` |
-| `values` | The full state after each step |
-| `messages` | The model's tokens as they're written |
-| `custom` | Your own progress events, for example from inside a tool |
+**`updates`** streams each node's change to the state. It's the best mode for progress displays, and an interrupt shows up here as `"__interrupt__"`.
+
+**`values`** streams the full state after each step.
+
+**`messages`** streams the model's tokens as they're written.
+
+**`custom`** streams your own progress events, for example from inside a tool.
 
 ---
 
@@ -473,14 +483,19 @@ Uses: "What if we had kept the 09:40 fare?" and auditing a disputed itinerary.
 
 This was the second half of the lecture. The key skill is **classifying** the failure, because the class decides the fix.
 
-| # | Failure | Example | Fix | Who handles it |
-|---|---|---|---|---|
-| 1 | **Tool hangs** | API accepts the connection, never answers | Timeout, then a bounded retry | Runtime |
-| 2 | **Tool fails** | 503, rate limit (429), expired credential | Retry if temporary, otherwise fall back | Runtime |
-| 3 | **Tool returns nothing useful** | "No flight under ₹50,000". That's a fact, not an error | **Return it to the model** as an observation | Model |
-| 4 | **Model calls the tool wrongly** | `cabin="premium"`, a wrong date | **Validate before running** (typed tool signature) | Model |
-| 5 | **Loop won't end** | Keeps switching between two fares forever | Recursion limit + oscillation guard | A missing limit |
-| 6 | **The world changed** | The fare is gone by step 6; a retry might buy two tickets | **Idempotency key**, revalidate | Runtime |
+There are six kinds of failure to tell apart.
+
+**1. The tool hangs.** The API accepts the connection but never answers. The fix is a timeout, then a bounded retry. The runtime handles this.
+
+**2. The tool fails.** You get a 503, a rate limit (429) or an expired credential. Retry if the problem is temporary, otherwise fall back. The runtime handles this too.
+
+**3. The tool returns nothing useful.** For example, "No flight under ₹50,000". That's a fact, not an error, so **return it to the model** as an observation. The model handles this one.
+
+**4. The model calls the tool wrongly.** It passes `cabin="premium"` or a wrong date. The fix is to **validate before running**, using a typed tool signature. This is the model's mistake to correct.
+
+**5. The loop won't end.** The agent keeps switching between two fares forever. The fix is a recursion limit plus an oscillation guard. The real cause here is a missing limit.
+
+**6. The world changed.** The fare is gone by step 6, and a retry might buy two tickets. The fix is an **idempotency key**, plus revalidating before acting. The runtime handles this.
 
 ### Retry or tell the model?
 
@@ -547,11 +562,11 @@ def node_book(state, config):
 
 ### Three nested clocks
 
-| Clock | Example value | Covers |
-|---|---|---|
-| Tool timeout | 5 s | One HTTP call |
-| Node / model timeout | 30 s | One graph step (`add_node(..., timeout=30)` in newer LangGraph) |
-| Run deadline | 90 s | The whole planning turn. When it's reached, checkpoint and return what's settled so far |
+**The tool timeout (for example 5 s)** covers one HTTP call.
+
+**The node or model timeout (for example 30 s)** covers one graph step. In newer LangGraph you set it with `add_node(..., timeout=30)`.
+
+**The run deadline (for example 90 s)** covers the whole planning turn. When it's reached, checkpoint and return what's settled so far.
 
 They must be **nested, with the inner clock firing first.** If the outer clock fires first, the trace only says "the run timed out" and you never learn *which* dependency stalled. The inner tool clock names the culprit.
 
@@ -560,12 +575,15 @@ They must be **nested, with the inner clock firing first.** If the outer clock f
 
 ### Four independent loop limits
 
-| Limit | Catches |
-|---|---|
-| `recursion_limit` (super-steps) | Runaway cycling (`GraphRecursionError`) |
-| A step budget kept in state (e.g. `attempts`) | Slow thrashing that stays under the recursion limit |
-| A token or cost ceiling checked in a node | Expensive replanning that is technically making progress |
-| An oscillation guard (same tool and arguments twice, A → B → A) | Going back and forth |
+Each limit catches a different way a loop can go wrong.
+
+**`recursion_limit` (counted in super-steps)** catches runaway cycling. When it's hit, LangGraph raises `GraphRecursionError`.
+
+**A step budget kept in state (for example `attempts`)** catches slow thrashing that stays under the recursion limit.
+
+**A token or cost ceiling checked in a node** catches expensive replanning that is technically making progress.
+
+**An oscillation guard** catches going back and forth, such as the same tool with the same arguments twice, or A → B → A.
 
 "Every loop needs an end condition that doesn't depend on the model choosing to stop." When a limit is hit, **escalate with the checkpointed state**, so the work already done (policy, hotel, fares) isn't lost.
 
@@ -589,18 +607,25 @@ Note that **LangGraph checkpoints don't detect quality drift.** If accuracy drop
 
 ---
 
-## Reliability checklist (quick decision table)
+## Reliability checklist
 
-| Problem | Mechanism | Where it lives |
-|---|---|---|
-| Dependency is slow | Timeout, then bounded retry | HTTP client + node `RetryPolicy` |
-| Dependency is down | Fallback, then degrade *visibly* | `with_fallbacks` |
-| No valid option exists | Return it as an observation | The tool's result, not an exception |
-| Bad arguments | Validate before running | Typed tool signature |
-| Loop won't end | Recursion limit + oscillation guard | Graph config + state counter |
-| Duplicate write | Idempotency key | Tool implementation |
-| Irreversible action (booking, payment) | Human approval | `interrupt()` in the node |
-| Process dies mid-run | Checkpoint and resume | A durable checkpointer |
+Read each problem as a pair: the mechanism that fixes it, and where in your code that mechanism lives.
+
+**A dependency is slow.** Use a timeout, then a bounded retry. This lives in the HTTP client and the node's `RetryPolicy`.
+
+**A dependency is down.** Fall back, then degrade *visibly*. This lives in `with_fallbacks`.
+
+**No valid option exists.** Return it as an observation. This lives in the tool's result, not in an exception.
+
+**The arguments are bad.** Validate before running. This lives in the typed tool signature.
+
+**The loop won't end.** Use a recursion limit plus an oscillation guard. These live in the graph config and a state counter.
+
+**A write might be duplicated.** Use an idempotency key. This lives in the tool implementation.
+
+**The action is irreversible, such as a booking or a payment.** Get human approval. This lives in an `interrupt()` inside the node.
+
+**The process dies mid-run.** Checkpoint and resume. This needs a durable checkpointer.
 
 ---
 
@@ -625,22 +650,35 @@ Two design lessons:
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "What's the difference between append, accumulate and overwrite?" | Append keeps history (messages). Accumulate builds a collection or total from several nodes. Overwrite keeps only the latest value. |
-| "Is LangGraph the orchestrator? Is it a separate service?" | Yes, it's the orchestration framework. No, it's a library you add to your app. |
-| "MCP vs LangGraph — which should I always choose?" | Neither, because they solve different problems. MCP connects to tools; LangGraph orchestrates. Use them together. |
-| "If a tool gets a wrong datatype, does it fail silently?" | No. The schema built from the type hints rejects it before the API call, with an error the agent can use. |
-| "What does 'malformed… not three steps later' mean?" | The output doesn't match the expected structure, and it should fail *where it's produced*, not after it has flowed into routing or booking. |
-| "Where do checkpoints live — RAM?" | In production, in persistent storage (Postgres, Redis, MongoDB). |
-| "Checkpoint vs conversation summary?" | A checkpoint is a full state snapshot for recovery. A summary is compressed history for saving tokens. |
-| "The manager approved, but the fare rose afterwards. Book anyway?" | No. A checkpoint is saved state, not permanent approval. Revalidate, then re-approve or reject. |
-| "What if the human never responds?" | Add a timeout policy: remind, escalate, reroute or cancel. The checkpoint keeps the state safe meanwhile. |
-| "Should retries go in a conditional edge or inside the node?" | Temporary failures go in a node-level `RetryPolicy`. Meaning-based decisions ("no flights under budget") go in a conditional edge. |
-| "Why a step counter if the model is told to stop?" | It's a hard limit for when the model *doesn't* stop. |
-| "How do I stop one agent using up the whole budget?" | A global budget manager in the runtime enforces hard limits. "Planning decides the budget; the runtime enforces it." |
-| "Can a prompt stop a payroll bot leaking a manager's salary?" | Not on its own. Authorisation must sit **outside the LLM**: check permissions before the payroll tool returns data. "The LLM decides what it wants to do; the runtime decides what it is allowed to do." |
-| "Chat memory costs a lot of tokens. How do I cap it?" | Keep the last N messages, summarise older ones, retrieve only relevant memories, and set token or cost ceilings. |
+These are real questions students asked during the session, with the answers they were given.
+
+**"What's the difference between append, accumulate and overwrite?"** Append keeps history, as with messages. Accumulate builds a collection or total from several nodes. Overwrite keeps only the latest value.
+
+**"Is LangGraph the orchestrator? Is it a separate service?"** Yes, it's the orchestration framework. No, it isn't a separate service. It's a library you add to your app.
+
+**"MCP vs LangGraph — which should I always choose?"** Neither, because they solve different problems. MCP connects to tools, and LangGraph orchestrates. Use them together.
+
+**"If a tool gets a wrong datatype, does it fail silently?"** No. The schema built from the type hints rejects it before the API call, with an error the agent can use.
+
+**"What does 'malformed… not three steps later' mean?"** It means the output doesn't match the expected structure. It should fail *where it's produced*, not after it has flowed into routing or booking.
+
+**"Where do checkpoints live — RAM?"** In production, they live in persistent storage such as Postgres, Redis or MongoDB.
+
+**"Checkpoint vs conversation summary?"** A checkpoint is a full state snapshot for recovery. A summary is compressed history for saving tokens.
+
+**"The manager approved, but the fare rose afterwards. Book anyway?"** No. A checkpoint is saved state, not permanent approval. Revalidate, then re-approve or reject.
+
+**"What if the human never responds?"** Add a timeout policy: remind, escalate, reroute or cancel. Meanwhile the checkpoint keeps the state safe.
+
+**"Should retries go in a conditional edge or inside the node?"** Temporary failures go in a node-level `RetryPolicy`. Decisions based on meaning, such as "no flights under budget", go in a conditional edge.
+
+**"Why a step counter if the model is told to stop?"** It's a hard limit for when the model *doesn't* stop.
+
+**"How do I stop one agent using up the whole budget?"** Put a global budget manager in the runtime to enforce hard limits. As the course put it, "Planning decides the budget; the runtime enforces it."
+
+**"Can a prompt stop a payroll bot leaking a manager's salary?"** Not on its own. Authorisation must sit **outside the LLM**: check permissions before the payroll tool returns any data. "The LLM decides what it wants to do; the runtime decides what it is allowed to do."
+
+**"Chat memory costs a lot of tokens. How do I cap it?"** Keep the last N messages, summarise the older ones, retrieve only the relevant memories, and set token or cost ceilings.
 
 ---
 

@@ -23,21 +23,39 @@ If you remember one sentence, make it this one: **retrieval and generation are s
 
 ## Exam radar
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| Parse-then-embed (OCR pipeline) vs retrieval in vision space (ColPali), and why OCR pipelines fail on charts and tables | 🔴 High | Lecture quiz; repeated in the pre-read, slides, post-read and Q&A |
-| Which strategy when: text search vs image search vs multimodal RAG; PDF parser vs ColPali on cost | 🔴 High | Dedicated slide plus many Q&A answers; ideal scenario material |
-| Late interaction: many vectors per page, each query token finds its best patch, scores added | 🔴 High | Lecture quiz; formula slide; ColBERT origin |
-| Pitfalls: retrieval failure, hallucination despite retrieval, irrelevant context, over-trusting citations | 🔴 High | Lecture quiz; key takeaway "grounding reduces but does not eliminate hallucination" |
-| Text-search basics: keyword vs semantic vs hybrid, bi-encoder, ANN indexes, reranking | 🔴 High | A full set of five quick-check quiz questions |
-| Image search with CLIP: shared space, no translation step, same ANN infrastructure, weak on compositional queries | 🔴 High | Another set of five quick-check quiz questions |
-| Metrics: Recall@K, nDCG@5, the ViDoRe benchmark (what each measures, not how to compute it) | 🟠 Medium | Quiz questions on what they mean |
-| Cost and memory: ColPali needs a much bigger index and more GPU memory | 🟠 Medium | Several Q&A answers |
-| Three storage designs (convert all to text / shared space / separate indexes) | 🟠 Medium | Slide plus Q&A |
-| Chunking trade-off; page-level indexing | 🟠 Medium | Dedicated slide |
-| Do you need to fine-tune the LLM for a domain? (Usually no, RAG supplies the knowledge) | 🟠 Medium | Two Q&A answers; classic scenario |
-| Keeping the index fresh (incremental ingestion) | 🟢 Low–Medium | Q&A only |
-| Survey details, EM/latent-variable training, application names | 🟢 Low | "Technically curious" boxes only |
+How likely each topic is to be tested, based on the lecture quiz, the quick-check questions and the Q&A.
+
+### 🔴 High: expect questions here
+
+**Parse-then-embed versus retrieval in vision space.** Know the difference between the OCR pipeline and ColPali, and why OCR pipelines fail on charts and tables. It's in the lecture quiz and repeated in the pre-read, slides, post-read and Q&A.
+
+**Which strategy to use when.** Text search vs image search vs multimodal RAG, and a PDF parser vs ColPali on cost. There's a dedicated slide plus many Q&A answers, so it's ideal scenario material.
+
+**Late interaction.** Many vectors per page, each query token finds its best patch, and the scores are added. It's in the lecture quiz, has a formula slide, and comes from ColBERT.
+
+**Pitfalls.** Retrieval failure, hallucination despite retrieval, irrelevant context and over-trusting citations. It's in the lecture quiz, and a key takeaway was "grounding reduces but does not eliminate hallucination".
+
+**Text-search basics.** Keyword vs semantic vs hybrid, bi-encoders, ANN indexes and reranking. A full set of five quick-check quiz questions covers them.
+
+**Image search with CLIP.** A shared space, no translation step, the same ANN infrastructure, and weakness on compositional queries. Another set of five quick-check quiz questions covers it.
+
+### 🟠 Medium: likely to show up in one question
+
+**Metrics.** Recall@K, nDCG@5 and the ViDoRe benchmark: what each measures, not how to compute it. There are quiz questions on what they mean.
+
+**Cost and memory.** ColPali needs a much bigger index and more GPU memory. Several Q&A answers make this point.
+
+**Three storage designs.** Convert everything to text, use a shared space, or keep separate indexes. There's a slide plus Q&A.
+
+**The chunking trade-off and page-level indexing.** There's a dedicated slide.
+
+**Do you need to fine-tune the LLM for a domain?** Usually no, because RAG supplies the knowledge. Two Q&A answers cover it, and it's a classic scenario.
+
+### 🟢 Low: understand the idea, skip the details
+
+**Keeping the index fresh with incremental ingestion (🟢 Low–Medium).** It came up in the Q&A only.
+
+**Survey details, EM/latent-variable training and application names.** These appear in "technically curious" boxes only.
 
 ---
 
@@ -49,11 +67,11 @@ Given a question, find the most relevant passages from a big pile of text. The o
 
 ### Three ways to search
 
-| Approach | How it matches | Strength | Weakness |
-|---|---|---|---|
-| **Keyword** (TF-IDF, BM25) | Exact words, weighted by how rare and important they are | Fast, easy to explain, great for exact terms and IDs | Misses synonyms and paraphrases |
-| **Semantic** (dense embeddings) | Meaning, using vectors | Finds paraphrases with no shared words | Can blur exact numbers, negation and rare terms |
-| **Hybrid** (BM25 + dense) | Both signals blended | Best of both; common in production | More moving parts |
+**Keyword search (TF-IDF, BM25) matches exact words.** Each word is weighted by how rare and important it is. It's fast, easy to explain, and great for exact terms and IDs, but it misses synonyms and paraphrases.
+
+**Semantic search (dense embeddings) matches meaning, using vectors.** It finds paraphrases even when no words are shared, but it can blur exact numbers, negation and rare terms.
+
+**Hybrid search (BM25 + dense) blends both signals.** You get the best of both, which is why it's common in production. The cost is more moving parts.
 
 !!! example "Everyday example"
     You search a help centre for *"canceling a subscription"*. The article you need is titled *"How to end my plan"*. Keyword search misses it because no words overlap. Semantic search finds it because the **meaning** is the same.
@@ -180,15 +198,21 @@ This is the heart of the chapter.
 
 ### Comparison
 
-| Aspect | Parse-then-embed | Vision space (ColPali) |
-|---|---|---|
-| Pipeline | OCR → layout → text chunks → text embedding | Page image → VLM encoder → patch vectors |
-| Where it breaks | OCR/layout on charts, tables, scans, odd layouts | Those steps don't exist |
-| Vectors per page | A few (one per text chunk) | ~1,000 (one per patch) |
-| Index size and GPU memory | Smaller and cheaper | **Much larger and more expensive** |
-| Offline indexing speed | Slow (OCR + layout + embedding) | **Much faster**, about 18× in the paper |
-| Query speed | Comparable | Comparable (milliseconds) |
-| Best for | Mostly plain text or clean tables; tight budget | Complex layouts, charts, scanned pages, visual context |
+Here's how the two strategies compare, point by point.
+
+**The pipeline.** Parse-then-embed goes OCR → layout → text chunks → text embedding. ColPali goes page image → VLM encoder → patch vectors.
+
+**Where it breaks.** Parse-then-embed breaks at the OCR and layout steps on charts, tables, scans and odd layouts. In ColPali, those steps don't exist.
+
+**Vectors per page.** Parse-then-embed stores a few, one per text chunk. ColPali stores about 1,000, one per patch.
+
+**Index size and GPU memory.** Parse-then-embed is smaller and cheaper. ColPali is **much larger and more expensive**.
+
+**Offline indexing speed.** Parse-then-embed is slow, because of OCR + layout + embedding. ColPali is **much faster**, about 18× in the paper.
+
+**Query speed.** The two are comparable, both in milliseconds.
+
+**Best for.** Parse-then-embed suits mostly plain text or clean tables on a tight budget. ColPali suits complex layouts, charts, scanned pages and visual context.
 
 !!! warning "Classic trap"
     ColPali is **faster at indexing** but **heavier to store and serve**. The two systems are about equally fast at *query* time. The real cost difference is index size and GPU memory, not query latency.
@@ -225,11 +249,11 @@ The idea comes from **ColBERT** (text retrieval). **ColPali** applies it to page
 
 ### How it differs from neighbouring ideas
 
-| Idea | What it does |
-|---|---|
-| **Small chunks** | Changes the *retrieval unit* to smaller pieces |
-| **Late interaction** | Keeps the *whole page* as the unit, but compares at fine-grained token/patch level internally |
-| **Cross-encoder reranker** | Runs the query and document **together** through a transformer. It's more accurate but **much slower**, so it's only used on a short list |
+**Small chunks change the retrieval unit.** The unit becomes smaller pieces.
+
+**Late interaction keeps the whole page as the unit.** Internally, though, it compares at a fine-grained token/patch level.
+
+**A cross-encoder reranker runs the query and document together through a transformer.** It's more accurate but **much slower**, so it's only used on a short list.
 
 A typical pipeline goes: bi-encoder retrieval (cheap) → late interaction (medium) → cross-encoder rerank (expensive, top few only).
 
@@ -237,11 +261,11 @@ A typical pipeline goes: bi-encoder retrieval (cheap) → late interaction (medi
 
 ## Concept 7 — Storing multimodal content: three designs
 
-| Design | How it works | Trade-off |
-|---|---|---|
-| **1. Convert everything to text** (unified representation) | Caption images and tables, then use one text encoder and one database | Simple, but **loses visual detail** |
-| **2. Shared embedding space** (cross-modal search) | Embed each modality separately into the *same* space, CLIP-style | Preserves visual content; one multimodal index |
-| **3. Separate indexes per modality** | Text index and image index searched in parallel, results fused | Most flexible, but most complex |
+**Design 1: convert everything to text (a unified representation).** Caption the images and tables, then use one text encoder and one database. It's simple, but it **loses visual detail**.
+
+**Design 2: a shared embedding space (cross-modal search).** Embed each modality separately into the *same* space, CLIP-style. This preserves visual content and gives you one multimodal index.
+
+**Design 3: separate indexes per modality.** A text index and an image index are searched in parallel and the results are fused. It's the most flexible design, but also the most complex.
 
 **Chunking still matters.** Chunks that are too small lose context ("Revenue was $4.2B" without saying which quarter). Chunks that are too large dilute relevance (a 50-page report as one vector). ColPali uses **page-level** indexing, which also lets you cite **which page** the answer came from, not just which document.
 
@@ -265,12 +289,13 @@ The professor's warning: **"Abstention is easier said than done."** Models often
 
 ## Concept 9 — Pitfalls (high exam value)
 
-| Pitfall | What happens | Everyday picture |
-|---|---|---|
-| **Retrieval failure** | The right page is never retrieved, so no prompt can fix the answer | Asking a brilliant student to answer from the wrong textbook |
-| **Hallucination despite retrieval** | The model ignores the retrieved page and answers from memory | The student has the right book open but answers from memory anyway |
-| **Irrelevant context** | An on-topic but unhelpful page distracts the generator | Getting a page about Q2 when you asked about Q3 |
-| **Over-trusting citations** | A cited page number doesn't prove the answer came from that page | A footnote that doesn't actually say what the essay claims |
+**Retrieval failure.** The right page is never retrieved, so no prompt can fix the answer. It's like asking a brilliant student to answer from the wrong textbook.
+
+**Hallucination despite retrieval.** The model ignores the retrieved page and answers from memory. The student has the right book open but answers from memory anyway.
+
+**Irrelevant context.** An on-topic but unhelpful page distracts the generator, like getting a page about Q2 when you asked about Q3.
+
+**Over-trusting citations.** A cited page number doesn't prove the answer came from that page. Think of a footnote that doesn't actually say what the essay claims.
 
 **Grounding reduces hallucination, but it does not eliminate it.** Verify citations instead of trusting them.
 
@@ -280,28 +305,37 @@ The professor's warning: **"Abstention is easier said than done."** Models often
 
 You won't need to compute these, but you should know what each one rewards.
 
-| Metric / benchmark | What it tells you |
-|---|---|
-| **Precision / Recall / F1 @k** | How many of the top-k results are relevant, and how many of all relevant items you found |
-| **Recall@K** (image search: Flickr30K, MS COCO) | Did the correct item appear **anywhere in the top K**? Recall@5 is always ≥ Recall@1 |
-| **nDCG@5** | Ranking quality of the top 5, rewarding the right result **near the very top** (scores run from 0 to 1, with 1 being ideal) |
-| **ViDoRe** | A benchmark for **visually rich document page retrieval**, scored with nDCG@5. ColPali beat OCR + BM25 and OCR + text-embedding pipelines on it |
-| **MS MARCO / BEIR / MTEB** | Text retrieval: training data, zero-shot generalisation across many tasks, and a broad embedding leaderboard |
+**Precision, Recall and F1 @k.** These tell you how many of the top-k results are relevant, and how many of all the relevant items you found.
+
+**Recall@K, used for image search on Flickr30K and MS COCO.** Did the correct item appear **anywhere in the top K**? That's why Recall@5 is always ≥ Recall@1.
+
+**nDCG@5.** This measures the ranking quality of the top 5, rewarding the right result **near the very top**. Scores run from 0 to 1, with 1 being ideal.
+
+**ViDoRe.** A benchmark for **visually rich document page retrieval**, scored with nDCG@5. ColPali beat OCR + BM25 and OCR + text-embedding pipelines on it.
+
+**MS MARCO, BEIR and MTEB.** These are for text retrieval: training data, zero-shot generalisation across many tasks, and a broad embedding leaderboard, respectively.
 
 ---
 
 ## Which strategy when?
 
-| Situation | Choose | Why |
-|---|---|---|
-| Plain text corpus (policies, articles) | **Text RAG** (dense or hybrid) | No visual content, so multimodal adds cost for nothing |
-| Product photos, simple descriptive queries | **Image search** with CLIP-style embeddings | Shared text–image space |
-| Reports mixing text, tables and charts; scanned pages | **Multimodal RAG**, ideally vision-space retrieval | "Worth the added cost" |
-| Yearly mutual-fund PDFs with clean tables, extracting fixed fields cheaply | **PDF parser + text RAG** | Cheaper; ColPali only pays off for complex visuals |
-| Exact values and calculations from tables | **Table / structured RAG** | Needs exact numbers, not similarity |
-| Exact codes or IDs plus meaning | **Hybrid (BM25 + dense)** | Keyword precision plus semantic recall |
-| Multi-hop questions across linked entities | **Graph RAG** | Follows relationships |
-| Real production mix | **Hybrid:** parse text/tables + vision retrieval for complex pages | No single best approach |
+Start from the situation, and the choice follows.
+
+**A plain text corpus, such as policies or articles, calls for text RAG (dense or hybrid).** There's no visual content, so multimodal would add cost for nothing.
+
+**Product photos with simple descriptive queries call for image search with CLIP-style embeddings.** Text and images share one space.
+
+**Reports that mix text, tables and charts, or scanned pages, call for multimodal RAG, ideally with vision-space retrieval.** Here it's "worth the added cost".
+
+**Yearly mutual-fund PDFs with clean tables, where you extract fixed fields cheaply, call for a PDF parser + text RAG.** It's cheaper, and ColPali only pays off for complex visuals.
+
+**Exact values and calculations from tables call for table / structured RAG.** You need exact numbers, not similarity.
+
+**Exact codes or IDs plus meaning call for hybrid search (BM25 + dense).** You get keyword precision plus semantic recall.
+
+**Multi-hop questions across linked entities call for Graph RAG.** It follows relationships.
+
+**A real production mix calls for a hybrid: parse the text and tables, and use vision retrieval for complex pages.** There's no single best approach.
 
 **Fine-tune the LLM for a new domain?** Usually **no**. Domain knowledge comes from RAG. Fine-tune only for domain-specific behaviour, terminology or output format. If **retrieval** is weak, fine-tune the **embedding or reranker** model instead.
 
@@ -322,18 +356,27 @@ You won't need to compute these, but you should know what each one rewards.
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "Does the vector DB hold both image and text vectors?" | It can, but there are three designs: shared space, separate embeddings with cross-modal search, or separate DBs per modality |
-| "Can I use a different model for queries if it also outputs 768-d vectors?" | No. Matching size isn't enough; both must be **trained into the same space** |
-| "Does ColPali split a big chart into chunks?" | No. The page is the unit; the chart's patches all contribute to the page's score |
-| "Is ColPali cheaper than a PDF parser?" | Generally **more expensive** (many vectors per page, big model). Use a parser for plain text and clean tables |
-| "Does ColPali need less GPU memory than OCR + text embeddings?" | No, **more**: a large VLM backbone plus many patch vectors |
-| "Late interaction vs just using small chunks?" | Small chunks change the retrieval unit; late interaction keeps the page and compares at fine-grained level inside |
-| "ColBERT vs a reranker?" | ColBERT's token-level matching is cheaper; a cross-encoder reranker processes query and document jointly, which is more accurate but slower |
-| "Must the LLM be fine-tuned for my domain?" | Usually no; RAG provides the knowledge. Fine-tune the embedder or reranker if retrieval is poor |
-| "How do I keep the index fresh as documents arrive daily?" | Incremental ingestion: detect changes (timestamp, hash or webhook) → extract → chunk → embed → upsert, and remove deleted documents |
-| "Offline vs online?" | Offline = build the index ahead of time. Online = encode the query and search at request time |
+These are real questions students asked during the session, with the answers they were given.
+
+**"Does the vector DB hold both image and text vectors?"** It can, but there are three designs: a shared space, separate embeddings with cross-modal search, or separate DBs per modality.
+
+**"Can I use a different model for queries if it also outputs 768-d vectors?"** No. Matching the size isn't enough; both must be **trained into the same space**.
+
+**"Does ColPali split a big chart into chunks?"** No. The page is the unit, and the chart's patches all contribute to the page's score.
+
+**"Is ColPali cheaper than a PDF parser?"** It's generally **more expensive**, because of the many vectors per page and the big model. Use a parser for plain text and clean tables.
+
+**"Does ColPali need less GPU memory than OCR + text embeddings?"** No, it needs **more**: a large VLM backbone plus many patch vectors.
+
+**"What's the difference between late interaction and just using small chunks?"** Small chunks change the retrieval unit. Late interaction keeps the page and compares at a fine-grained level inside it.
+
+**"How does ColBERT compare with a reranker?"** ColBERT's token-level matching is cheaper. A cross-encoder reranker processes the query and document jointly, which is more accurate but slower.
+
+**"Must the LLM be fine-tuned for my domain?"** Usually no, because RAG provides the knowledge. Fine-tune the embedder or reranker if retrieval is poor.
+
+**"How do I keep the index fresh as documents arrive daily?"** Use incremental ingestion: detect changes (by timestamp, hash or webhook) → extract → chunk → embed → upsert, and remove deleted documents.
+
+**"What do offline and online mean?"** Offline means building the index ahead of time. Online means encoding the query and searching at request time.
 
 ---
 

@@ -24,19 +24,35 @@ If you remember one sentence, make it this one: **"RAG answers. Agents finish."*
 
 ## Exam radar
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| Workflow vs agent: who controls the order; the "draw the flowchart" test; when to pick each | 🔴 High | Dedicated slide, pre-read, post-read and 4+ Q&A threads |
-| The six-rung ladder: what each rung adds; matching a request to a rung | 🔴 High | Opening and closing slides; Q&A |
-| Tool calling: the model *emits a request*, your code *executes* it | 🔴 High | Slide quote "the model never touches the API"; repeated in Q&A |
-| MCP: `list_tools()` / `call_tool()`, discovery at run time, the server owns the schema | 🔴 High | 10+ Q&A questions, the most of any topic |
-| The agent loop (Think → Act → Observe → Remember) and its three properties: bounded, observable, recoverable | 🔴 High | Slide plus notebook guards; "verify, don't trust the claim" |
-| ReAct vs Plan-and-Execute vs Reflection: trade-offs | 🔴 High | Side-by-side slide; Q&A on token cost |
-| Three kinds of memory: conversation, task state, long-term | 🟠 Medium | Slide table plus post-read; easy "classify this item" MCQ |
-| Agentic RAG: retrieval as one tool (rewrite the query, retrieve again, skip retrieval) | 🟠 Medium | Dedicated slide |
-| Why the loop gets expensive (the whole history is re-sent each step) | 🟠 Medium | Slide; concept matters, numbers don't |
-| Safety at the execution boundary: write tools need approval; retrieved text is data | 🟠 Medium | Post-read and Q&A on duplicate bookings |
-| Framework landscape (Agents SDKs, ADK, Pydantic AI…) | 🟢 Low | One slide: "pick by stack, not by benchmark" |
+How likely each topic is to be tested, based on slide time, how often it appears across the pre-read, slides and post-read, and how many student questions it drew.
+
+### 🔴 High: expect questions here
+
+**Workflow vs agent.** Who controls the order of steps, the "draw the flowchart" test, and when to pick each. It has a dedicated slide, appears in the pre-read and post-read, and drew 4+ Q&A threads.
+
+**The six-rung ladder.** What each rung adds, and how to match a request to the right rung. It opens and closes the slides, and came up in the Q&A.
+
+**Tool calling.** The model *emits a request*; your code *executes* it. The slide puts it bluntly: "the model never touches the API". It was repeated in the Q&A.
+
+**MCP.** `list_tools()` and `call_tool()`, discovery at run time, and the server owning the schema. It drew 10+ Q&A questions, more than any other topic.
+
+**The agent loop and its three properties.** Think → Act → Observe → Remember, and the loop must be bounded, observable and recoverable. It's on a slide and in the notebook's guards, along with the rule "verify, don't trust the claim".
+
+**ReAct vs Plan-and-Execute vs Reflection.** Their trade-offs were shown side by side on a slide, and students asked about token cost.
+
+### 🟠 Medium: likely to show up in one question
+
+**Three kinds of memory.** Conversation, task state and long-term. There's a slide table and a post-read section, which makes this an easy "classify this item" MCQ.
+
+**Agentic RAG.** Retrieval becomes one tool among others: the agent can rewrite the query, retrieve again or skip retrieval. It has a dedicated slide.
+
+**Why the loop gets expensive.** The whole history is re-sent at every step. It's on a slide; the concept matters, the numbers don't.
+
+**Safety at the execution boundary.** Write tools need approval, and retrieved text is data, not instructions. This comes from the post-read and the Q&A about duplicate bookings.
+
+### 🟢 Low: understand the idea, skip the details
+
+**The framework landscape** (Agents SDKs, ADK, Pydantic AI…). It's one slide, and its message is "pick by stack, not by benchmark".
 
 ---
 
@@ -61,14 +77,19 @@ Each rung of the ladder fixes one of these. Keep the Paris trip in mind; most sc
 
 ## Concept 1 — The ladder: each rung adds exactly one thing
 
-| # | Rung | What it adds | Paris example | A request it can handle |
-|---|---|---|---|---|
-| 1 | **LLM** | Generates language | Writes a plausible itinerary with no facts behind it | "What is the capital of France?" |
-| 2 | **RAG** | + **Knowledge** (retrieval) | Fetches the real company travel policy | "What is our international travel policy?" |
-| 3 | **Assistant** | + **Context** (remembers the conversation) | Remembers the trip dates and budget from earlier messages | "I'm in Paris next week for 4 days. What does the policy allow?" |
-| 4 | **Tool-using assistant** | + **Tools** (acts in the world) | Calls live flight and hotel search APIs | "Find flights to Paris." |
-| 5 | **Agent** | + **Decisions** (chooses its own next step) | Re-plans when a policy check fails | "Plan my Paris trip within policy and budget." |
-| 6 | **Multi-agent** | + **Delegation** (hands sub-tasks to specialists) | Separate agents for flights, hotels, meetings, expenses | "Plan the whole trip, meetings and expenses." |
+There are six rungs. Each one keeps everything below it and adds exactly one new ability. The Paris trip shows what each step up buys you.
+
+**Rung 1, the LLM, generates language.** On its own it writes a plausible itinerary with no facts behind it. It's fine for a request like "What is the capital of France?"
+
+**Rung 2, RAG, adds knowledge through retrieval.** Now it can fetch the real company travel policy, so it can answer "What is our international travel policy?"
+
+**Rung 3, the assistant, adds context: it remembers the conversation.** It keeps hold of the trip dates and budget from earlier messages, so it can handle "I'm in Paris next week for 4 days. What does the policy allow?"
+
+**Rung 4, the tool-using assistant, adds tools so it can act in the world.** It calls live flight and hotel search APIs, which lets it answer "Find flights to Paris."
+
+**Rung 5, the agent, adds decisions: it chooses its own next step.** When a policy check fails, it re-plans. That's what "Plan my Paris trip within policy and budget" needs.
+
+**Rung 6, multi-agent, adds delegation: it hands sub-tasks to specialists.** Separate agents handle flights, hotels, meetings and expenses, for a request like "Plan the whole trip, meetings and expenses."
 
 Nothing below is thrown away as you climb. An agent still uses retrieval, context and tools. The hands-on notebook added one more rung, **Workflow** (a fixed sequence written by the developer), between rungs 4 and 5.
 
@@ -93,13 +114,17 @@ The four limits of a plain LLM are: a **knowledge cutoff**, **no access to priva
 
 ### Why RAG isn't enough either
 
-| | Question answering (RAG) | Task completion (the Paris request) |
-|---|---|---|
-| Input | A question | A goal plus constraints |
-| Work | One retrieval, one generation | Many steps, in an order decided at run time |
-| Output | Text | A decision, a change in the world |
-| Failure looks like | A wrong sentence | A booking that breaks policy |
-| Ends when | The model stops generating | The goal is met, **or** judged impossible |
+RAG answers questions. The Paris request is a task, and tasks differ from questions in five ways.
+
+**The input is different.** RAG gets a question. A task gets a goal plus constraints.
+
+**The work is different.** RAG does one retrieval and one generation. A task takes many steps, in an order decided at run time.
+
+**The output is different.** RAG produces text. A task produces a decision, a change in the world.
+
+**Failure looks different.** When RAG fails, you get a wrong sentence. When a task fails, you get a booking that breaks policy.
+
+**The ending is different.** RAG ends when the model stops generating. A task ends when the goal is met, **or** when it's judged impossible.
 
 A task needs three things RAG doesn't have: **actions** (calling external tools), **decisions** (choosing between actions) and **interaction** (asking for clarification or approval).
 
@@ -208,23 +233,17 @@ session.call_tool("search_flights", {...})   # use one
 
 This is the single most important definition in the chapter.
 
-| | Tool-using assistant / workflow | Agent |
-|---|---|---|
-| Who picks the next step | **You**, at development time | **The model**, at run time |
-| What the model does | Fills in arguments and interprets messy language | Decides which tool to call next, based on the last result |
-| Paris example | retrieve_policy → search_flights → search_hotels → rank (always this order) | goal + tools → decide → act → observe → decide again… |
+**In a tool-using assistant or workflow, *you* pick the next step, at development time.** The model only fills in arguments and interprets messy language. In the Paris example the order is always the same: retrieve_policy → search_flights → search_hotels → rank.
+
+**In an agent, *the model* picks the next step, at run time.** It decides which tool to call next based on the last result. In the Paris example it goes goal + tools → decide → act → observe → decide again…
 
 **The test:** *"If you can draw the flowchart before the request arrives, you do not need an agent."*
 
 ### When to choose which
 
-| Use a **workflow** when… | Use an **agent** when… |
-|---|---|
-| The steps are the same for every input | The number of steps depends on the data |
-| Auditors need the same path every time | A later step can invalidate an earlier one |
-| Latency and cost must be bounded exactly | Tools fail often and recovery must be worked out on the fly |
-| An extra wrong tool call is expensive or irreversible | The range of possible requests is open-ended |
-| Example: monthly expense-report generation | Examples: the Paris trip; triaging a live incident |
+**Use a workflow when the path is predictable.** That means the steps are the same for every input, auditors need the same path every time, latency and cost must be bounded exactly, or an extra wrong tool call would be expensive or irreversible. Monthly expense-report generation is a good example.
+
+**Use an agent when the path can't be known in advance.** That means the number of steps depends on the data, a later step can invalidate an earlier one, tools fail often and recovery has to be worked out on the fly, or the range of possible requests is open-ended. The Paris trip and triaging a live incident are good examples.
 
 In practice you **ship both**: a deterministic workflow for the parts you can name, with an agent embedded at the one step where the path is genuinely unknown.
 
@@ -266,24 +285,24 @@ flowchart LR
 
 ### The Paris trace (simplified)
 
-| Step | Think | Act | Observe |
-|---|---|---|---|
-| 1 | I need the rules before I can price anything | `retrieve_policy` | Economy only; hotel cap per night; book ≥ 7 days ahead |
-| 2 | Search within the allowed cabin | `search_flights` (first date) | Several fares |
-| 3 | Find a hotel under the cap with the money left | `search_hotels` | Several hotels under the cap |
-| 4 | The total is under budget. Now *check* compliance | `check_policy` | **FAIL:** departure is 5 days away, policy needs 7 |
-| 5 | "The budget was never the problem." Move the date | `search_flights` (a week later) | A fare that departs in 8 days |
-| 6 | Compliant and under budget | `draft_itinerary` | Present to the user for approval |
+Here is how the agent worked through the Paris request, one Think → Act → Observe step at a time.
+
+1. **Think:** "I need the rules before I can price anything." **Act:** `retrieve_policy`. **Observe:** economy only, a hotel cap per night, and booking must be ≥ 7 days ahead.
+2. **Think:** "Search within the allowed cabin." **Act:** `search_flights` for the first date. **Observe:** several fares.
+3. **Think:** "Find a hotel under the cap with the money left." **Act:** `search_hotels`. **Observe:** several hotels under the cap.
+4. **Think:** "The total is under budget. Now *check* compliance." **Act:** `check_policy`. **Observe:** **FAIL.** Departure is 5 days away, and the policy needs 7.
+5. **Think:** "The budget was never the problem. Move the date." **Act:** `search_flights` a week later. **Observe:** a fare that departs in 8 days.
+6. **Think:** "Compliant and under budget." **Act:** `draft_itinerary`. **Observe:** present it to the user for approval.
 
 **Step 4 is the reason agents exist.** A fixed pipeline would have returned the non-compliant itinerary. Also note: *"Believing a plan is compliant is not the same as checking it."*
 
 ### Three properties every agent loop needs
 
-| Property | Meaning | How the notebook did it |
-|---|---|---|
-| **Bounded** | A step budget and cost ceiling, "or it never stops" | `for i in range(max_steps)` (default 10) |
-| **Observable** | Every Think/Act/Observe step is logged and replayable | History of (thought, tool, args, observation) |
-| **Recoverable** | A failed tool is an *observation*, not a crash | Errors returned as `{"error": ...}` data |
+**Bounded.** The loop needs a step budget and a cost ceiling, "or it never stops". The notebook did this with `for i in range(max_steps)`, with a default of 10.
+
+**Observable.** Every Think/Act/Observe step is logged and can be replayed. The notebook kept a history of (thought, tool, args, observation).
+
+**Recoverable.** A failed tool is an *observation*, not a crash. The notebook returned errors as `{"error": ...}` data, so the model could read them and react.
 
 The notebook added two more guards:
 
@@ -310,12 +329,13 @@ The fix is **context engineering**: truncate long observations, summarise old st
 
 ## Concept 7 — Three shapes of the loop: ReAct, Plan-and-Execute, Reflection
 
-| | **ReAct** | **Plan-and-Execute** | **Reflection** |
-|---|---|---|---|
-| Idea | Interleave one thought and one action; decide each step from the last result | Draft the whole plan first, then run it; re-plan on failure | Produce a draft, critique it, revise it (loops on the *draft*, not the task) |
-| Strength | Cheapest to run, easiest to debug | Steps can run in parallel; cost is predictable | Visible quality improvement on written output |
-| Weakness | Can wander on long tasks | The plan is written before any evidence arrives | Doubles or triples token spend |
-| Good for | The Paris trace | Deep research, batch jobs | Writing up the itinerary, code review |
+The three shapes differ in when the thinking happens and what gets looped over.
+
+**ReAct interleaves one thought and one action at a time.** Each step is decided from the last result. It's the cheapest to run and the easiest to debug, but it can wander on long tasks. The Paris trace is a ReAct loop.
+
+**Plan-and-Execute drafts the whole plan first, then runs it, and re-plans on failure.** Because the plan exists up front, steps can run in parallel and cost is predictable. The weakness is that the plan is written before any evidence arrives. It suits deep research and batch jobs.
+
+**Reflection produces a draft, critiques it, then revises it.** It loops on the *draft*, not on the task. You get a visible quality improvement on written output, but it doubles or triples token spend. It suits writing up the itinerary, or code review.
 
 **In the Paris story:**
 
@@ -358,11 +378,13 @@ One warning from the post-read: inside an agent, **chunk quality now drives acti
 
 ## Concept 9 — Three things an agent must remember
 
-| Memory type | Lives for | Purpose | Paris examples |
-|---|---|---|---|
-| **Conversation state** | One thread | What the user said and what we replied | "Next week" means specific dates; prefers direct flights; approved the budget |
-| **Task state** (scratchpad) | One run | What's done and what's left | Policy retrieved; a flight is held; budget remaining; compliance re-check needed |
-| **Long-term memory** | Across sessions | Durable facts that outlive the task | Employee grade; home airport; last trip rejected for late booking |
+An agent needs three kinds of memory. The difference is how long each one lives.
+
+**Conversation state lives for one thread.** It records what the user said and what we replied. In the Paris example: "next week" means specific dates, the user prefers direct flights, and they approved the budget.
+
+**Task state, the scratchpad, lives for one run.** It records what's done and what's left. In the Paris example: the policy has been retrieved, a flight is held, there's a budget remaining, and a compliance re-check is needed.
+
+**Long-term memory lives across sessions.** It holds durable facts that outlive the task. In the Paris example: the employee's grade, their home airport, and the fact that their last trip was rejected for late booking.
 
 **"Without task state there is no loop"**: the question "what is still missing?" can only be answered against a record of what has already happened.
 
@@ -390,18 +412,25 @@ The fix is to **"split the goal, not the model"**: an orchestrator plus speciali
 
 ---
 
-## Choosing the right rung: quick decision table
+## Choosing the right rung
 
-| Situation | Good choice | Why |
-|---|---|---|
-| General-knowledge question | Plain LLM | Answer is in the weights |
-| Question about private or recent documents | RAG | Needs grounded, citable evidence |
-| Follow-up questions in a chat | Assistant (RAG + conversation context) | "And the hotel?" needs the earlier turn |
-| Same fixed sequence of API calls every time | Workflow / tool-using assistant | Predictable, auditable, cheaper |
-| Fully rule-based process with clean inputs | Ordinary automation (no LLM) | Cheaper, faster, more predictable |
-| Open-ended goal; later steps may undo earlier ones | Agent | Needs run-time decisions and re-planning |
-| Many tools that change, across several systems | MCP for tool access | Discovery at run time; server owns the schema |
-| Many specialised sub-tasks, context crowding | Multi-agent (Chapter 11) | Specialisation and context isolation |
+Pick the lowest rung that can do the job. Each step up adds cost and unpredictability.
+
+**For a general-knowledge question, a plain LLM is enough.** The answer is already in its weights.
+
+**For a question about private or recent documents, use RAG.** The answer needs grounded, citable evidence.
+
+**For follow-up questions in a chat, use an assistant (RAG + conversation context).** A question like "And the hotel?" only makes sense with the earlier turn.
+
+**When the same fixed sequence of API calls happens every time, use a workflow or tool-using assistant.** It's predictable, auditable and cheaper.
+
+**When the process is fully rule-based with clean inputs, use ordinary automation with no LLM at all.** It's cheaper, faster and more predictable.
+
+**When the goal is open-ended and later steps may undo earlier ones, use an agent.** It needs run-time decisions and re-planning.
+
+**When there are many tools that change, across several systems, use MCP for tool access.** Tools are discovered at run time, and the server owns the schema.
+
+**When there are many specialised sub-tasks and the context is getting crowded, go multi-agent** (Chapter 11). You get specialisation and context isolation.
 
 ---
 
@@ -421,20 +450,31 @@ The notebook "From RAG to Agents" rebuilt the ladder in code:
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "If RAG gives the document, why does the quiz say the model lacks access to the policy?" | The quiz meant the **base LLM** without RAG. Once RAG supplies the document, that limit goes away. RAG fixes knowledge *access*, not reasoning. |
-| "Does the LLM actually call the tool?" | No. It emits `{"tool": …, "args": …}`; your code executes it and returns the result. |
-| "What's the difference between an assistant and an agent?" | Assistant: you choose the workflow, and it helps you. Agent: the model chooses the workflow at run time, and it acts for you. |
-| "Is MCP an agent or a tool?" | Neither. It's a standard protocol for discovering and calling tools and data. |
-| "Does the client keep polling `list_tools()`?" | No. It's called at session start; changes are seen after calling it again or reconnecting. |
-| "Do tools run inside the LLM?" | No. They run on the MCP server or the systems behind it. |
-| "Is MCP required?" | No. Plain function calling works; MCP helps with many or changing tools. |
-| "How do we stop duplicate bookings?" | A guard in the execution layer: a unique key, a check for existing bookings, human approval. Not just the prompt. |
-| "Skill vs knowledge base?" | A knowledge base is *information* (the policy PDF); a skill is a *capability* (`check_travel_policy()`). |
-| "Will huge context windows replace RAG?" | No. RAG is still better for large, changing, private data. The future is large context + RAG + agents together. |
-| "What is a 'harness'?" | The software around the agent: prompts, tools, state, memory, retries, limits, logging, approvals. |
-| "Which model should an agent use?" | A small, cheap model for simple high-volume tasks; a strong reasoning model for long multi-step tasks with recovery. |
+These are real questions students asked during the session, with the answers they were given.
+
+**"If RAG gives the document, why does the quiz say the model lacks access to the policy?"** The quiz meant the **base LLM** without RAG. Once RAG supplies the document, that limit goes away. RAG fixes knowledge *access*, not reasoning.
+
+**"Does the LLM actually call the tool?"** No. It emits `{"tool": …, "args": …}`, and your code executes it and returns the result.
+
+**"What's the difference between an assistant and an agent?"** With an assistant, you choose the workflow and it helps you. With an agent, the model chooses the workflow at run time and acts for you.
+
+**"Is MCP an agent or a tool?"** Neither. It's a standard protocol for discovering and calling tools and data.
+
+**"Does the client keep polling `list_tools()`?"** No. It's called at session start, and changes are seen only after calling it again or reconnecting.
+
+**"Do tools run inside the LLM?"** No. They run on the MCP server or the systems behind it.
+
+**"Is MCP required?"** No. Plain function calling works fine. MCP helps when there are many tools or the tools keep changing.
+
+**"How do we stop duplicate bookings?"** With a guard in the execution layer: a unique key, a check for existing bookings, and human approval. Not just a line in the prompt.
+
+**"Skill vs knowledge base?"** A knowledge base is *information*, like the policy PDF. A skill is a *capability*, like `check_travel_policy()`.
+
+**"Will huge context windows replace RAG?"** No. RAG is still better for large, changing, private data. The future is large context + RAG + agents together.
+
+**"What is a 'harness'?"** The software around the agent: prompts, tools, state, memory, retries, limits, logging and approvals.
+
+**"Which model should an agent use?"** A small, cheap model for simple high-volume tasks, and a strong reasoning model for long multi-step tasks that need recovery.
 
 ---
 

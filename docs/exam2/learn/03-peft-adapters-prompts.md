@@ -20,19 +20,35 @@ If you remember one sentence, make it this one: **adapters adapt the model in th
 
 ## Exam radar
 
-| Topic | Likelihood | Why we think so |
-|---|---|---|
-| Why full fine-tuning is costly: weights, gradients and Adam states all in memory | 🔴 High | Slides, pre-read and many Q&A rows; repeated in Chapter 04 |
-| Catastrophic forgetting and the multi-task storage problem | 🔴 High | Professor's "in a nutshell" names it as one of the two core problems |
-| The four PEFT families: additive, re-parameterization, soft prompt, selective | 🔴 High | Concept map, pre-read table, revision session |
-| Adapter structure: down-project → non-linearity → up-project + residual, near-identity init | 🔴 High | Slide "Two requirements of adapters", demo code, many Q&A rows |
-| Sequential (Houlsby) vs residual/parallel (Lin) adapters, and why sequential adds latency | 🔴 High | Named limitations slide; pre-read calls latency "the primary practical objection" |
-| Prefix tuning vs prompt tuning; only P_k and P_v trained | 🔴 High | Highest-volume confusion in the Q&A sheet |
-| Soft prompt vs discrete prompt vs system prompt vs RAG | 🟠 Medium | Several student questions; easy "which is true" material |
-| SMoP, APT, IDPG: what problem each fixes | 🟠 Medium | Professor's closing summary slide lists all three |
-| Adapter routing, AdapterFusion, task ID | 🟠 Medium | Two setup slides plus demo |
-| Choosing a PEFT method by scenario | 🟠 Medium | Rule of thumb given in the Q&A answers |
-| Exact GPU table, paper names like Compacter or P-Tuning v2 | 🟢 Low | Mentioned only in passing |
+How likely each topic is to be tested, based on how much class time it got, how often it appears across the pre-read, slides and post-read, and how many student questions it drew.
+
+### 🔴 High: expect questions here
+
+**Why full fine-tuning is costly.** The weights, their gradients and Adam's states all have to sit in memory. This is in the slides, the pre-read and many Q&A rows, and Chapter 04 repeats it.
+
+**Catastrophic forgetting and the multi-task storage problem.** The professor's "in a nutshell" summary names these as the two core problems PEFT solves.
+
+**The four PEFT families: additive, re-parameterization, soft prompt and selective.** They appear in the concept map and a pre-read table, and came back in the revision session.
+
+**How an adapter is built.** It goes down-project → non-linearity → up-project, plus a residual, and starts near identity. There's a slide called "Two requirements of adapters", demo code, and many Q&A rows.
+
+**Sequential (Houlsby) vs residual/parallel (Lin) adapters, and why sequential adds latency.** A slide is dedicated to their limitations, and the pre-read calls latency "the primary practical objection".
+
+**Prefix tuning vs prompt tuning, and the fact that only P_k and P_v are trained.** This drew the most confusion of anything in the Q&A sheet.
+
+### 🟠 Medium: likely to show up in one question
+
+**Soft prompt vs discrete prompt vs system prompt vs RAG.** Several students asked about this, and it makes easy "which is true" material.
+
+**SMoP, APT and IDPG: what problem each one fixes.** The professor's closing summary slide lists all three.
+
+**Adapter routing, AdapterFusion and task ID.** Two setup slides and the demo cover these.
+
+**Choosing a PEFT method for a scenario.** The Q&A answers gave rules of thumb for this.
+
+### 🟢 Low: understand the idea, skip the details
+
+**The exact GPU table, and paper names like Compacter or P-Tuning v2.** These were only mentioned in passing.
 
 ---
 
@@ -63,14 +79,15 @@ The professor opened by showing that bigger models gain new abilities. At around
 
 ### The problem
 
-During training, the GPU must hold four things **for every parameter that is being trained**:
+During training, the GPU must hold four things **for every parameter that is being trained**.
 
-| Item | Why it's needed | Size per parameter |
-|---|---|---|
-| The weight | To run the model | 2 bytes (FP16) |
-| Its gradient | To know which way to nudge the weight | 2 bytes (FP16) |
-| Adam's **momentum** (running average of gradients) | Smooths the direction of updates | 4 bytes (FP32) |
-| Adam's **variance** (running average of squared gradients) | Adapts the step size per weight | 4 bytes (FP32) |
+**The weight itself.** The model needs it to run. In FP16 that's 2 bytes.
+
+**Its gradient.** This tells the model which way to nudge the weight. Another 2 bytes in FP16.
+
+**Adam's momentum.** This is a running average of the gradients, and it smooths the direction of the updates. It's kept in FP32, so 4 bytes.
+
+**Adam's variance.** This is a running average of the *squared* gradients, and it adapts the step size for each weight. Another 4 bytes in FP32.
 
 Add the **activations** (intermediate outputs kept for the backward pass) and the course's 7B example comes to about **92 GB**. Notice that **Adam's two states alone are four times the size of the weights.**
 
@@ -108,14 +125,15 @@ There's also a **storage** problem. Naive fine-tuning keeps **one full model per
 
 ## Concept 3 — The four families of PEFT
 
-The lecture's concept map splits PEFT into four branches:
+The lecture's concept map splits PEFT into four branches.
 
-| Family | What it does, in one line | Examples | Trainable share (course figures) | Where it's covered |
-|---|---|---|---|---|
-| **Additive** | Adds small new modules to the frozen network | Adapters, AdapterFusion, Compacter | < 1% | This chapter |
-| **Soft prompt** | Adds trainable virtual tokens (vectors) to the input or attention | Prompt tuning, prefix tuning, SMoP, APT | < 0.1% | This chapter |
-| **Re-parameterization** | Learns the weight *change* in a compact low-rank form | LoRA, QLoRA, DoRA, AdaLoRA | < 1% | Chapter 04 |
-| **Selective** | Unfreezes a chosen **subset of existing** weights; adds nothing new | BitFit (bias terms only), Diff Pruning | Varies | Named only |
+**Additive methods add small new modules to the frozen network.** Examples are adapters, AdapterFusion and Compacter. In the course's figures they train less than 1% of the parameters. This chapter covers them.
+
+**Soft-prompt methods add trainable virtual tokens (vectors) to the input or to attention.** Examples are prompt tuning, prefix tuning, SMoP and APT. They train less than 0.1% of the parameters. This chapter covers them too.
+
+**Re-parameterization methods learn the weight *change* in a compact, low-rank form.** Examples are LoRA, QLoRA, DoRA and AdaLoRA. They train less than 1% of the parameters, and Chapter 04 covers them.
+
+**Selective methods unfreeze a chosen subset of the existing weights and add nothing new.** Examples are BitFit (which trains only the bias terms) and Diff Pruning. How much they train varies. The course only names this family.
 
 !!! example "Everyday analogy: four ways to customise a car"
     - **Additive:** bolt on a roof rack (add a new part).
@@ -204,25 +222,29 @@ Lin et al. built **one GPT-2 backbone with a bank of task adapters** in every la
 
 ### Quick comparison
 
-| | Sequential (Houlsby) | Residual / parallel (Lin) |
-|---|---|---|
-| Placement | In series after attention and after FFN | Beside the sub-layer, outputs merged |
-| Inference latency | Adds sequential steps | Little extra delay |
-| Showcase | BERT on GLUE classification | GPT-2 on QA, dialogue, summarisation, translation |
-| Extra trick | — | Task/segment embeddings, per-task adapter bank |
+The two designs differ in where the adapter sits, and that one choice drives everything else.
+
+**Where the adapter sits.** A sequential (Houlsby) adapter is placed in series, after attention and after the feed-forward block. A residual/parallel (Lin) adapter sits *beside* the sub-layer, and its output is merged in.
+
+**What that does to inference latency.** Because the sequential adapter is in the path, it adds sequential steps to every call. The parallel adapter adds little extra delay.
+
+**Where each was showcased.** Houlsby adapters were shown on BERT for GLUE classification. Lin adapters were shown on GPT-2 for question answering, dialogue, summarisation and translation.
+
+**Extra tricks.** The Lin design also adds task/segment embeddings and a bank of per-task adapters. The Houlsby design has no extra trick here.
 
 ---
 
 ## Concept 6 — Using adapters for many tasks: task ID, routing and fusion
 
-The slides showed four setups:
+The slides showed four setups.
 
-| Setup | How it works |
-|---|---|
-| **Explicit task ID** | The task name picks the adapter. In the demo this was literally a dictionary (`ModuleDict`) of `task_name → adapter`. |
-| **Adapter routing** | Computation flows only through the chosen adapter. **Unselected adapters don't run.** Routing happens before or during the forward pass, not after the output. |
-| **AdapterFusion** | When there's no task ID, a **fusion layer** softly combines the outputs of several task adapters. |
-| **Multi-task adapter** | One adapter is trained on many tasks together. |
+**Explicit task ID.** The task name picks the adapter. In the demo this was literally a dictionary (`ModuleDict`) mapping `task_name → adapter`.
+
+**Adapter routing.** Computation flows only through the chosen adapter, so **unselected adapters don't run.** Routing happens before or during the forward pass, not after the output.
+
+**AdapterFusion.** When there's no task ID, a **fusion layer** softly combines the outputs of several task adapters.
+
+**Multi-task adapter.** A single adapter is trained on many tasks together.
 
 The professor also named a **Tiny-Attention Adapter**, which places a small attention module inside the adapter.
 
@@ -238,12 +260,13 @@ The professor also named a **Tiny-Attention Adapter**, which places a small atte
 
 ### Discrete vs continuous prompts
 
-| | Discrete (hard) prompt | Continuous (soft) prompt |
-|---|---|---|
-| Made of | Real words from the vocabulary | **Virtual tokens**: free vectors in the embedding space |
-| Created by | A human, or a search over words | **Learned by backpropagation** |
-| Readable? | Yes | No, they're just numbers |
-| Weakness | Small wording changes swing results a lot | Tied to one model's embedding space |
+**What they're made of.** A discrete (hard) prompt is made of real words from the vocabulary. A continuous (soft) prompt is made of **virtual tokens**, which are free vectors in the embedding space.
+
+**Who creates them.** A discrete prompt is written by a human, or found by searching over words. A soft prompt is **learned by backpropagation**.
+
+**Can you read them?** You can read a discrete prompt. A soft prompt is just numbers, so you can't.
+
+**Their weakness.** With discrete prompts, small wording changes swing the results a lot. A soft prompt's weakness is that it's tied to one model's embedding space.
 
 The slide's evidence: on a fact-retrieval benchmark (LAMA), paraphrases of the same manual prompt scored anywhere from about 20 to 51. With learned prompts they scored a steady ~58.
 
@@ -257,12 +280,13 @@ The key idea from the slide: **"conditioning on a proper context can steer the L
 
 ### What a soft prompt is **not** (a favourite trap area)
 
-| It is NOT… | Because… |
-|---|---|
-| A system prompt | A system prompt is human-written text. A soft prompt is learned vectors. |
-| Prompt compression | Compression shortens a text prompt. A soft prompt is trained for a task. |
-| RAG | RAG retrieves external **knowledge** at inference. A soft prompt changes **behaviour**. |
-| Transferable to another LLM | It lives in one model's embedding space and is tied to its tokenizer. |
+**It isn't a system prompt.** A system prompt is human-written text. A soft prompt is learned vectors.
+
+**It isn't prompt compression.** Compression shortens a text prompt. A soft prompt is trained for a task.
+
+**It isn't RAG.** RAG retrieves external **knowledge** at inference time. A soft prompt changes the model's **behaviour**.
+
+**It can't be moved to another LLM.** It lives in one model's embedding space and is tied to that model's tokenizer.
 
 It's still counted as a **PEFT method**, because its parameters are trained with backpropagation. It's trained once, saved and reused. Virtual tokens also get positional information like any other token.
 
@@ -272,12 +296,13 @@ It's still counted as a **PEFT method**, because its parameters are trained with
 
 Both freeze the model and learn virtual tokens. The **only** difference is **where** the virtual tokens go.
 
-| | Prompt tuning | Prefix tuning (Li & Liang, 2021) |
-|---|---|---|
-| Where | At the **input embedding layer only** | Prepended to the **keys and values of every attention layer** |
-| What's trained | A small matrix of virtual-token embeddings | Prefix vectors P_k and P_v for each layer (often generated by a small MLP during training) |
-| Influence | Indirect: must travel up through all layers | Direct: conditions attention at every layer |
-| Good for | Simple adaptation with the fewest parameters | **Generation tasks** such as summarisation, table-to-text and dialogue |
+**Where the virtual tokens go.** Prompt tuning puts them at the **input embedding layer only**. Prefix tuning (Li & Liang, 2021) prepends them to the **keys and values of every attention layer**.
+
+**What gets trained.** Prompt tuning trains a small matrix of virtual-token embeddings. Prefix tuning trains prefix vectors P_k and P_v for each layer, which are often generated by a small MLP during training.
+
+**How much influence they have.** In prompt tuning the influence is indirect: the signal has to travel up through all the layers. In prefix tuning it's direct, because the prefix conditions attention at every layer.
+
+**What each is good for.** Prompt tuning suits simple adaptation with the fewest parameters. Prefix tuning shines on **generation tasks** such as summarisation, table-to-text and dialogue.
 
 ### How prefix tuning works, in words
 
@@ -318,12 +343,13 @@ flowchart LR
 
 The professor's closing summary slide tied each method to a problem. **Learn the problem → method pairs.** That's how scenario questions are framed.
 
-| Problem | Method | Fix in one line |
-|---|---|---|
-| A long soft prompt (e.g. 100 tokens) is costly, and not every token helps for every input | **SMoP** — Sparse Mixture of Prompts (Choi et al., 2023) | Keep **several short prompts** and a small **router** (e.g. a linear layer + softmax) that picks the best one(s) for each input |
-| Every layer gets the same prefix length, but layers need different amounts | **APT** — Adaptive Prefix Tuning (Zhang et al., 2023) | **Learn a different prefix length per layer** using gates. Bottom layers (shallow, phrase-level features) tend to need more; top layers (abstract meaning) need less |
-| One fixed prompt for every input of a task is unnatural | **IDPG** — Instance-Dependent Prompt Generation (Wu et al., 2022) | A small generator network (down-project → non-linearity → up-project) creates a **different prompt for each input** |
-| Prompts only at the input layer may not be the best place | **SPT / LPT** — Selective / Late Prompt Tuning | Insert prompts at **intermediate layers** (LPT) or **learn which layers** to use within a budget (SPT) |
+**SMoP, Sparse Mixture of Prompts (Choi et al., 2023).** *The problem:* a long soft prompt (say 100 tokens) is costly, and not every token helps for every input. *The fix:* keep **several short prompts** plus a small **router** (for example, a linear layer + softmax) that picks the best one or ones for each input.
+
+**APT, Adaptive Prefix Tuning (Zhang et al., 2023).** *The problem:* every layer gets the same prefix length, but different layers need different amounts. *The fix:* **learn a different prefix length per layer** using gates. The bottom layers, which handle shallow, phrase-level features, tend to need more. The top layers, which handle abstract meaning, need less.
+
+**IDPG, Instance-Dependent Prompt Generation (Wu et al., 2022).** *The problem:* using one fixed prompt for every input of a task is unnatural. *The fix:* a small generator network (down-project → non-linearity → up-project) creates a **different prompt for each input**.
+
+**SPT / LPT, Selective / Late Prompt Tuning.** *The problem:* the input layer may not be the best place for prompts. *The fix:* insert prompts at **intermediate layers** (LPT), or **learn which layers** to use within a budget (SPT).
 
 APT's heatmaps showed this in practice. An entity-relation task (CoNLL04) concentrated its prefix in the **bottom** layers, while a commonsense-reasoning task (COPA) used the **higher** layers more.
 
@@ -334,18 +360,21 @@ APT's heatmaps showed this in practice. An entity-relation task (CoNLL04) concen
 
 ---
 
-## Choosing a PEFT method: quick decision table
+## Choosing a PEFT method
 
 These rules of thumb come from the course's Q&A answers. The professor added: *"nowadays LoRA is mostly used."*
 
-| Situation | Good choice | Why |
-|---|---|---|
-| General instruction tuning or domain adaptation | **LoRA** (Chapter 04) | Default today; can be merged for zero extra latency |
-| Very large model, limited GPU | **QLoRA** (Chapter 04) | 4-bit base model |
-| Several separate tasks or domains on one backbone | **Adapters** (task-specific, routed) | One backbone, a small adapter per task, no forgetting |
-| Generation tasks (summarisation, dialogue) with the fewest trainable parameters | **Prefix tuning** | Learned K/V at every layer |
-| Latency-sensitive deployment | Avoid **sequential adapters** | They add sequential computation at inference |
-| Inputs vary a lot within one task | **IDPG** or **SMoP** | Input-dependent or routed prompts |
+**For general instruction tuning or domain adaptation, use LoRA** (Chapter 04). It's the default today, and it can be merged for zero extra latency.
+
+**If the model is very large and the GPU is limited, use QLoRA** (Chapter 04). Its base model is stored in 4 bits.
+
+**If several separate tasks or domains share one backbone, use adapters**, one per task, with routing. You keep one backbone and a small adapter per task, and nothing is forgotten.
+
+**For generation tasks such as summarisation or dialogue, with the fewest trainable parameters, use prefix tuning.** It learns K/V at every layer.
+
+**If the deployment is latency-sensitive, avoid sequential adapters.** They add sequential computation at inference.
+
+**If the inputs vary a lot within one task, consider IDPG or SMoP.** Their prompts are input-dependent or routed.
 
 ---
 
@@ -376,20 +405,31 @@ These rules of thumb come from the course's Q&A answers. The professor added: *"
 
 ## Where students got confused (from the live Q&A)
 
-| Student question | The clarified answer |
-|---|---|
-| "Is an adapter a tool or a separate LLM?" | No. It's a small trainable neural-network layer inside the frozen LLM. |
-| "Where is the new task's knowledge stored?" | Entirely in the adapter (or soft-prompt) weights. The backbone is unchanged. |
-| "Does near-identity mean the adapter stays close to identity?" | Only at initialisation. The up-projection starts near zero, then learns. |
-| "Does the bottleneck permanently shrink the embedding?" | No. It reduces trainable parameters inside the adapter and expands straight back. |
-| "Why do we need an activation between down- and up-projection?" | Without it, the two linear layers collapse into one linear map. |
-| "How is the bottleneck size chosen?" | By validation, typically trying 8, 16, 32 or 64. |
-| "Are CoLA, SST, MRPC… layers?" | No. They're GLUE **dataset** names. |
-| "In prefix tuning, are W_k and W_v trained?" | No. Only the extra prefix vectors P_k and P_v. |
-| "Is a soft prompt the same as a system prompt or RAG?" | No. A system prompt is written text, RAG adds retrieved knowledge, and a soft prompt is learned vectors. |
-| "Can I reuse a soft prompt on another LLM?" | No. It's tied to that model's embedding space. |
-| "Do unselected adapters still run?" | No. Routing runs only the selected adapter. |
-| "Are gradients and Adam states needed at inference?" | No. Only for training. |
+These are real questions students asked during the session, with the answers they were given.
+
+**"Is an adapter a tool or a separate LLM?"** Neither. It's a small trainable neural-network layer inside the frozen LLM.
+
+**"Where is the new task's knowledge stored?"** Entirely in the adapter (or soft-prompt) weights. The backbone is unchanged.
+
+**"Does near-identity mean the adapter stays close to identity?"** Only at initialisation. The up-projection starts near zero and then learns.
+
+**"Does the bottleneck permanently shrink the embedding?"** No. It reduces the trainable parameters inside the adapter, then expands straight back.
+
+**"Why do we need an activation between the down- and up-projection?"** Without it, the two linear layers collapse into a single linear map.
+
+**"How is the bottleneck size chosen?"** By validation, typically trying 8, 16, 32 or 64.
+
+**"Are CoLA, SST, MRPC… layers?"** No. They're the names of GLUE **datasets**.
+
+**"In prefix tuning, are W_k and W_v trained?"** No. Only the extra prefix vectors P_k and P_v are.
+
+**"Is a soft prompt the same as a system prompt or RAG?"** No. A system prompt is written text, RAG adds retrieved knowledge, and a soft prompt is learned vectors.
+
+**"Can I reuse a soft prompt on another LLM?"** No. It's tied to that model's embedding space.
+
+**"Do unselected adapters still run?"** No. Routing runs only the selected adapter.
+
+**"Are gradients and Adam states needed at inference?"** No. They're only needed for training.
 
 ---
 
