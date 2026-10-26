@@ -42,7 +42,7 @@ How likely each topic is to be tested, based on how much slide time it got, whet
 
 **Mapping RL words onto an LLM (state, action, policy, trajectory).** Several slides cover it, and it drew more student questions than any other topic.
 
-**Why policy gradients are noisy: reward-to-go, baseline and advantage.** These are slides 27–31. The idea matters, the formulas don't.
+**Why policy gradients are noisy: reward-to-go, baseline and advantage.** These are slides 27–31. The idea matters most; the one formula to know is advantage A = Q − V.
 
 **PPO's "proximal" idea: don't change the model too much in one update.** These are slides 32–37, and revision restated it.
 
@@ -134,7 +134,7 @@ It's hard to get people to agree that an answer is "7.3 out of 10." But **"peopl
 - It's a transformer (usually built from the same base architecture) that reads **prompt + answer**.
 - On top of the **last token's** hidden state sits a small linear layer with **one output**: a single number, the **reward score**.
 
-### How it learns (the Bradley-Terry idea, no maths needed)
+### How it learns (the Bradley-Terry loss)
 
 For each training pair we know the human-preferred answer (the "winner", **chosen**) and the other one (the "loser", **rejected**).
 
@@ -142,7 +142,14 @@ For each training pair we know the human-preferred answer (the "winner", **chose
 - The training loss is **small when the winner's score is well above the loser's** and **large when the loser scores higher**.
 - The only way to make the loss small across thousands of pairs is to learn to give **high scores to the kinds of answers humans prefer**.
 
-(The formula on the slides is −log σ(r_winner − r_loser). You only need the idea: *it rewards a big gap in the right direction.*)
+The formula on the slides is **L = −log σ(r_chosen − r_rejected)**, where σ (the sigmoid) turns the score gap into a number between 0 and 1. *It rewards a big gap in the right direction.*
+
+!!! example "Worked example: the loss for three score gaps"
+    **Chosen scores 2 higher:** σ(2) ≈ 0.88, so the loss ≈ **0.13**, which is small.
+
+    **Equal scores:** σ(0) = 0.5, so the loss = −log 0.5 ≈ **0.69**.
+
+    **Rejected scores 2 higher:** σ(−2) ≈ 0.12, so the loss ≈ **2.13**, which is large, so training pushes hard to fix it. More practice: [Numbers & formulas](../extras/formulas.md).
 
 !!! example "Everyday analogy"
     Chess ratings. Nobody hands out ratings by gut feeling. Ratings are learned purely from who **beat** whom. After enough games, the ratings reflect real skill. The reward model's scores are learned the same way: purely from which answer "won" each comparison.
@@ -193,7 +200,7 @@ RL has its own vocabulary. The course mapped each word onto a language model.
 
 ## Concept 5 — Why plain policy gradients are noisy, and the fixes
 
-You don't need any formulas here, just the story.
+The story matters most here. The one formula worth knowing is the **advantage**, A = Q − V: how much better an action was than the average from that state. With Q = 7 and V = 5, A = **+2**, so the action is reinforced.
 
 1. **The basic method (REINFORCE):** generate some answers, see their rewards, and push up the probability of whatever led to high rewards. Its estimate is right **on average** (unbiased), but very **noisy** (high variance), because it's based on just a few sampled answers.
 2. **Reward-to-go:** "The future cannot influence the past." When judging a token, only count rewards that come **after** it. Earlier rewards weren't caused by it, so including them just adds noise.
@@ -229,6 +236,9 @@ The reward model is just a model, and it has blind spots. The language model, tr
 - Measure how different the new model's word probabilities are from the reference's, using **KL divergence** (a measure of how different two probability distributions are: 0 if identical, larger as they diverge).
 - **Subtract** that difference from the reward. Drifting into strange territory now costs points.
 - A weight **β** controls how strong the penalty is: **larger β = stay closer to the reference.**
+
+!!! example "Worked example: r_total = r_φ − β · KL"
+    The reward model gives 8, the KL divergence from the reference is 4, and β = 0.5. The policy's reward is 8 − 0.5 × 4 = **6**. Double β to 1.0 and it drops to **4**.
 
 So the training goal becomes: **get a high reward, without moving far from the sensible SFT model.**
 
@@ -318,6 +328,11 @@ Suppose the starting model actually prefers the rejected answer. DPO's job is to
 
 !!! info "A note on the slide numbers"
     The revision slides used two different sets of example probabilities for this idea (one slide says the initial model gives chosen 30% / rejected 70%; another uses 0.60/0.40 for "pre" and 0.30/0.70 for "new"). They don't agree with each other, so **don't memorise them**. Remember the direction: **chosen up, rejected down, relative to the reference.**
+
+!!! example "Worked example: the DPO loss with consistent numbers"
+    The loss is −log σ(β × [log(π_θ(chosen) ÷ π_ref(chosen)) − log(π_θ(rejected) ÷ π_ref(rejected))]).
+
+    The reference gives each answer 0.40. After training, the model gives the chosen answer 0.60 and the rejected one 0.20. The chosen term is log 1.5 ≈ +0.41, and the rejected term is log 0.5 ≈ −0.69. The difference is 1.10, and × β (0.1) gives 0.11. σ(0.11) ≈ 0.53, so the loss ≈ **0.64**, down from **0.69** before training. Step-by-step: [Numbers & formulas](../extras/formulas.md).
 
 ### Signs that DPO training is working (from the hands-on)
 

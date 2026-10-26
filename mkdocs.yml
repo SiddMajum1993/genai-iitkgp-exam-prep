@@ -113,6 +113,7 @@ extra_javascript:
   - assets/js/quizzes/ch11-multi-agent.js
   - assets/js/quizzes/ch12-langchain-langgraph.js
   - assets/js/quizzes/ch13-responsible-ai.js
+  - assets/js/quizzes/formulas.js
   - assets/js/practice-quiz.js
   - assets/js/aura.js
 
@@ -148,6 +149,7 @@ nav:
           - Focus map: exam2/extras/focus-map.md
           - Which one when?: exam2/extras/which-one-when.md
           - Commonly confused pairs: exam2/extras/confused-pairs.md
+          - Numbers & formulas: exam2/extras/formulas.md
           - Cheat sheet: exam2/extras/cheat-sheet.md
           - Glossary: exam2/extras/glossary.md
   - Cheat sheet: cheatsheet.md

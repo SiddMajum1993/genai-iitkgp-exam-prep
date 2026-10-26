@@ -3,7 +3,7 @@
 A beginner-friendly study guide for the **2nd proctored exam** of the upGrad × IIT Kharagpur course on Generative and Agentic AI. It covers only the sessions taught **after the 1st exam**.
 
 !!! info "Exam format"
-    **24 multiple-choice questions in 90 minutes.** We don't expect calculation questions, so numbers in this guide are explained as ideas to recognise, not formulas to compute.
+    **24 multiple-choice questions in 90 minutes.** Students from the first exam slot reported **some formula-based calculation questions from the fine-tuning chapters**. Every formula from the slides, with worked examples and calculation practice, is collected on the [Numbers & formulas](extras/formulas.md) page.
 
 ## How to use this guide
 
@@ -43,8 +43,9 @@ There are deliberately **no mock exams**. Last time the mocks followed one patte
 **Exam toolkit** (use these in the final week)
 
 - [Focus map](extras/focus-map.md): every high-likelihood topic, ranked, plus a rough question split across the four parts
-- [Which one when?](extras/which-one-when.md): "if the scenario says… → choose…" tables
+- [Which one when?](extras/which-one-when.md): "if the scenario says… → choose…" decision rules
 - [Commonly confused pairs](extras/confused-pairs.md): look-alike concepts and how to tell them apart in an MCQ
+- [Numbers & formulas](extras/formulas.md): every formula from the slides, worked step by step, with 12 calculation questions
 - [Cheat sheet](extras/cheat-sheet.md): last-hour revision, chapter by chapter
 - [Glossary](extras/glossary.md): every term, defined in one line
 

@@ -184,6 +184,11 @@ On the GLUE benchmark with BERT-large, adapters scored almost the same as full f
 !!! info "About the percentages"
     The slides quote different figures for adapters: "< 1%" (taxonomy), "about 1%", "about 2%" (summary slide) and "3.6%" (Houlsby table). They depend on the bottleneck size. Remember **"a small few percent or less"**, not a single number.
 
+!!! example "Worked example: counting an adapter's parameters (from the slides)"
+    One adapter adds **2md + m + d** parameters: two weight matrices (d × m down, m × d up) plus their biases (m and d).
+
+    With d = 768 and m = 64: 2 × 64 × 768 = 98,304, plus 64 + 768 = **99,136, about 0.1 million**. The slide counts one transformer layer as about 16d² + 19d ≈ **9.5 million**, so the adapter adds about **1%** per layer. More practice: [Numbers & formulas](../extras/formulas.md).
+
 ### Common misunderstandings
 
 - **"Near-identity means the adapter must stay close to identity during training."** No. It's only the **starting** condition.
@@ -303,6 +308,11 @@ Both freeze the model and learn virtual tokens. The **only** difference is **whe
 **How much influence they have.** In prompt tuning the influence is indirect: the signal has to travel up through all the layers. In prefix tuning it's direct, because the prefix conditions attention at every layer.
 
 **What each is good for.** Prompt tuning suits simple adaptation with the fewest parameters. Prefix tuning shines on **generation tasks** such as summarisation, table-to-text and dialogue.
+
+!!! example "Worked example: how many numbers each one trains"
+    **Prompt tuning** trains one t × d matrix (t virtual tokens, hidden size d). With t = 20 and d = 768 that's 20 × 768 = **15,360** parameters.
+
+    **Prefix tuning** trains a key prefix and a value prefix at **every** layer, so about 2 × L × t × d. With L = 12 layers, t = 10 and d = 768 that's **184,320**. This explains why prefix tuning trains more for the same number of virtual tokens. *(This count follows from the slide's design; the slides don't work it out.)* See [Numbers & formulas](../extras/formulas.md).
 
 ### How prefix tuning works, in words
 

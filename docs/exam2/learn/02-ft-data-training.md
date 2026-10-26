@@ -36,7 +36,7 @@ If you remember one sentence, make it this one: **"Good data, a gentle learning 
 
 ### 🟠 Medium: likely to show up in one question
 
-**Batch size: the small vs large trade-off, gradient accumulation, "bigger batch → raise LR".** 8 slides. The formulas exist, but we don't expect arithmetic.
+**Batch size: the small vs large trade-off, gradient accumulation, "bigger batch → raise LR".** 8 slides. Students from the first exam slot reported formula questions, so be ready to **compute** an effective batch size and a scaled learning rate ([Numbers & formulas](../extras/formulas.md)).
 
 **Imbalanced data and the accuracy paradox; which metrics to use.** This is classic MCQ material.
 
@@ -235,7 +235,7 @@ There are four patterns to recognise.
 - **Too low:** the loss falls painfully slowly.
 - **Fine-tuning uses much smaller learning rates than pre-training**, because the goal is to *nudge* the model, not rebuild it.
 
-Typical peak values to *recognise* (not compute):
+Typical peak values to recognise:
 
 **Full fine-tuning** usually peaks at 1e-5 to 2e-5 (that is, 0.00001–0.00002).
 
@@ -255,6 +255,11 @@ Typical peak values to *recognise* (not compute):
     Driving into a parking spot: start gently (warm-up), drive at normal speed on the road (peak), then slow right down as you park (decay).
 
 **Warm-up facts:** the default is **3% of total steps** (raise it to 5–10% for short or unstable runs). It's counted in **optimizer steps**, not epochs.
+
+!!! example "Worked example: counting steps and warm-up"
+    10,000 training examples with an effective batch of 100 gives 10,000 ÷ 100 = **100 steps per epoch**. Five epochs give **500 steps**.
+
+    With 1,000 total steps and `warmup_ratio = 0.03`, warm-up lasts 0.03 × 1,000 = **30 steps**. More practice: [Numbers & formulas](../extras/formulas.md).
 
 **Six schedule shapes:**
 
@@ -288,6 +293,11 @@ When one update is too big, it damages the weights. That causes bigger errors, b
 
 > "Clipping is a seatbelt, not a steering wheel." If more than ~20% of steps get clipped, your learning rate is too high. Fix the LR rather than relying on clipping.
 
+!!! example "Worked example: what clipping does to the numbers"
+    The rule is g ← g × min(1, c ÷ ‖g‖), with c = `max_grad_norm` = 1.0.
+
+    If the gradient's norm is **4**, the multiplier is min(1, 1 ÷ 4) = 0.25. Every component shrinks to a quarter, the norm becomes exactly 1 and the direction stays the same. If the norm is **0.5**, the multiplier is min(1, 2) = 1, so nothing changes.
+
 **Fix 2 — An LR schedule.** For example, a legal-domain fine-tune at a constant LR kept spiking near the end. Switching to cosine (same peak) removed the late spikes.
 
 **The stability checklist** (each layer adds protection):
@@ -317,8 +327,8 @@ Batch size is a trade-off, and each side wins something.
 Key ideas to *recognise*:
 
 - **Gradient accumulation:** if a big batch doesn't fit in GPU memory, process several small "micro-batches" and **add up their gradients before one update**. It behaves like a bigger batch without the memory cost.
-- **Effective batch size** = micro-batch × accumulation steps × number of GPUs. You won't need to compute it, just know what goes into it.
-- **The linear scaling rule:** if you make the batch bigger, raise the LR roughly in proportion.
+- **Effective batch size** = micro-batch × accumulation steps × number of GPUs. The slide's example: micro-batch 2 × accumulation 16 × 4 GPUs = **128**.
+- **The linear scaling rule:** if you make the batch bigger, raise the LR roughly in proportion: η_new ≈ η_old × B_new ÷ B_old. The slide's example: batch 32 at 2e-5 becomes batch 64 at **4e-5**.
 - **A practical recipe:** fix the max sequence length → increase the micro-batch until GPU memory is nearly full → use accumulation to reach the batch you want.
 
 **Let the curves judge:**
@@ -359,7 +369,7 @@ The metric you're watching (the target task) **improves**, while general skills 
 
 **Regularise towards the pre-trained weights (L2-SP, EWC).** Add a penalty for moving away from the original weights. **EWC** holds the weights that are *most important* for old skills more tightly, with importance measured by Fisher information. The cost is the memory to store the original weights (plus the importance scores for EWC). Use it when full FT is required and no general data is available.
 
-**Weight averaging (WiSE-FT).** After fine-tuning, **blend** the fine-tuned weights with the original ones. It costs one merge pass. Use it when the model is already fine-tuned and has degraded.
+**Weight averaging (WiSE-FT).** After fine-tuning, **blend** the fine-tuned weights with the original ones. It costs one merge pass. Use it when the model is already fine-tuned and has degraded. The formula is θ_merged = (1 − α)·θ_base + α·θ_ft. For example, a weight that was 2.0 in the base model and 3.0 after fine-tuning becomes 0.5 × 2.0 + 0.5 × 3.0 = **2.5** with α = 0.5.
 
 **Freeze layers.** Freeze the embeddings and lower layers, which hold general knowledge, and train only the top ~25–50% of blocks. It costs nothing. Use it with tight compute or very small datasets.
 

@@ -7,6 +7,9 @@
 - The rankings come from how much class time a topic got, how often it appeared in the pre-read, slides and post-read, how many student questions it drew, and whether it was re-taught in the revision session.
 - They are **our estimate, not an official blueprint**.
 
+!!! warning "Expect a few calculation questions"
+    Students from the first exam slot reported **formula-based questions from the fine-tuning chapters**. The most likely ones: memory for full fine-tuning (12 or 16 bytes per parameter), LoRA parameter counts (r × (d + k)), adapter parameter counts (2md + m + d), absmax quantization, effective batch size, warm-up steps and the linear scaling rule for the learning rate. All of them are worked step by step, with 12 practice calculations, on [Numbers & formulas](formulas.md).
+
 ---
 
 ## 🔴 High: know these cold

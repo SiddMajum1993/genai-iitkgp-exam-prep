@@ -32,7 +32,7 @@ The slides revised these topics, roughly in this order. Each one is covered in f
 - **HHH, RLHF, the reward model, PPO's "don't change too much" idea, DPO.** *See Chapter 05.*
 
 !!! warning "About the memory numbers"
-    The revision slides quote **120 GB** for fully fine-tuning a 10B model on one slide (FP16 + Adam) and **160 GB** on another (with LoRA at about 40 GB). The extra 40 GB isn't explained. Since the exam isn't expected to have calculations, remember the pattern: **full fine-tuning needs several times more memory than LoRA, mostly because of gradients and optimizer states.**
+    The revision slides quote **120 GB** for fully fine-tuning a 10B model on one slide (FP16 + Adam) and **160 GB** on another (with LoRA at about 40 GB). The extra 40 GB is the **FP32 master copy** of the weights that mixed-precision training usually keeps: 2 + 2 + 8 + 4 = 16 bytes per parameter instead of 12. Students from the first exam slot reported calculation questions, so work through [Numbers & formulas](../extras/formulas.md). The pattern to remember: **full fine-tuning needs several times more memory than LoRA, mostly because of gradients and optimizer states.**
 
 ---
 

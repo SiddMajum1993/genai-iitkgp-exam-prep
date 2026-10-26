@@ -98,7 +98,7 @@ A text transformer reads a sentence as a sequence of word tokens. A ViT does the
 4. Optionally add a special **[CLS] token** whose final output summarises the whole image.
 5. Run the sequence through ordinary **transformer encoder layers**.
 
-The standard example: a 224 × 224 image with 16 × 16 patches gives **196 patch tokens** (197 with [CLS]).
+The standard example: a 224 × 224 image with 16 × 16 patches gives **196 patch tokens** (197 with [CLS]). The formula is N = (H ÷ P) × (W ÷ P): (224 ÷ 16)² = 14² = 196. With 14 × 14 patches the same image gives 16² = **256**, and a 336 × 336 image gives 24² = **576**. Halving the patch size quadruples the count.
 
 !!! example "Everyday analogy"
     Cut a photo into a grid of jigsaw pieces, write a "description card" for each piece and number the cards by position. The ViT reads the cards in order, like words in a sentence.
@@ -157,7 +157,7 @@ The slides draw these nine pairings as a square grid, with images down the side 
 
 **Embeddings are L2-normalised.** Every vector is scaled to length 1, so the dot product equals the **cosine similarity**.
 
-**The temperature τ (tau) is learned.** It rescales the scores before the softmax. **Lower τ = sharper, more confident choices; higher τ = softer.** CLIP *learns* τ instead of fixing it.
+**The temperature τ (tau) is learned.** It rescales the scores before the softmax. **Lower τ = sharper, more confident choices; higher τ = softer.** CLIP *learns* τ instead of fixing it. For example, two captions with cosine scores 0.30 and 0.25 are nearly a coin flip at τ = 1 (about 51% vs 49%), but at τ = 0.01 they become 30 vs 25, and the first caption gets about **99%**.
 
 **Projection layers make the sizes match.** The image and text encoders output different-sized vectors. Small learned projection layers map both into the same shared size.
 

@@ -4,6 +4,30 @@
 
 ---
 
+## The formulas in one place
+
+Full details and worked examples are on [Numbers & formulas](formulas.md).
+
+- **Full fine-tuning memory:** about **12 bytes per parameter** (2 weight + 2 gradient + 8 Adam), or 16 with an FP32 master copy. 10B → 120 GB (or 160 GB). 70B → 840 GB.
+- **Storing a model:** FP16 = 2 bytes per parameter (7B → 14 GB), NF4 = 0.5 bytes (7B → 3.5 GB).
+- **LoRA and QLoRA on 70B:** LoRA ≈ 17.6 bits per parameter → ≈ 154 GB. QLoRA ≈ 5.2 bits → ≈ 46 GB, one GPU.
+- **LoRA parameters:** r × (d + k) per matrix, and L × M × r × (d + k) for the model. LLaMA-13B with r = 16 on Q, K, V, O → 26.2M → 52.4 MB (0.2%).
+- **LoRA scaling:** h = W₀x + (α/r)·BAx. α = 16, r = 8 → ×2.
+- **Adapter parameters:** 2md + m + d. d = 768, m = 64 → 99,136 ≈ 0.1M ≈ 1% of a 9.5M layer.
+- **Prompt tuning:** t × d. **Prefix tuning:** about 2 × L × t × d.
+- **Absmax (int8):** c = 127 ÷ max|X|, q = round(c·x), x̂ = q ÷ c. [0.5, −2.0, 1.2, 3.0] → [21, −85, 51, 127].
+- **Block overhead:** 32 ÷ block size bits per parameter (64 → 0.5, 128 → 0.25).
+- **Training steps:** steps per epoch = examples ÷ effective batch. Warm-up = warmup_ratio × total steps (1,000 × 0.03 = 30).
+- **Effective batch:** micro × accumulation × GPUs (2 × 16 × 4 = 128). **Linear scaling:** LR × B_new ÷ B_old (32 at 2e-5 → 64 at 4e-5).
+- **Clipping:** g × min(1, c ÷ ‖g‖), with c = 1.0. Same direction, smaller size.
+- **Reward-model loss:** −log σ(r_chosen − r_rejected). An equal score gives 0.69.
+- **RLHF reward:** r_φ − β·KL. **Advantage:** A = Q − V. **PPO models:** 4; **DPO models:** 2.
+- **ViT patches:** (H ÷ P)². 224/16 → 196, 224/14 → 256, 336/14 → 576.
+- **CLIP:** an N × N score grid, with N − 1 negatives per image. Lower τ gives sharper choices.
+- **MaxSim:** for each query token, take its best patch score, then add them up.
+
+---
+
 ## Part A · Fine-tuning
 
 ### 01 · When to fine-tune ([chapter](../learn/01-ft-decisions.md))

@@ -41,7 +41,7 @@ How likely each topic is to be tested, based on the lecture quiz, the quick-chec
 
 ### 🟠 Medium: likely to show up in one question
 
-**Metrics.** Recall@K, nDCG@5 and the ViDoRe benchmark: what each measures, not how to compute it. There are quiz questions on what they mean.
+**Metrics.** Recall@K, nDCG@5 and the ViDoRe benchmark: what each measures, and simple calculations such as Recall@K and MaxSim. There are quiz questions on what they mean.
 
 **Cost and memory.** ColPali needs a much bigger index and more GPU memory. Several Q&A answers make this point.
 
@@ -219,7 +219,7 @@ Here's how the two strategies compare, point by point.
 
 ---
 
-## Concept 6 — Late interaction and MaxSim (no math needed)
+## Concept 6 — Late interaction and MaxSim
 
 ### The problem with one vector per page
 
@@ -232,6 +232,11 @@ Squeezing a whole page into **one** vector blends everything together. A small c
 1. For **each word in the question**, find the **single best-matching patch** on the page. That's the "Max" in **MaxSim**.
 2. **Add up** those best-match scores across all the question's words.
 3. The page with the highest total wins.
+
+!!! example "Worked example: a MaxSim score"
+    The formula is s(q, d) = Σᵢ maxⱼ qᵢ · dⱼ. A 2-token query is scored against a page with 3 patches.
+
+    Token 1 scores [0.2, 0.9, 0.1] against the patches, so its best is **0.9**. Token 2 scores [0.7, 0.3, 0.4], so its best is **0.7**. The page's score is 0.9 + 0.7 = **1.6**.
 
 The idea comes from **ColBERT** (text retrieval). **ColPali** applies it to page images.
 
@@ -303,7 +308,7 @@ The professor's warning: **"Abstention is easier said than done."** Models often
 
 ## Concept 10 — Measuring retrieval quality (what the metrics mean)
 
-You won't need to compute these, but you should know what each one rewards.
+Know what each one rewards, and be able to do the simple ones. For example, if the correct item is in the top 5 for 80 of 100 queries, **Recall@5 = 0.80**.
 
 **Precision, Recall and F1 @k.** These tell you how many of the top-k results are relevant, and how many of all the relevant items you found.
 

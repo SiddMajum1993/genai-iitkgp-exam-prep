@@ -117,6 +117,8 @@ Both networks take 1000 numbers in and give 1000 numbers out. But B has **five t
 
 The size of that waist is called the **rank (r)**. A small r means few directions, few parameters and cheap training.
 
+**The parameter-count formula.** Fully fine-tuning one d × k matrix trains d × k numbers. LoRA trains B (d × r) and A (r × k), which is **r × (d + k)**. For a 4096 × 4096 matrix with r = 8, that's 8 × (4096 + 4096) = **65,536** instead of 16,777,216, about 0.39%. Doubling r doubles the count.
+
 !!! example "Everyday analogy"
     Imagine a spreadsheet of how much 1,000 customers like 1,000 movies. You could store all million ratings. Or you could notice that taste mostly comes down to a few factors: "likes action", "likes romance", "likes comedy". Then you store each customer's score on those 3 factors, plus each movie's score on the same 3 factors. You can rebuild a very good approximation of the whole table from those two small lists. The "3 factors" is the rank.
 
@@ -171,12 +173,16 @@ This is the same idea as the **near-identity initialisation** of adapters in Cha
 
 In the course's example, LoRA is applied to the attention projection matrices: **Query, Key, Value and Output**. In code these are often called `q_proj`, `k_proj`, `v_proj` and `o_proj`. The matrices don't have to be square; the slides used square ones only to keep the picture simple.
 
-### Worked example (no calculation needed, just the picture)
+### Worked example: the size of a LoRA adapter (from the slides)
 
-Imagine fine-tuning LLaMA-13B with LoRA, rank 16, on the Q, K, V and O matrices of all 40 layers.
+Imagine fine-tuning LLaMA-13B with LoRA, rank 16, on the Q, K, V and O matrices of all 40 layers. The hidden size is d = k = 5120. The formula is **L × M × r × (d + k)**, where L is the number of layers and M the number of matrices per layer.
 
-- The **trainable** part comes to about **26 million** parameters. That's about **0.2%** of the 13 billion.
-- Saved to disk, the adapter is about **50 MB**, compared with 26 GB for the full model.
+1. Per matrix: 16 × (5120 + 5120) = **163,840**
+2. Per layer (4 matrices): 163,840 × 4 = **655,360**
+3. All 40 layers: 655,360 × 40 = **26.2 million**, about **0.2%** of 13 billion
+4. On disk in FP16: 26.2 million × 2 bytes = **52.4 MB**, compared with 26 GB for the full model
+
+More practice: [Numbers & formulas](../extras/formulas.md).
 
 That's where the "50 MB per client" in the opening story comes from.
 
@@ -204,7 +210,7 @@ LoRA gives you two settings to choose before training. They control different th
 
 **The alpha α sets how loudly the adapter speaks.** It controls how strongly the LoRA correction is applied on top of the frozen model. Think of it as a volume knob for the adapter.
 
-**In the formula, the two appear together as α / r.** Dividing by r keeps the update's size roughly stable when you change the rank. So if you try r = 8 and then r = 16, you don't have to re-tune everything else from scratch.
+**In the formula, the two appear together as α / r.** Dividing by r keeps the update's size roughly stable when you change the rank. So if you try r = 8 and then r = 16, you don't have to re-tune everything else from scratch. For example, with α = 16 and r = 8 the update is multiplied by 16 ÷ 8 = **2**. Raise r to 16 with the same α and the multiplier becomes **1**.
 
 **How to choose r:** start with common values (8, 16, 32), then pick the **smallest r that gives acceptable validation performance**. Bigger isn't automatically better: it costs more memory and can overfit small datasets.
 
@@ -264,7 +270,13 @@ So each trained weight costs about **12 bytes**, plus the activations. Notice th
 
 The course's headline comparison uses a **70B model**. Full fine-tuning needs about 840 GB, which is around 20 data-centre GPUs. LoRA brings that down to about 154 GB, or around 4 GPUs. QLoRA brings it to about 46 GB, which fits on **a single** data-centre GPU.
 
-You won't be asked to calculate these numbers, but you should recognise the pattern: **each step cuts memory dramatically, and QLoRA is what makes a single GPU possible.**
+Students from the first exam slot reported calculation questions on exactly this kind of number, so know where they come from:
+
+- **Full fine-tuning:** about 12 bytes per parameter, so 70B × 12 = **840 GB**. (Some slides add a 4-byte FP32 master copy, giving 16 bytes per parameter.)
+- **LoRA:** about 17.6 bits (2.2 bytes) per parameter of the whole model, mostly the frozen 16-bit weights, so 70B × 2.2 ≈ **154 GB**.
+- **QLoRA:** about 5.2 bits per parameter, because the frozen weights are now 4-bit, so 70B × 5.2 ÷ 8 ≈ **46 GB**.
+
+The pattern: **each step cuts memory dramatically, and QLoRA is what makes a single GPU possible.** Step-by-step versions are on [Numbers & formulas](../extras/formulas.md).
 
 ---
 
@@ -280,6 +292,11 @@ The basic recipe ("absmax" quantization) works like this:
 2. Scale everything so that the largest value maps to the top of the small integer range (127 for 8-bit).
 3. Round each number to the nearest integer.
 4. Store the integers **plus the one scaling constant**, so you can approximately convert back later. Converting back is called **dequantization**.
+
+!!! example "Worked example (from the slides)"
+    X = [0.5, −2.0, 1.2, 3.0]. The largest absolute value is 3.0, so the constant is c = 127 ÷ 3.0 ≈ **42.33**.
+
+    Multiply and round: q = [21, −85, 51, 127]. Divide by c to get back about [0.496, −2.008, 1.205, 3.0]. The errors are tiny (about 0.004, 0.008, 0.005 and 0), and the largest value comes back exactly.
 
 !!! example "Everyday analogy"
     Rounding prices to the nearest ₹10 before writing them in a notebook. ₹247 becomes ₹250 and ₹1,183 becomes ₹1,180. You save writing space, and you lose a little precision. That small loss is called **quantization error**.
@@ -310,7 +327,7 @@ Most weights in a neural network are small numbers clustered near zero, but ther
 
 Now an outlier only affects its own small block. The slides showed that **smaller blocks (64) give better accuracy** than large blocks (1024).
 
-**The catch:** more blocks mean more scaling constants to store. Concept 10 deals with this.
+**The catch:** more blocks mean more scaling constants to store. With a 32-bit constant per block, the overhead is 32 ÷ block size bits per weight: **0.5 bits** for blocks of 64 and **0.25 bits** for blocks of 128. Concept 10 deals with this.
 
 ---
 
@@ -330,6 +347,11 @@ With 4 bits you only get **16 possible values**. Where should those 16 levels si
 ### Why it matters
 
 NF4 introduces **less error than other 4-bit formats** for this kind of data, which is why QLoRA uses it for the frozen base model. It brings storage down to about **0.5 bytes per parameter**. For example, LLaMA-7B goes from 14 GB in FP16 to about 3.5 GB.
+
+!!! example "Worked example: NF4 storage (from the slides)"
+    Six FP32 weights take 6 × 4 = **24 bytes**. As 4-bit codes they take 6 × 0.5 = 3 bytes, plus one 4-byte absmax constant, so **7 bytes**, a saving of (24 − 7) ÷ 24 ≈ **70.8%**.
+
+    To get a weight back, multiply its NF4 level by the absmax: with absmax 1.65 and level −0.696, the weight comes back as 1.65 × −0.696 ≈ **−1.149** (the original was −1.2).
 
 !!! info "Two different problems, two different fixes"
     - **Block-wise quantization** handles *scale* changes across different regions of the tensor (outliers).
@@ -353,6 +375,15 @@ Block-wise quantization gives every block of 64 weights its own scaling constant
     You vacuum-pack your clothes into small bags (block-wise quantization). Each bag has a label. There are so many bags that the labels themselves start filling a drawer. So you shrink the labels as well: shorter codes, plus one master key for each group of labels.
 
 **The cost** is a tiny bit of extra error and a tiny bit of extra compute (one more dequantization step). The memory saving is "essentially free" according to the pre-read.
+
+!!! example "Worked example: the slide's 25-value comparison"
+    **No quantization:** 25 × 4 bytes = **100 bytes**.
+
+    **8-bit, one constant for everything:** 25 × 1 byte + one 4-byte constant = **29 bytes**.
+
+    **8-bit, block-based (5 blocks of 5):** 25 bytes + five 4-byte constants = **45 bytes**. That's more accurate, but the constants cost 20 bytes.
+
+    **Block-based + double quantization:** 25 bytes + the five constants stored in 1 byte each (5 bytes) + one 4-byte constant for them = **34 bytes**. Double quantization wins back most of the overhead.
 
 ---
 
