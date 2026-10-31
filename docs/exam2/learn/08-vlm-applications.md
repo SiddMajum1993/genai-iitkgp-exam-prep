@@ -42,9 +42,11 @@ How likely each topic is to be tested, based on slide time, the quick-check quiz
 
 **How state-of-the-art models are trained for each task.** For documents, resolution is the main lever. There's one slide per task.
 
+**The DAVE and DocVLM case studies.** The slides mark them optional, but the official practice set asks three questions on them: DAVE's raw-pixel MAE target, DAVE's learned merging and DocVLM's 64 queries.
+
 ### 🟢 Low: understand the idea, skip the details
 
-**Benchmark scores and the DAVE / DocVLM case studies.** The numbers are only "directional", and the case studies are marked optional.
+**Benchmark scores.** The numbers are only "directional".
 
 ---
 
@@ -260,9 +262,11 @@ Document extraction runs into four typical problems.
 
 Other open challenges: handwriting is weaker than print, multi-page reasoning, complex tables, numbers with no reliable confidence flag, and non-Latin scripts.
 
-### Case studies (optional, low exam weight)
+### Case studies (marked optional, but in the practice set)
 
-- **DAVE:** a purpose-built document encoder (MAE-style pre-training on document images, then multi-task training with **learned model merging**) combined with a general encoder (SigLIP2). It improves document and web-agent benchmarks without hurting general VQA.
+- **DAVE:** a purpose-built document encoder (MAE-style pre-training on document images, then multi-task training with **learned model merging**) combined with a general encoder (SigLIP2). It improves document and web-agent benchmarks without hurting general VQA. Two details the practice set asks about:
+    - **Raw pixels, not normalised patches.** Standard MAE normalises each patch before reconstructing it. Document and web pages are mostly flat white space, so patches have very **low variance**, and normalising them makes training unstable. DAVE reconstructs the **raw pixel values** instead.
+    - **Learned merging, not plain averaging.** DAVE trains one encoder copy per LLM decoder (Qwen, Llama, Phi), then combines them with **learned merge coefficients** into one decoder-agnostic encoder. That beat simple weight averaging.
 - **DocVLM:** encodes OCR text plus its layout positions and compresses them with **64 learnable queries** (the same idea as Qwen-VL's 256-query adapter) before feeding the frozen VLM.
 
 ### Datasets and metric to recognise

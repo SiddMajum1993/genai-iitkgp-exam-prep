@@ -397,6 +397,8 @@ Temporary things (intermediate results, held fares, today's dates) belong in **t
     - **Task state:** your to-do checklist for this one errand, with ticks against finished items.
     - **Long-term memory:** your contact book, which is still there next month.
 
+**Other names you may see.** The official practice set uses general agent vocabulary. **Working memory** means the current task's context, close to task state. **Episodic (experience) memory** means storing past episodes or successful solutions and retrieving them for similar tasks later; it's a kind of long-term memory. These are usually stored in a **vector database** so they can be found by similarity. But **similar doesn't always mean useful** for the task at hand. *(These terms are from the practice set, beyond the course slides.)*
+
 ---
 
 ## Concept 10 — When one agent isn't enough (preview of Chapter 11)

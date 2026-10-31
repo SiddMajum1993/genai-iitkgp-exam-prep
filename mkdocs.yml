@@ -99,6 +99,14 @@ extra_javascript:
   - assets/js/mock-exam-3-data.js
   - assets/js/mock-exam-4-data.js
   - assets/js/mock-exam-5-data.js
+  - assets/js/exam2-mock-1-data.js
+  - assets/js/exam2-mock-2-data.js
+  - assets/js/exam2-mock-3-data.js
+  - assets/js/exam2-mock-4-data.js
+  - assets/js/exam2-mock-5-data.js
+  - assets/js/exam2-mock-6-data.js
+  - assets/js/exam2-mock-7-data.js
+  - assets/js/exam2-mock-8-data.js
   - assets/js/quiz.js
   - assets/js/quizzes/ch01-ft-decisions.js
   - assets/js/quizzes/ch02-ft-data-training.js
@@ -152,6 +160,16 @@ nav:
           - Numbers & formulas: exam2/extras/formulas.md
           - Cheat sheet: exam2/extras/cheat-sheet.md
           - Glossary: exam2/extras/glossary.md
+      - Practice mocks:
+          - exam2/practice/index.md
+          - Mock 1 · Official practice set (part 1 of 4): exam2/practice/mock-1.md
+          - Mock 2 · Official practice set (part 2 of 4): exam2/practice/mock-2.md
+          - Mock 3 · Official practice set (part 3 of 4): exam2/practice/mock-3.md
+          - Mock 4 · Official practice set (part 4 of 4): exam2/practice/mock-4.md
+          - Mock 5 · Same topics, sharper distractors: exam2/practice/mock-5.md
+          - Mock 6 · Numbers and formulas: exam2/practice/mock-6.md
+          - Mock 7 · Scenarios and design choices: exam2/practice/mock-7.md
+          - Mock 8 · Curveballs (challenge round): exam2/practice/mock-8.md
   - Cheat sheet: cheatsheet.md
   - Learn (deep guides):
       - learn/index.md

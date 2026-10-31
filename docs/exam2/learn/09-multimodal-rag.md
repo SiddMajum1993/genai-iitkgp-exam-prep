@@ -306,6 +306,17 @@ The professor's warning: **"Abstention is easier said than done."** Models often
 
 ---
 
+### Training a multimodal RAG system: the EM-style view
+
+When you train the retriever and generator together, you never see **which documents should have been retrieved**. That's a **hidden (latent) variable**. The lecture frames training as alternating two passes, in the spirit of Expectation-Maximisation (EM):
+
+1. **An E-step-like pass:** retrieve and score documents with the current model.
+2. **An M-step-like pass:** update the model so the correct answer becomes more likely given what was retrieved.
+
+The idea goes back to the original **RAG** and **REALM** papers, which average over the top-k retrieved documents during training.
+
+---
+
 ## Concept 10 — Measuring retrieval quality (what the metrics mean)
 
 Know what each one rewards, and be able to do the simple ones. For example, if the correct item is in the top 5 for 80 of 100 queries, **Recall@5 = 0.80**.

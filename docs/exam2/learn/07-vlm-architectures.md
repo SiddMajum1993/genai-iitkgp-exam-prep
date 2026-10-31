@@ -163,6 +163,8 @@ The slides draw these nine pairings as a square grid, with images down the side 
 
 **The text embedding is taken at the [EOS] token.** The caption's vector is the text encoder's output at the end-of-sequence token, not an average over all tokens.
 
+**The modality gap.** Even after training, image embeddings and text embeddings don't fully mix. They sit in **two separate regions ("cones")** of the shared space, roughly parallel to each other. Retrieval and zero-shot classification still work, because what matters is which caption is *relatively* closest to an image, not the absolute distance. *(This comes from the official practice set and later research, beyond the course slides.)*
+
 ### Common misunderstandings
 
 - **"CLIP is a Siamese network."** Related idea, but a Siamese network *shares one encoder*. CLIP has **two separate** encoders, one per modality.

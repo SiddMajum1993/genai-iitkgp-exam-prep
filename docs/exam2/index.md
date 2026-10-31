@@ -10,8 +10,7 @@ A beginner-friendly study guide for the **2nd proctored exam** of the upGrad × 
 1. **Read each chapter's "In one minute" and "Exam radar" first.** The radar marks topics 🔴 High, 🟠 Medium or 🟢 Low likelihood, based on how much class time they got, how often they appear across the pre-read, slides and post-read, and how many student questions they drew.
 2. **Go through the concepts.** Each one has a plain-language explanation, an everyday analogy, a small example and the common misunderstandings.
 3. **Finish with the practice questions.** Every chapter ends with 5–10 MCQs that give instant feedback and explain every option. Got one wrong? The explanation points you to the section to re-read.
-
-There are deliberately **no mock exams**. Last time the mocks followed one pattern and didn't reflect the real paper. The focus here is understanding the concepts well enough to handle any question style.
+4. **Then take the [practice mocks](practice/index.md).** There are eight timed papers. Mocks 1–4 are the official practice set, split into four. Mocks 5–8 are original and each one is deliberately different, so you don't get used to a single pattern.
 
 ## Chapters
 
